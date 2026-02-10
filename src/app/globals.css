@@ -1,0 +1,354 @@
+/**
+ * Estilos globales de la aplicación
+ * Paleta de colores oficial de Origen - Manual de Marca v1.0
+ * Incluye variables CSS personalizadas y estilos base
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === PALETA "BOSQUE INNOVADOR" - ORIGEN === */
+    
+    /* Colores Principales (Manual de Marca Sección 3.1) */
+    --color-origen-bosque: 154 63% 18%;      /* #1B4332 - Verde Bosque (Principal) */
+    --color-origen-pino: 154 47% 29%;        /* #2D6A4F - Verde Pino (Secundario) */
+    --color-origen-hoja: 154 43% 39%;        /* #40916C - Verde Hoja */
+    --color-origen-pradera: 167 38% 55%;     /* #74C69D - Verde Pradera */
+    --color-origen-menta: 167 80% 44%;       /* #06D6A0 - Menta Vibrante (Acento) */
+    --color-origen-crema: 100 67% 96%;       /* #F1FAEE - Blanco Crema (Fondo) */
+    
+    /* Colores de Apoyo (Manual de Marca Sección 3.2) */
+    --color-origen-oscuro: 164 84% 8%;       /* #081C15 - Verde Oscuro (Texto) */
+    --color-origen-pastel: 139 68% 93%;      /* #D8F3DC - Verde Pastel (Fondos suaves) */
+    
+    /* Colores del Sistema */
+    --background: var(--color-origen-crema);        /* Fondo principal */
+    --foreground: var(--color-origen-oscuro);       /* Texto principal */
+    --card: 0 0% 100%;                        /* Tarjetas blancas */
+    --card-foreground: var(--color-origen-bosque);  /* Texto en tarjetas */
+    --popover: 0 0% 100%;                     /* Popovers blancos */
+    --popover-foreground: var(--color-origen-bosque); /* Texto en popovers */
+    
+    /* Estados y Acciones */
+    --primary: var(--color-origen-bosque);          /* Botones primarios */
+    --primary-foreground: 0 0% 100%;          /* Texto botones primarios (blanco) */
+    --secondary: var(--color-origen-menta);         /* Botones secundarios */
+    --secondary-foreground: var(--color-origen-bosque); /* Texto botones secundarios */
+    --muted: var(--color-origen-pastel);            /* Elementos muted */
+    --muted-foreground: var(--color-origen-hoja);   /* Texto muted */
+    --accent: var(--color-origen-pastel);           /* Elementos de acento */
+    --accent-foreground: var(--color-origen-bosque); /* Texto acento */
+    --destructive: 0 84% 60%;                 /* Rojo para errores */
+    --destructive-foreground: 0 0% 100%;      /* Texto en errores */
+    
+    /* Bordes e Inputs */
+    --border: 147 20% 85%;                    /* #D1E7DD - Bordes suaves */
+    --input: 147 20% 85%;                     /* #D1E7DD - Inputs */
+    --ring: var(--color-origen-menta);              /* Anillos de focus - Menta */
+    
+    /* Variables de Diseño */
+    --radius: 0.5rem;                         /* 8px - Bordes redondeados */
+    
+    /* === TIPOGRAFÍA (Manual de Marca Sección 4) === */
+    --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    
+    /* Tamaños de fuente (Jerarquía según manual) */
+    --font-h1: 2.5rem;    /* 40px - Títulos principales */
+    --font-h2: 1.8rem;    /* 28.8px - Títulos secundarios */
+    --font-h3: 1.3rem;    /* 20.8px - Títulos terciarios */
+    --font-body: 1rem;    /* 16px - Cuerpo de texto */
+    --font-small: 0.875rem; /* 14px - Texto pequeño */
+  }
+
+  /* === ESTILOS BASE === */
+  * {
+    @apply border-border;                     /* Aplicar borde consistente */
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;      /* Fondo crema, texto oscuro */
+    font-family: var(--font-sans);            /* Arial según manual de marca */
+    font-size: var(--font-body);
+    line-height: 1.6;                         /* Interlineado legible */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* === JERARQUÍA TIPOGRÁFICA (Manual Sección 4.2) === */
+  h1, .h1 {
+    color: hsl(var(--color-origen-bosque));   /* Color principal */
+    font-size: var(--font-h1);
+    font-weight: 700;                         /* Bold según manual */
+    line-height: 1.2;
+    border-bottom: 4px solid hsl(var(--color-origen-menta)); /* Borde inferior menta */
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  h2, .h2 {
+    color: hsl(var(--color-origen-pino));     /* Verde medio oscuro */
+    font-size: var(--font-h2);
+    font-weight: 700;                         /* Bold */
+    line-height: 1.3;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  h3, .h3 {
+    color: hsl(var(--color-origen-hoja));     /* Verde medio */
+    font-size: var(--font-h3);
+    font-weight: 600;                         /* Semi-bold */
+    line-height: 1.4;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  /* === ESTILOS DE TEXTO === */
+  p, .text-body {
+    color: hsl(var(--color-origen-oscuro));   /* Verde oscuro para texto */
+    font-size: var(--font-body);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    opacity: 0.9;                             /* 90% opacidad según manual */
+  }
+
+  .text-small {
+    font-size: var(--font-small);
+    color: hsl(var(--muted-foreground));      /* Gris verdoso */
+    line-height: 1.5;
+  }
+
+  /* === ENLACES === */
+  a {
+    color: hsl(var(--color-origen-hoja));
+    transition: color 0.2s ease;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: hsl(var(--color-origen-bosque));
+    text-decoration: underline;
+  }
+}
+
+@layer components {
+  /* === COMPONENTES REUTILIZABLES === */
+  
+  /* Caja destacada (Manual Sección 1) */
+  .highlight-box {
+    background-color: hsl(var(--color-origen-pastel));
+    border-left: 4px solid hsl(var(--color-origen-menta));
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  /* Grid de colores (Manual Sección 3) */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  /* Card de color (Manual Sección 3.1) */
+  .color-card {
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .color-swatch {
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    color: white;
+    font-weight: bold;
+  }
+
+  /* Do & Don't boxes (Manual Sección 7) */
+  .do-box {
+    background-color: hsl(var(--color-origen-pastel));
+    border: 2px solid hsl(var(--color-origen-pradera));
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .dont-box {
+    background-color: #FFE5E5;
+    border: 2px solid #FF6B6B;
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  /* Logo showcase (Manual Sección 2.1) */
+  .logo-showcase {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    background-color: hsl(var(--color-origen-crema));
+    border-radius: 8px;
+    margin: 2rem 0;
+  }
+
+  /* Botones personalizados */
+  .btn-primary {
+    background-color: hsl(var(--color-origen-bosque));
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: hsl(var(--color-origen-pino));
+  }
+
+  .btn-secondary {
+    background-color: hsl(var(--color-origen-menta));
+    color: hsl(var(--color-origen-bosque));
+  }
+
+  .btn-secondary:hover {
+    background-color: hsl(var(--color-origen-pradera));
+  }
+
+  .btn-outline {
+    border: 1px solid hsl(var(--color-origen-bosque));
+    color: hsl(var(--color-origen-bosque));
+    background-color: transparent;
+  }
+
+  .btn-outline:hover {
+    background-color: hsl(var(--color-origen-crema));
+  }
+}
+
+@layer utilities {
+  /* === UTILIDADES PERSONALIZADAS === */
+  
+  /* Text colors usando clases de Tailwind */
+  .text-origen-bosque {
+    color: hsl(var(--color-origen-bosque));
+  }
+  
+  .text-origen-pino {
+    color: hsl(var(--color-origen-pino));
+  }
+  
+  .text-origen-hoja {
+    color: hsl(var(--color-origen-hoja));
+  }
+  
+  .text-origen-menta {
+    color: hsl(var(--color-origen-menta));
+  }
+  
+  .text-origen-oscuro {
+    color: hsl(var(--color-origen-oscuro));
+  }
+  
+  /* Background colors */
+  .bg-origen-bosque {
+    background-color: hsl(var(--color-origen-bosque));
+  }
+  
+  .bg-origen-pino {
+    background-color: hsl(var(--color-origen-pino));
+  }
+  
+  .bg-origen-hoja {
+    background-color: hsl(var(--color-origen-hoja));
+  }
+  
+  .bg-origen-pradera {
+    background-color: hsl(var(--color-origen-pradera));
+  }
+  
+  .bg-origen-menta {
+    background-color: hsl(var(--color-origen-menta));
+  }
+  
+  .bg-origen-crema {
+    background-color: hsl(var(--color-origen-crema));
+  }
+  
+  .bg-origen-pastel {
+    background-color: hsl(var(--color-origen-pastel));
+  }
+  
+  /* Border colors */
+  .border-origen-bosque {
+    border-color: hsl(var(--color-origen-bosque));
+  }
+  
+  .border-origen-menta {
+    border-color: hsl(var(--color-origen-menta));
+  }
+  
+  .border-origen-pradera {
+    border-color: hsl(var(--color-origen-pradera));
+  }
+  
+  /* Degradados de la marca */
+  .bg-gradient-origen {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-origen-bosque)) 0%,
+      hsl(var(--color-origen-pino)) 50%,
+      hsl(var(--color-origen-pradera)) 100%
+    );
+  }
+
+  .bg-gradient-menta {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-origen-menta)) 0%,
+      hsl(var(--color-origen-pradera)) 100%
+    );
+  }
+
+  /* Sombreados */
+  .shadow-origen {
+    box-shadow: 0 4px 20px hsla(var(--color-origen-bosque) / 0.1);
+  }
+
+  .shadow-subtle {
+    box-shadow: 0 2px 8px hsla(var(--color-origen-bosque) / 0.08);
+  }
+
+  /* Focus utilities */
+  .focus-origen {
+    outline: none;
+    ring-width: 2px;
+    ring-color: hsl(var(--color-origen-menta));
+    ring-offset-width: 2px;
+  }
+
+  /* Scrollbar personalizado */
+  .scrollbar-origen::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-origen::-webkit-scrollbar-track {
+    background-color: hsl(var(--color-origen-crema));
+    border-radius: 9999px;
+  }
+
+  .scrollbar-origen::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--color-origen-pradera));
+    border-radius: 9999px;
+  }
+
+  .scrollbar-origen::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--color-origen-hoja));
+  }
+}
