@@ -1,13 +1,15 @@
 // components/register/ProcessSection.tsx
 /**
- * Sección de Proceso - Paso a paso del registro
- * @version 1.1.0 - Correcciones de accesibilidad aplicadas
- * @description Muestra el proceso en 4 pasos claros para nuevos vendedores
+ * Sección de Proceso - CORREGIDA v1.2.0
+ * @version 1.2.0 - Correcciones de accesibilidad y manual de marca
+ * @description Muestra el proceso en 4 pasos con colores oficiales
  * @author Equipo de Desarrollo Origen
  * @updated Marzo 2026
  * 
- * @important Botón principal actualizado para cumplir contraste WCAG AA
- * @note El degradado Menta-Pradera solo para elementos grandes con texto blanco
+ * @important CORRECCIONES CRÍTICAS:
+ *   - Eliminado uso de Menta (#06D6A0) como fondo de iconos
+ *   - Eliminada línea decorativa con degradado Menta
+ *   - Estandarizados colores: Pradera, Hoja, Pino, Bosque
  */
 
 'use client';
@@ -22,8 +24,9 @@ export function ProcessSection() {
       title: 'Registro simple', 
       description: 'Formulario rápido de 5 minutos',
       icon: FileText,
-      color: 'bg-origen-menta/20', // Fondo con opacidad
-      iconColor: 'text-origen-menta' // Icono color completo
+      // CORREGIDO: Eliminado bg-origen-menta/20
+      color: 'bg-origen-pradera/20',
+      iconColor: 'text-origen-pradera'
     },
     { 
       number: 2, 
@@ -66,10 +69,11 @@ export function ProcessSection() {
         </div>
         
         <div className="relative">
-          {/* Línea de progresión decorativa */}
-          <div className="hidden lg:block absolute left-0 right-0 top-16 h-2 bg-gradient-to-r from-origen-menta via-origen-pradera to-origen-hoja rounded-full opacity-30">
-            <div className="absolute inset-0 bg-gradient-to-r from-origen-menta to-origen-hoja rounded-full animate-pulse"></div>
-          </div>
+          {/* 
+            LÍNEA DE PROGRESIÓN - CORREGIDA
+            @error: Antes usaba from-origen-menta via-origen-pradera to-origen-hoja
+            @fix: Eliminada completamente (decorativa, no esencial)
+          */}
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-6 relative z-10">
             {steps.map((step, index) => {
@@ -134,10 +138,8 @@ export function ProcessSection() {
           </div>
           
           {/* 
-            Botón CTA Principal - CORREGIDO
-            @important Cambiado de degradado Menta-Pradera a Verde Bosque sólido
-            @reason Contraste Menta con texto blanco: 2.9:1 (solo para elementos grandes)
-            @solution Verde Bosque con texto blanco: 10.5:1 (WCAG AAA ✓)
+            Botón CTA Principal - CORRECTO
+            @note: bg-origen-bosque con texto blanco (contraste 10.5:1 AAA ✓)
           */}
           <Button 
             size="lg"
@@ -149,11 +151,6 @@ export function ProcessSection() {
               <ArrowRight className="w-4 h-4 md:w-6 md:h-6" />
             </span>
           </Button>
-          
-          {/* Nota de accesibilidad (opcional para desarrollo) */}
-          <p className="mt-4 text-xs text-gray-500 hidden lg:block">
-            ✓ Contraste: 10.5:1 (WCAG AAA) | ✓ Texto legible: 18px+ | ✓ Color accesible
-          </p>
         </div>
       </div>
     </section>

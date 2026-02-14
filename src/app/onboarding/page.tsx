@@ -1,6 +1,7 @@
 // 📁 /src/app/onboarding/page.tsx
 /**
- * @page Onboarding Premium - VERSIÓN CORREGIDA
+ * @page Onboarding Premium - VERSIÓN DEFINITIVA
+ * @version 14.0.0 - CORREGIDO: Tipos específicos por paso
  */
 
 'use client';
@@ -12,15 +13,14 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 
-import { EnhancedStep1Location } from '@/components/onboarding/steps/EnhancedStep1Location';
-import { EnhancedStep2Story } from '@/components/onboarding/steps/EnhancedStep2Story';
-import { EnhancedStep3Visual } from '@/components/onboarding/steps/EnhancedStep3Visual';
-import { EnhancedStep4Capacity } from '@/components/onboarding/steps/EnhancedStep4Capacity';
-import { EnhancedStep5Documents } from '@/components/onboarding/steps/EnhancedStep5Documents';
-import { EnhancedStep6Stripe } from '@/components/onboarding/steps/EnhancedStep6Stripe';
+// Importar tipos específicos de cada paso
+import { EnhancedStep1Location, type EnhancedLocationData } from '@/components/onboarding/steps/EnhancedStep1Location';
+import { EnhancedStep2Story, type EnhancedStoryData, type Certification } from '@/components/onboarding/steps/EnhancedStep2Story';
+import { EnhancedStep3Visual, type EnhancedVisualData } from '@/components/onboarding/steps/EnhancedStep3Visual';
+import { EnhancedStep4Capacity, type EnhancedCapacityData } from '@/components/onboarding/steps/EnhancedStep4Capacity';
+import { EnhancedStep5Documents, type EnhancedStep5DocumentsData } from '@/components/onboarding/steps/EnhancedStep5Documents';
+import { EnhancedStep6Stripe, type EnhancedStep6StripeData } from '@/components/onboarding/steps/EnhancedStep6Stripe';
 
 import {
   MapPin,
@@ -31,57 +31,97 @@ import {
   CreditCard,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
-  Leaf,
   ArrowRight,
-  CheckCircle2,
-  Clock
+  CheckCircle,
+  Clock,
+  Sparkles,
+  Shield,
+  Leaf
 } from 'lucide-react';
+
+// ============================================================================
+// CONFIGURACIÓN DE PASOS
+// ============================================================================
 
 const STEPS = [
   {
     id: 1,
     title: 'Ubicación',
-    description: 'Dónde se encuentra tu negocio',
     icon: MapPin,
-    color: 'from-origen-pradera to-origen-hoja'
+    color: 'text-origen-pradera',
+    bgColor: 'bg-origen-pradera/10',
+    time: '2 min',
+    description: 'Dirección, provincia y categorías',
+    longDescription: 'Cuéntanos dónde está ubicado tu negocio y qué productos vendes.'
   },
   {
     id: 2,
     title: 'Historia',
-    description: 'Cuéntanos tu proyecto',
     icon: BookOpen,
-    color: 'from-origen-hoja to-origen-pino'
+    color: 'text-origen-hoja',
+    bgColor: 'bg-origen-hoja/10',
+    time: '3 min',
+    description: 'Nombre, descripción y valores',
+    longDescription: 'Comparte la historia detrás de tus productos y los valores de tu marca.'
   },
   {
     id: 3,
     title: 'Perfil visual',
-    description: 'Logo, banner y fotos',
     icon: Camera,
-    color: 'from-origen-pino to-origen-bosque'
+    color: 'text-origen-pino',
+    bgColor: 'bg-origen-pino/10',
+    time: '2 min',
+    description: 'Logo, banner y fotos',
+    longDescription: 'Configura la imagen de tu perfil y muestra tus productos.'
   },
   {
     id: 4,
     title: 'Capacidad',
-    description: 'Producción y logística',
     icon: Package,
-    color: 'from-origen-bosque to-origen-pradera'
+    color: 'text-origen-bosque',
+    bgColor: 'bg-origen-bosque/10',
+    time: '2 min',
+    description: 'Producción y envíos',
+    longDescription: 'Define tu capacidad de producción y las opciones de envío.'
   },
   {
     id: 5,
     title: 'Documentación',
-    description: 'Verifica tu negocio',
     icon: FileText,
-    color: 'from-origen-oscuro to-origen-bosque'
+    color: 'text-origen-oscuro',
+    bgColor: 'bg-origen-oscuro/10',
+    time: '3 min',
+    description: 'Verificación de identidad',
+    longDescription: 'Verifica tu identidad como productor y sube tus certificaciones.'
   },
   {
     id: 6,
     title: 'Pagos',
-    description: 'Configura Stripe',
     icon: CreditCard,
-    color: 'from-origen-menta to-origen-pradera'
+    color: 'text-origen-pradera',
+    bgColor: 'bg-origen-pradera/10',
+    time: '2 min',
+    description: 'Conectar Stripe',
+    longDescription: 'Configura Stripe para recibir pagos de forma segura.'
   }
 ];
+
+// ============================================================================
+// TIPOS ESPECÍFICOS PARA CADA PASO
+// ============================================================================
+
+interface OnboardingFormData {
+  step1: EnhancedLocationData;
+  step2: EnhancedStoryData;
+  step3: EnhancedVisualData;
+  step4: EnhancedCapacityData;
+  step5: EnhancedStep5DocumentsData;
+  step6: EnhancedStep6StripeData;
+}
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -90,39 +130,46 @@ export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValid, setIsValid] = useState(true);
 
-  const [formData, setFormData] = useState({
+  // Estado con tipos específicos por paso
+  const [formData, setFormData] = useState<OnboardingFormData>({
     step1: { 
       address: '', 
       city: '', 
       province: '', 
       postalCode: '', 
       categories: [], 
-      locationImages: [] 
+      locationImages: [],
+      foundedYear: undefined,
+      teamSize: undefined
     },
     step2: { 
       businessName: '', 
       tagline: '', 
       description: '', 
       values: [], 
-      teamSize: '',
-      mission: '',
-      vision: '',
-      photos: [] 
+      photos: [],
+      productionPhilosophy: '',
+      certifications: []
     },
     step3: { 
       logo: null, 
       banner: null, 
-      productImages: [] 
+      productImages: [],
+      introVideo: ''
     },
     step4: {
       productionCapacity: { daily: 50 },
       deliveryOptions: [],
       deliveryAreas: [],
-      minOrderAmount: 20
+      minOrderAmount: 20,
+      sustainablePackaging: false,
+      packagingDescription: ''
     },
     step5: {
-      documents: [],
-      producerCategory: 'agricola',
+      cif: undefined,
+      seguroRC: undefined,
+      manipuladorAlimentos: undefined,
+      certifications: [],
       verificationStatus: 'pending'
     },
     step6: {
@@ -131,12 +178,15 @@ export default function OnboardingPage() {
     }
   });
 
-  const currentStepData = STEPS[currentStep];
-  const StepIcon = currentStepData.icon;
-  const progress = ((currentStep + 1) / STEPS.length) * 100;
+  const totalSteps = STEPS.length;
+  const progress = ((currentStep + 1) / totalSteps) * 100;
 
+  // ========================================================================
+  // MANEJADORES DE NAVEGACIÓN
+  // ========================================================================
+  
   const handleNext = () => {
-    if (currentStep < STEPS.length - 1) {
+    if (currentStep < totalSteps - 1) {
       setDirection(1);
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,9 +201,17 @@ export default function OnboardingPage() {
     }
   };
 
+  const handleStepClick = (index: number) => {
+    if (index <= currentStep) {
+      setDirection(index > currentStep ? 1 : -1);
+      setCurrentStep(index);
+    }
+  };
+
   const handleComplete = async () => {
     setIsSubmitting(true);
     try {
+      // Aquí iría la llamada a la API para guardar todos los datos
       await new Promise(resolve => setTimeout(resolve, 2000));
       router.push('/dashboard');
     } catch (error) {
@@ -163,211 +221,361 @@ export default function OnboardingPage() {
     }
   };
 
-  const renderStep = () => {
-    const props = {
-      data: formData[`step${currentStep + 1}` as keyof typeof formData],
-      onChange: (data: any) => setFormData(prev => ({ ...prev, [`step${currentStep + 1}`]: data }))
-    };
+  // ========================================================================
+  // MANEJADORES DE CAMBIO POR PASO (TIPADOS)
+  // ========================================================================
+  
+  const handleStep1Change = (data: EnhancedLocationData) => {
+    setFormData(prev => ({ ...prev, step1: data }));
+  };
 
+  const handleStep2Change = (data: EnhancedStoryData) => {
+    setFormData(prev => ({ ...prev, step2: data }));
+  };
+
+  const handleStep3Change = (data: EnhancedVisualData) => {
+    setFormData(prev => ({ ...prev, step3: data }));
+  };
+
+  const handleStep4Change = (data: EnhancedCapacityData) => {
+    setFormData(prev => ({ ...prev, step4: data }));
+  };
+
+  const handleStep5Change = (data: EnhancedStep5DocumentsData) => {
+    setFormData(prev => ({ ...prev, step5: data }));
+  };
+
+  const handleStep6Change = (data: EnhancedStep6StripeData) => {
+    setFormData(prev => ({ ...prev, step6: data }));
+  };
+
+  // ========================================================================
+  // RENDER DEL PASO ACTUAL
+  // ========================================================================
+  
+  const renderStep = () => {
     switch (currentStep) {
-      case 0: return <EnhancedStep1Location {...props} />;
-      case 1: return <EnhancedStep2Story {...props} />;
-      case 2: return <EnhancedStep3Visual {...props} />;
-      case 3: return <EnhancedStep4Capacity {...props} />;
-      case 4: return <EnhancedStep5Documents {...props} />;
-      case 5: return <EnhancedStep6Stripe {...props} />;
-      default: return null;
+      case 0:
+        return (
+          <EnhancedStep1Location
+            data={formData.step1}
+            onChange={handleStep1Change}
+          />
+        );
+      case 1:
+        return (
+          <EnhancedStep2Story
+            data={formData.step2}
+            onChange={handleStep2Change}
+          />
+        );
+      case 2:
+        return (
+          <EnhancedStep3Visual
+            data={formData.step3}
+            onChange={handleStep3Change}
+          />
+        );
+      case 3:
+        return (
+          <EnhancedStep4Capacity
+            data={formData.step4}
+            onChange={handleStep4Change}
+          />
+        );
+      case 4:
+        return (
+          <EnhancedStep5Documents
+            data={formData.step5}
+            onChange={handleStep5Change}
+            selectedCertifications={formData.step2.certifications?.map(c => ({
+              id: c.id,
+              name: c.name,
+              issuingBody: c.issuingBody
+            })) || []}
+          />
+        );
+      case 5:
+        return (
+          <EnhancedStep6Stripe
+            data={formData.step6}
+            onChange={handleStep6Change}
+          />
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-white to-origen-crema/30">
       
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-origen-bosque flex items-center justify-center transition-all group-hover:bg-origen-pino">
-                <Leaf className="w-4 h-4 text-white" />
+      {/* ====================================================================
+          HEADER - Ultra minimal
+      ==================================================================== */}
+      <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-sm border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-origen-bosque to-origen-pino flex items-center justify-center shadow-sm">
+                <svg className="w-5 h-5 text-white" viewBox="0 0 200 200">
+                  <circle cx="100" cy="100" r="85" fill="none" stroke="white" strokeWidth="3"/>
+                  <path d="M100 140 L100 80" stroke="white" strokeWidth="5" strokeLinecap="round"/>
+                  <path d="M100 90 Q85 75, 75 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                  <path d="M100 90 Q115 75, 125 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                  <circle cx="100" cy="140" r="8" fill="white"/>
+                  <circle cx="100" cy="140" r="5" fill="#74C69D"/>
+                </svg>
               </div>
-              <span className="text-sm font-bold text-origen-bosque">ORIGEN</span>
             </Link>
-
-            <div className="flex items-center gap-6">
-              <div className="hidden md:flex items-center gap-3">
-                <span className="text-xs text-gray-500">
-                  Paso {currentStep + 1} de {STEPS.length}
-                </span>
-                <div className="w-32 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-origen-menta to-origen-pradera rounded-full transition-all duration-500"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">
+                {currentStep + 1}/{totalSteps}
+              </span>
+              <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-origen-pradera rounded-full transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
-              
-              <Badge variant="outline" size="sm" className="bg-white">
-                <Sparkles className="w-3 h-3 mr-1.5 text-origen-pradera" />
-                Onboarding exclusivo
-              </Badge>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="pt-16 min-h-screen">
-        <div className="container mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            
-            <div className="lg:col-span-4 space-y-8">
+      {/* ====================================================================
+          MAIN - Layout: Timeline vertical (4) + Formulario (8)
+      ==================================================================== */}
+      <main className="max-w-7xl mx-auto px-6 py-10 lg:py-12">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
+          
+          {/* ====================================================================
+              COLUMNA IZQUIERDA - Timeline vertical (4/12)
+          ==================================================================== */}
+          <div className="lg:w-4/12">
+            <div className="sticky top-24 space-y-6">
               
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className={cn(
-                    'w-12 h-12 rounded-xl flex items-center justify-center',
-                    'bg-gradient-to-br',
-                    currentStepData.color,
-                    'text-white shadow-sm'
-                  )}>
-                    <StepIcon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <Badge variant="outline" size="sm" className="mb-2 bg-white">
-                      Paso {currentStep + 1}
-                    </Badge>
-                    <h1 className="text-2xl font-bold text-origen-bosque">
-                      {currentStepData.title}
-                    </h1>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-base pl-16">
-                  {currentStepData.description}
-                </p>
+              {/* Título de la sección */}
+              <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+                <Sparkles className="w-4 h-4 text-origen-pradera" />
+                <h2 className="text-xs font-bold text-origen-bosque uppercase tracking-wider">
+                  Configura tu tienda
+                </h2>
               </div>
-
-              <div className="space-y-1 pt-4">
+              
+              {/* Timeline vertical */}
+              <div className="relative">
                 {STEPS.map((step, index) => {
                   const isActive = index === currentStep;
                   const isCompleted = index < currentStep;
+                  const isPending = index > currentStep;
                   const Icon = step.icon;
-
+                  
                   return (
-                    <div
-                      key={step.id}
-                      className={cn(
-                        'relative flex items-center gap-4 py-3 px-4 rounded-lg transition-colors',
-                        isActive && 'bg-origen-crema/50'
+                    <div key={step.id} className="relative flex gap-4 pb-8 last:pb-0">
+                      
+                      {/* Línea conectora vertical */}
+                      {index < totalSteps - 1 && (
+                        <div 
+                          className={cn(
+                            "absolute left-5 top-10 w-0.5 h-[calc(100%-1.5rem)]",
+                            index < currentStep 
+                              ? "bg-gradient-to-b from-origen-pradera to-origen-pradera/40" 
+                              : "bg-gray-200"
+                          )}
+                        />
                       )}
-                    >
-                      <div className={cn(
-                        'w-8 h-8 rounded-lg flex items-center justify-center transition-all',
-                        isCompleted && 'bg-origen-pradera/10 text-origen-pradera',
-                        isActive && 'bg-origen-bosque text-white shadow-sm',
-                        !isActive && !isCompleted && 'bg-gray-100 text-gray-400'
-                      )}>
-                        {isCompleted ? (
-                          <CheckCircle2 className="w-4 h-4" />
-                        ) : (
-                          <Icon className="w-4 h-4" />
+                      
+                      {/* Indicador del paso */}
+                      <div className="relative z-10 flex-shrink-0">
+                        <div className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center transition-all",
+                          isCompleted && "bg-origen-pradera text-white shadow-sm",
+                          isActive && "bg-white border-2 shadow-sm",
+                          isActive && `border-${step.color.replace('text-', '')}`,
+                          isPending && "bg-gray-100 border border-gray-200 text-gray-400",
+                          !isActive && !isCompleted && !isPending && "bg-white border-2 border-gray-200 text-gray-500"
+                        )}>
+                          {isCompleted ? (
+                            <CheckCircle className="w-5 h-5" />
+                          ) : (
+                            <Icon className={cn("w-5 h-5", isActive && step.color)} />
+                          )}
+                        </div>
+                        
+                        {/* Badge de tiempo */}
+                        <span className={cn(
+                          "absolute -bottom-2 -right-2 text-[10px] font-medium px-1.5 py-0.5 rounded-full shadow-sm",
+                          isCompleted 
+                            ? "bg-green-100 text-green-700 border border-green-200" 
+                            : "bg-white text-gray-600 border border-gray-200"
+                        )}>
+                          {step.time}
+                        </span>
+                      </div>
+                      
+                      {/* Contenido del paso */}
+                      <div 
+                        onClick={() => handleStepClick(index)}
+                        className={cn(
+                          "flex-1 pt-1 transition-all",
+                          isPending && "opacity-50 cursor-not-allowed",
+                          !isPending && "cursor-pointer"
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <h3 className={cn(
+                            "text-sm font-semibold",
+                            isActive && "text-origen-bosque",
+                            isCompleted && "text-origen-oscuro",
+                            isPending && "text-gray-500"
+                          )}>
+                            {step.title}
+                          </h3>
+                          
+                          {/* Indicador de estado */}
+                          {isActive && (
+                            <span className="text-[10px] font-medium text-origen-pradera flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-origen-pradera animate-pulse" />
+                              En progreso
+                            </span>
+                          )}
+                          {isCompleted && (
+                            <span className="text-[10px] font-medium text-green-600 flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3" />
+                              Listo
+                            </span>
+                          )}
+                        </div>
+                        
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-1">
+                          {step.description}
+                        </p>
+                        
+                        {/* Descripción larga - solo paso activo */}
+                        {isActive && (
+                          <p className="text-xs text-gray-500 mt-2 italic">
+                            {step.longDescription}
+                          </p>
                         )}
                       </div>
-                      <div className="flex-1">
-                        <p className={cn(
-                          'text-sm font-medium',
-                          isActive && 'text-origen-bosque',
-                          isCompleted && 'text-gray-700',
-                          !isActive && !isCompleted && 'text-gray-500'
-                        )}>
-                          {step.title}
-                        </p>
-                      </div>
-                      {isActive && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-origen-menta" />
-                      )}
                     </div>
                   );
                 })}
               </div>
-
-              <div className="pt-6 text-xs text-gray-500 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Tiempo estimado: 8-10 minutos</span>
+              
+              {/* Tiempo total estimado */}
+              <div className="mt-4 bg-white/50 rounded-xl border border-gray-100 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-origen-pradera/5 flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-origen-pradera" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Tiempo total</p>
+                    <p className="text-sm font-semibold text-origen-bosque">~14 minutos</p>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="lg:col-span-8">
-              <Card className="border-0 shadow-none bg-transparent">
-                <div className="bg-white rounded-2xl border border-gray-200 p-8 md:p-10">
-                  
-                  <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                      key={currentStep}
-                      custom={direction}
-                      initial={{ opacity: 0, x: direction > 0 ? 20 : -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: direction > 0 ? -20 : 20 }}
-                      transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    >
-                      {renderStep()}
-                    </motion.div>
-                  </AnimatePresence>
-
-                  <div className="flex items-center justify-between pt-8 mt-8 border-t border-gray-100">
-                    <Button
-                      variant="outline"
-                      onClick={handleBack}
-                      disabled={currentStep === 0 || isSubmitting}
-                      className="border-gray-200 text-gray-600 hover:text-origen-bosque hover:border-origen-pradera"
-                    >
-                      <ChevronLeft className="w-4 h-4 mr-2" />
-                      Anterior
-                    </Button>
-
-                    {currentStep < STEPS.length - 1 ? (
-                      <Button
-                        onClick={handleNext}
-                        disabled={!isValid || isSubmitting}
-                        className="bg-origen-bosque hover:bg-origen-pino text-white shadow-sm hover:shadow transition-all"
-                      >
-                        Continuar
-                        <ChevronRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleComplete}
-                        disabled={!isValid || isSubmitting}
-                        className="bg-origen-bosque hover:bg-origen-pino text-white shadow-sm hover:shadow transition-all"
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                            Completando...
-                          </>
-                        ) : (
-                          <>
-                            Finalizar
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
+          </div>
+          
+          {/* ====================================================================
+              COLUMNA DERECHA - Formulario (8/12)
+          ==================================================================== */}
+          <div className="lg:w-8/12">
+            
+            {/* Título del paso actual */}
+            <div className="mb-6 pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-2 mb-1">
+                <div className={cn(
+                  "w-6 h-6 rounded-md flex items-center justify-center",
+                  STEPS[currentStep].bgColor
+                )}>
+                  {(() => {
+                    const Icon = STEPS[currentStep].icon;
+                    return <Icon className={cn("w-3.5 h-3.5", STEPS[currentStep].color)} />;
+                  })()}
                 </div>
-              </Card>
+                <span className="text-xs font-medium text-gray-500">
+                  Paso {currentStep + 1} de {totalSteps}
+                </span>
+              </div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-origen-bosque">
+                {STEPS[currentStep].title}
+              </h1>
+            </div>
 
-              <div className="mt-6 text-center">
-                <p className="text-xs text-gray-500">
-                  ¿Necesitas ayuda?{' '}
-                  <a 
-                    href="mailto:soporte@origen.es" 
-                    className="font-medium text-origen-bosque hover:text-origen-hoja transition-colors"
+            {/* Contenido del paso - ANIMADO */}
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={currentStep}
+                custom={direction}
+                initial={{ opacity: 0, x: direction > 0 ? 20 : -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction > 0 ? -20 : 20 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* ====================================================================
+                NAVEGACIÓN - Botones en una línea
+            ==================================================================== */}
+            <div className="flex items-center justify-between mt-10 pt-6 border-t border-gray-200">
+              
+              {/* Trust badges */}
+              <div className="flex items-center gap-3 text-xs text-gray-400">
+                <div className="flex items-center gap-1">
+                  <Shield className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">SSL</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Leaf className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Km 0</span>
+                </div>
+              </div>
+
+              {/* Botones */}
+              <div className="flex items-center gap-3">
+                {currentStep > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={handleBack}
+                    disabled={isSubmitting}
+                    className="h-10 px-4 border-gray-300 text-origen-bosque hover:bg-origen-crema/50 hover:border-origen-pradera"
                   >
-                    soporte@origen.es
-                  </a>
-                </p>
+                    Anterior
+                  </Button>
+                )}
+
+                {currentStep < totalSteps - 1 ? (
+                  <Button
+                    onClick={handleNext}
+                    disabled={!isValid || isSubmitting}
+                    className="h-10 px-5 bg-origen-bosque hover:bg-origen-pino text-white shadow-sm hover:shadow transition-all"
+                  >
+                    Continuar
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleComplete}
+                    disabled={!isValid || isSubmitting}
+                    className="h-10 px-5 bg-origen-bosque hover:bg-origen-pino text-white shadow-sm hover:shadow transition-all"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                        Completando...
+                      </>
+                    ) : (
+                      <>
+                        Finalizar
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
           </div>

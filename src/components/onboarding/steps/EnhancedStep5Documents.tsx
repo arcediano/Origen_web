@@ -1,343 +1,502 @@
 // 📁 /src/components/onboarding/steps/EnhancedStep5Documents.tsx
 /**
  * @file EnhancedStep5Documents.tsx
- * @description Paso 5: Documentación - VERSIÓN CORREGIDA CON FILEUPLOAD
+ * @description Paso 5: Documentación y Verificación de Certificaciones
+ * @version 1.0.0 - Integración con certificaciones seleccionadas en paso 2
  */
 
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { FileUpload, type UploadedFile } from '@/components/forms/FileUpload';
+import { Button } from '@/components/ui/button';
 
 import {
   FileText,
   Shield,
   CheckCircle2,
-  Sparkles,
+  AlertCircle,
+  Info,
   Clock,
   Lock,
-  FileSignature,
-  FileBadge,
+  Download,
+  Eye,
+  X,
   Leaf,
+  Award,
+  Globe,
+  Heart,
   Sprout,
-  Beef,
-  ChefHat,
-  Flower,
-  Wine,
-  Package,
-  AlertCircle,
-  Info
+  Recycle
 } from 'lucide-react';
 
+// ============================================================================
+// TIPOS
+// ============================================================================
+
+export interface CertificationDocument extends UploadedFile {
+  certificationId: string;
+  certificationName: string;
+  issuingBody: string;
+}
+
 export interface EnhancedStep5DocumentsData {
-  documents: UploadedFile[];
-  producerCategory: string;
-  verificationStatus?: 'pending' | 'partial' | 'complete';
+  // Documentos obligatorios
+  cif?: UploadedFile;
+  seguroRC?: UploadedFile;
+  manipuladorAlimentos?: UploadedFile;
+  
+  // Certificaciones seleccionadas en paso 2
+  certifications: CertificationDocument[];
+  
+  // Estado de verificación
+  verificationStatus: 'pending' | 'partial' | 'complete';
 }
 
 export interface EnhancedStep5DocumentsProps {
   data: EnhancedStep5DocumentsData;
   onChange: (data: EnhancedStep5DocumentsData) => void;
+  selectedCertifications?: Array<{
+    id: string;
+    name: string;
+    issuingBody: string;
+  }>;
 }
 
-const REQUIRED_DOCUMENTS = [
-  {
-    id: 'cif_nie',
-    name: 'CIF / NIF',
-    description: 'Documento de identificación fiscal',
-    icon: <FileSignature className="w-5 h-5" />
-  },
-  {
-    id: 'seguro_responsabilidad',
-    name: 'Seguro RC',
-    description: 'Responsabilidad civil (mín. 150.000€)',
-    icon: <Shield className="w-5 h-5" />
-  },
-  {
-    id: 'manipulador_alimentos',
-    name: 'Manipulador de alimentos',
-    description: 'Certificado oficial',
-    icon: <FileBadge className="w-5 h-5" />
-  }
-];
+// ============================================================================
+// MAPA DE ICONOS POR CERTIFICACIÓN
+// ============================================================================
 
-const OPTIONAL_DOCUMENTS = [
-  {
-    id: 'certificacion_ecologica',
-    name: 'Certificación ecológica',
-    description: 'CCAE, CAAE u otros sellos',
-    icon: <Leaf className="w-5 h-5" />
-  },
-  {
-    id: 'denominacion_origen',
-    name: 'Denominación de origen',
-    description: 'DOP, IGP, DOCa',
-    icon: <FileBadge className="w-5 h-5" />
-  }
-];
+const CERTIFICATION_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  'ecologico': Leaf,
+  'comercio_justo': Globe,
+  'denominacion_origen': Award,
+  'artesania': Heart,
+  'produccion_integrada': Sprout,
+  'bienestar_animal': Shield,
+  'agricultura_regenerativa': Recycle,
+  'sin_gluten': Leaf,
+  'vegano': Leaf
+};
 
-export function EnhancedStep5Documents({ data, onChange }: EnhancedStep5DocumentsProps) {
+const getCertificationIcon = (certId: string): React.ComponentType<{ className?: string }> => {
+  return CERTIFICATION_ICON_MAP[certId] || FileText;
+};
 
-  const requiredIds = REQUIRED_DOCUMENTS.map(d => d.id);
-  const uploadedRequired = data.documents?.filter(
-    doc => requiredIds.includes(doc.id) && doc.status === 'verified'
-  ) || [];
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+
+export function EnhancedStep5Documents({ 
+  data, 
+  onChange,
+  selectedCertifications = []
+}: EnhancedStep5DocumentsProps) {
+
+  // ========================================================================
+  // VALIDACIÓN
+  // ========================================================================
   
-  const progress = (uploadedRequired.length / REQUIRED_DOCUMENTS.length) * 100;
-  const isComplete = uploadedRequired.length === REQUIRED_DOCUMENTS.length;
+  const hasCif = Boolean(data.cif);
+  const hasSeguro = Boolean(data.seguroRC);
+  const hasManipulador = Boolean(data.manipuladorAlimentos);
+  
+  const verifiedCertifications = data.certifications?.filter(cert => cert.status === 'verified') || [];
+  const pendingCertifications = data.certifications?.filter(cert => cert.status === 'pending') || [];
+  
+  const totalRequired = 3 + selectedCertifications.length;
+  const completedRequired = [hasCif, hasSeguro, hasManipulador, ...verifiedCertifications].filter(Boolean).length;
+  const progress = (completedRequired / totalRequired) * 100;
+  
+  const isComplete = hasCif && hasSeguro && hasManipulador && 
+    selectedCertifications.length === verifiedCertifications.length;
 
-  const handleUpload = async (files: UploadedFile[]) => {
-    const newDocuments = files.map(file => ({
-      ...file,
-      id: file.id,
-      status: 'pending' as const
-    }));
+  // ========================================================================
+  // MANEJADORES
+  // ========================================================================
+  
+  const handleInputChange = (field: keyof EnhancedStep5DocumentsData, value: any) => {
+    onChange({ ...data, [field]: value });
+  };
+
+  const handleDocumentUpload = (field: 'cif' | 'seguroRC' | 'manipuladorAlimentos', files: UploadedFile[]) => {
+    if (files.length > 0) {
+      handleInputChange(field, {
+        ...files[0],
+        status: 'pending'
+      });
+    }
+  };
+
+  const handleCertificationUpload = (certId: string, certName: string, issuingBody: string, files: UploadedFile[]) => {
+    if (files.length === 0) return;
     
-    onChange({
-      ...data,
-      documents: [...(data.documents || []), ...newDocuments]
-    });
+    const newCertDocuments: CertificationDocument[] = files.map(file => ({
+      ...file,
+      certificationId: certId,
+      certificationName: certName,
+      issuingBody: issuingBody,
+      status: 'pending'
+    }));
+
+    const existingDocs = data.certifications?.filter(doc => doc.certificationId !== certId) || [];
+    
+    handleInputChange('certifications', [...existingDocs, ...newCertDocuments]);
   };
 
-  const handleDelete = (id: string) => {
-    onChange({
-      ...data,
-      documents: data.documents?.filter(doc => doc.id !== id) || []
-    });
+  const handleDeleteDocument = (certId: string) => {
+    handleInputChange('certifications', data.certifications?.filter(doc => doc.certificationId !== certId) || []);
   };
 
+  const handleDeleteRequired = (field: 'cif' | 'seguroRC' | 'manipuladorAlimentos') => {
+    handleInputChange(field, undefined);
+  };
+
+  // ========================================================================
+  // RENDER
+  // ========================================================================
+  
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-start gap-4"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 bg-origen-oscuro/10 rounded-xl blur-md" />
-          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-origen-oscuro to-origen-bosque flex items-center justify-center shadow-sm">
-            <FileText className="w-6 h-6 text-white" />
-          </div>
-        </div>
-        
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" size="sm" className="bg-white">
-              <Sparkles className="w-3 h-3 mr-1.5 text-origen-oscuro" />
-              Paso 5 de 6
-            </Badge>
-            {isComplete && (
-              <Badge variant="fruit" size="sm">
-                <CheckCircle2 className="w-3 h-3 mr-1.5" />
-                Completado
-              </Badge>
-            )}
-          </div>
-          
-          <h2 className="text-xl font-semibold text-origen-bosque mb-2">
-            Documentación
-          </h2>
-          
-          <p className="text-gray-600 text-sm max-w-2xl">
-            Sube los documentos requeridos para verificar tu negocio.
-          </p>
-        </div>
-      </motion.div>
-
-      <div className="max-w-md">
+      {/* ====================================================================
+          PROGRESS BAR
+      ==================================================================== */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md transition-all">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-origen-hoja">
-            Documentos verificados
-          </span>
-          <span className="text-xs font-semibold text-origen-menta">
-            {uploadedRequired.length}/{REQUIRED_DOCUMENTS.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-origen-pradera animate-pulse" />
+            <span className="text-sm font-medium text-origen-hoja">Documentación y certificaciones</span>
+          </div>
+          <span className="text-sm font-semibold text-origen-pradera">{completedRequired}/{totalRequired}</span>
         </div>
-        <Progress 
-          value={progress} 
-          variant="leaf" 
-          size="sm" 
-          showLabel={false}
-          className="bg-origen-pastel"
-        />
+        <div className="h-2.5 bg-origen-crema rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-origen-pradera rounded-full transition-all duration-700"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
+          <Info className="w-3.5 h-3.5 text-origen-pradera" />
+          Sube la documentación requerida. Los documentos se verifican en 24-48h.
+        </p>
       </div>
 
-      <Card className="p-6 border border-gray-200 bg-white">
-        <div className="space-y-4">
+      {/* ====================================================================
+          CARD 1: DOCUMENTOS OBLIGATORIOS
+      ==================================================================== */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md hover:border-origen-pradera/30 transition-all">
+        
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-origen-pradera/20 to-origen-hoja/20 flex items-center justify-center">
+            <FileText className="w-6 h-6 text-origen-pradera" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-origen-bosque">Documentos obligatorios</h2>
+            <p className="text-sm text-gray-600">Necesarios para verificar tu negocio</p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* CIF / NIF */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-origen-pradera" />
+                <h3 className="font-medium text-origen-bosque">CIF / NIF</h3>
+                {data.cif?.status === 'verified' && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Verificado
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {data.cif ? (
+              <div className="flex items-center justify-between p-4 bg-origen-crema/20 rounded-xl border border-origen-pradera/30">
+                <div className="flex items-center gap-3 flex-1">
+                  <FileText className="w-5 h-5 text-origen-pradera" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-origen-bosque truncate">{data.cif.name}</p>
+                    <p className="text-xs text-gray-500">{(data.cif.size / 1024).toFixed(1)} KB</p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => handleDeleteRequired('cif')}
+                  className="text-gray-400 hover:text-gray-700"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <FileUpload
+                value={[]}
+                onChange={(files) => handleDocumentUpload('cif', files)}
+                helperText="Sube tu CIF o NIF (PDF, JPG, PNG)"
+                accept=".pdf,.jpg,.jpeg,.png"
+                multiple={false}
+                maxSize={5}
+              />
+            )}
+          </div>
+
+          {/* Seguro de Responsabilidad Civil */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-origen-pradera" />
+                <h3 className="font-medium text-origen-bosque">Seguro RC</h3>
+                <span className="text-xs text-gray-500">Mín. 150.000€</span>
+                {data.seguroRC?.status === 'verified' && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Verificado
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {data.seguroRC ? (
+              <div className="flex items-center justify-between p-4 bg-origen-crema/20 rounded-xl border border-origen-pradera/30">
+                <div className="flex items-center gap-3 flex-1">
+                  <FileText className="w-5 h-5 text-origen-pradera" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-origen-bosque truncate">{data.seguroRC.name}</p>
+                    <p className="text-xs text-gray-500">{(data.seguroRC.size / 1024).toFixed(1)} KB</p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => handleDeleteRequired('seguroRC')}
+                  className="text-gray-400 hover:text-gray-700"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <FileUpload
+                value={[]}
+                onChange={(files) => handleDocumentUpload('seguroRC', files)}
+                helperText="Sube tu certificado de seguro"
+                accept=".pdf,.jpg,.jpeg,.png"
+                multiple={false}
+                maxSize={5}
+              />
+            )}
+          </div>
+
+          {/* Manipulador de Alimentos */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-origen-pradera" />
+                <h3 className="font-medium text-origen-bosque">Manipulador de alimentos</h3>
+                {data.manipuladorAlimentos?.status === 'verified' && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Verificado
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {data.manipuladorAlimentos ? (
+              <div className="flex items-center justify-between p-4 bg-origen-crema/20 rounded-xl border border-origen-pradera/30">
+                <div className="flex items-center gap-3 flex-1">
+                  <FileText className="w-5 h-5 text-origen-pradera" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-origen-bosque truncate">{data.manipuladorAlimentos.name}</p>
+                    <p className="text-xs text-gray-500">{(data.manipuladorAlimentos.size / 1024).toFixed(1)} KB</p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => handleDeleteRequired('manipuladorAlimentos')}
+                  className="text-gray-400 hover:text-gray-700"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <FileUpload
+                value={[]}
+                onChange={(files) => handleDocumentUpload('manipuladorAlimentos', files)}
+                helperText="Sube tu certificado de manipulador"
+                accept=".pdf,.jpg,.jpeg,.png"
+                multiple={false}
+                maxSize={5}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ====================================================================
+          CARD 2: CERTIFICACIONES SELECCIONADAS
+      ==================================================================== */}
+      {selectedCertifications.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md hover:border-origen-pradera/30 transition-all">
           
-          <div className="flex items-start gap-3">
-            <div className={cn(
-              'w-8 h-8 rounded-lg flex items-center justify-center',
-              data.producerCategory === 'agricola' && 'bg-origen-pradera/10 text-origen-pradera',
-              data.producerCategory === 'ganadero' && 'bg-origen-hoja/10 text-origen-hoja',
-              data.producerCategory === 'artesano' && 'bg-origen-pino/10 text-origen-pino',
-              data.producerCategory === 'apicultor' && 'bg-origen-menta/10 text-origen-menta',
-              data.producerCategory === 'viticultor' && 'bg-origen-bosque/10 text-origen-bosque'
-            )}>
-              {data.producerCategory === 'agricola' && <Sprout className="w-4 h-4" />}
-              {data.producerCategory === 'ganadero' && <Beef className="w-4 h-4" />}
-              {data.producerCategory === 'artesano' && <ChefHat className="w-4 h-4" />}
-              {data.producerCategory === 'apicultor' && <Flower className="w-4 h-4" />}
-              {data.producerCategory === 'viticultor' && <Wine className="w-4 h-4" />}
-              {!['agricola', 'ganadero', 'artesano', 'apicultor', 'viticultor'].includes(data.producerCategory) && 
-                <Package className="w-4 h-4" />
-              }
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-origen-pradera/20 to-origen-hoja/20 flex items-center justify-center">
+              <Award className="w-6 h-6 text-origen-pradera" />
             </div>
             <div>
-              <p className="text-sm font-medium text-origen-bosque">
-                Requisitos para {data.producerCategory === 'agricola' && 'productores agrícolas'}
-                {data.producerCategory === 'ganadero' && 'ganaderos'}
-                {data.producerCategory === 'artesano' && 'productores artesanales'}
-                {data.producerCategory === 'apicultor' && 'apicultores'}
-                {data.producerCategory === 'viticultor' && 'viticultores'}
-                {!['agricola', 'ganadero', 'artesano', 'apicultor', 'viticultor'].includes(data.producerCategory) && 
-                  'tu categoría'
-                }
-              </p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                {REQUIRED_DOCUMENTS.length} documentos obligatorios
+              <h2 className="text-xl font-bold text-origen-bosque">Certificaciones seleccionadas</h2>
+              <p className="text-sm text-gray-600">
+                Sube los documentos para verificar tus certificaciones
               </p>
             </div>
           </div>
-        </div>
-      </Card>
 
-      <Card className="p-6 border border-gray-200 bg-white">
-        <div className="space-y-4">
-          
-          <h3 className="text-sm font-medium text-origen-bosque">
-            Documentos obligatorios
-          </h3>
-          
-          <div className="space-y-3">
-            {REQUIRED_DOCUMENTS.map((doc) => {
-              const uploaded = data.documents?.find(d => d.id === doc.id);
+          <div className="space-y-6">
+            {selectedCertifications.map((cert) => {
+              const IconComponent = getCertificationIcon(cert.id);
+              const uploadedDoc = data.certifications?.find(doc => doc.certificationId === cert.id);
+              const isVerified = uploadedDoc?.status === 'verified';
+              const isPending = uploadedDoc?.status === 'pending';
+              
               return (
-                <div key={doc.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-lg bg-origen-oscuro/10 flex items-center justify-center">
-                    {doc.icon}
-                  </div>
-                  <div className="flex-1">
+                <div key={cert.id} className="space-y-3">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-origen-bosque">{doc.name}</p>
-                      {uploaded?.status === 'verified' && (
-                        <Badge variant="fruit" size="xs">Verificado</Badge>
+                      <div className="w-8 h-8 rounded-lg bg-origen-pradera/10 flex items-center justify-center">
+                        <IconComponent className="w-4 h-4 text-origen-pradera" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-origen-bosque">{cert.name}</h3>
+                        <p className="text-xs text-gray-500">{cert.issuingBody}</p>
+                      </div>
+                      {isVerified && (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Verificado
+                        </span>
                       )}
-                      {uploaded?.status === 'pending' && (
-                        <Badge variant="seed" size="xs">Pendiente</Badge>
-                      )}
-                      {!uploaded && (
-                        <Badge variant="outline" size="xs">Pendiente</Badge>
+                      {isPending && (
+                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          Pendiente
+                        </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{doc.description}</p>
                   </div>
+
+                  {uploadedDoc ? (
+                    <div className="flex items-center justify-between p-4 bg-origen-crema/20 rounded-xl border border-origen-pradera/30">
+                      <div className="flex items-center gap-3 flex-1">
+                        <FileText className="w-5 h-5 text-origen-pradera" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-origen-bosque truncate">{uploadedDoc.name}</p>
+                          <p className="text-xs text-gray-500">{(uploadedDoc.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => handleDeleteDocument(cert.id)}
+                        className="text-gray-400 hover:text-gray-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <FileUpload
+                      value={[]}
+                      onChange={(files) => handleCertificationUpload(cert.id, cert.name, cert.issuingBody, files)}
+                      helperText={`Sube el certificado de ${cert.name}`}
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      multiple={false}
+                      maxSize={5}
+                    />
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
-      </Card>
+      )}
 
-      <Card className="p-6 border border-gray-200 bg-white">
-        <div className="space-y-4">
-          
-          <h3 className="text-sm font-medium text-origen-bosque">
-            Documentos opcionales
-            <span className="ml-2 text-xs font-normal text-gray-500">Mejoran tu perfil</span>
-          </h3>
-          
-          <div className="space-y-3">
-            {OPTIONAL_DOCUMENTS.map((doc) => {
-              const uploaded = data.documents?.find(d => d.id === doc.id);
-              return (
-                <div key={doc.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
-                    {doc.icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-origen-bosque">{doc.name}</p>
-                      {uploaded && (
-                        <Badge variant="outline" size="xs">
-                          <CheckCircle2 className="w-2.5 h-2.5 mr-1 text-origen-pradera" />
-                          Subido
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{doc.description}</p>
-                  </div>
+      {/* ====================================================================
+          CARD 3: RESUMEN DE VERIFICACIÓN
+      ==================================================================== */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md transition-all">
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-full bg-origen-pradera/10 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-origen-pradera" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-origen-bosque">Estado de verificación</h3>
+            <div className="mt-2 space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-gray-600">Documentos obligatorios:</span>
+                <span className="font-medium text-origen-bosque">
+                  {[hasCif, hasSeguro, hasManipulador].filter(Boolean).length}/3
+                </span>
+              </div>
+              {selectedCertifications.length > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-origen-pradera" />
+                  <span className="text-gray-600">Certificaciones:</span>
+                  <span className="font-medium text-origen-bosque">
+                    {verifiedCertifications.length}/{selectedCertifications.length}
+                  </span>
                 </div>
-              );
-            })}
+              )}
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="text-gray-600">Pendientes de verificación:</span>
+                <span className="font-medium text-origen-bosque">
+                  {pendingCertifications.length + 
+                   (data.cif?.status === 'pending' ? 1 : 0) +
+                   (data.seguroRC?.status === 'pending' ? 1 : 0) +
+                   (data.manipuladorAlimentos?.status === 'pending' ? 1 : 0)}
+                </span>
+              </div>
+            </div>
+            
+            {isComplete && (
+              <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-xs text-green-700 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  ¡Todos los documentos han sido subidos correctamente! Los verificaremos en 24-48h.
+                </p>
+              </div>
+            )}
           </div>
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-6 border border-gray-200 bg-white">
-        <FileUpload
-          label="Subir documentos"
-          description="PDF, JPG o PNG • Máx 5MB por archivo"
-          accept=".pdf,.jpg,.jpeg,.png"
-          multiple={true}
-          maxSize={5}
-          value={data.documents || []}
-          onChange={handleUpload}
-        />
-      </Card>
-
-      {isComplete && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-origen-pradera/5 to-origen-crema/30 rounded-xl p-5 border border-origen-pradera/20"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-origen-pradera/10 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-origen-pradera" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-origen-bosque">
-                Documentación completada
-              </p>
-              <p className="text-xs text-gray-600 mt-0.5">
-                Revisaremos tus documentos en menos de 24h
-              </p>
-            </div>
-            <Badge variant="outline" size="sm" className="bg-white">
-              <Clock className="w-3 h-3 mr-1.5" />
-              En revisión
-            </Badge>
-          </div>
-        </motion.div>
-      )}
-
-      {!isComplete && (
-        <div className="flex items-center gap-2 p-4 bg-blue-50/30 rounded-lg border border-blue-100">
-          <Info className="w-4 h-4 text-blue-500 flex-shrink-0" />
-          <p className="text-xs text-blue-700">
-            ¿Necesitas ayuda? Contacta a{' '}
-            <a href="mailto:soporte@origen.es" className="font-medium underline underline-offset-2">
-              soporte@origen.es
-            </a>
-          </p>
-        </div>
-      )}
-
-      <div className="flex items-center gap-4 pt-2 text-xs text-gray-500 border-t border-gray-100">
+      {/* ====================================================================
+          TRUST BADGES
+      ==================================================================== */}
+      <div className="flex items-center gap-4 pt-2 text-xs text-gray-500 border-t border-gray-200">
         <div className="flex items-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-origen-oscuro" />
+          <Lock className="w-3.5 h-3.5 text-origen-pradera" />
           <span>Cifrado SSL 256-bit</span>
         </div>
         <span className="w-1 h-1 rounded-full bg-gray-300" />
-        <span>Verificación 24-48h</span>
+        <div className="flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5 text-origen-pradera" />
+          <span>Verificación 24-48h</span>
+        </div>
+        <span className="w-1 h-1 rounded-full bg-gray-300" />
+        <div className="flex items-center gap-1.5">
+          <Shield className="w-3.5 h-3.5 text-origen-pradera" />
+          <span>Documentos seguros</span>
+        </div>
       </div>
     </div>
   );

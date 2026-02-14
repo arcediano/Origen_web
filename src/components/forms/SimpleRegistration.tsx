@@ -1,8 +1,16 @@
 // components/register/SimpleRegistration.tsx
 /**
  * @file SimpleRegistration.tsx
- * @description Formulario de registro premium - Diseño amplio, campos legibles
- * @version 26.0.0 - Diseño premium, sin cabecera, márgenes cero laterales
+ * @description Formulario de registro premium - CORREGIDO v27.0.0
+ * @version 27.0.0 - CORRECCIÓN CRÍTICA: Eliminados todos los usos de Menta (#06D6A0)
+ * 
+ * @important CAMBIOS APLICADOS:
+ *   - Eliminado color Menta (#06D6A0) de TODOS los componentes
+ *   - Reemplazado por Verde Pradera (#74C69D) en elementos interactivos
+ *   - Reemplazado por Verde Hoja (#40916C) en textos de estado
+ *   - Gradientes: from-origen-pradera to-origen-hoja
+ *   - Focus rings: ring-origen-pradera/50
+ *   - Bordes seleccionados: border-origen-pradera
  */
 
 'use client';
@@ -36,7 +44,7 @@ import {
 } from '@/lib/validations/seller';
 
 // ============================================================================
-// ICONOS - Misma línea que BenefitsSection y ProcessSection
+// ICONOS
 // ============================================================================
 
 import {
@@ -118,7 +126,7 @@ const getCategoryIcon = (categoryId: string): React.ComponentType<{ className?: 
 };
 
 // ============================================================================
-// COMPONENTES AUXILIARES - DISEÑO PREMIUM
+// COMPONENTES AUXILIARES - DISEÑO PREMIUM CORREGIDO
 // ============================================================================
 
 interface ProgressBarProps {
@@ -138,11 +146,13 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     <div className={cn("space-y-1.5", className)}>
       <div className="flex items-center justify-between">
         <span className="text-sm text-origen-hoja">Mínimo 50 caracteres</span>
-        <span className="text-sm font-semibold text-origen-menta">{percentage}%</span>
+        {/* CORREGIDO: text-origen-menta → text-origen-pradera */}
+        <span className="text-sm font-semibold text-origen-pradera">{percentage}%</span>
       </div>
       <div className="h-2 bg-origen-crema rounded-full overflow-hidden">
+        {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
         <div 
-          className="h-full rounded-full bg-gradient-to-r from-origen-menta to-origen-pradera transition-all duration-700"
+          className="h-full rounded-full bg-gradient-to-r from-origen-pradera to-origen-hoja transition-all duration-700"
           style={{ width: `${percentage}%` }}
         />
       </div>
@@ -186,7 +196,8 @@ const CustomCheckbox: React.FC<CustomCheckboxProps> = ({
             onClick={() => onChange(!checked)}
             className={cn(
               "h-5 w-5 rounded-md border-2 bg-white transition-all",
-              "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:ring-offset-2",
+              // CORREGIDO: focus:ring-origen-menta/50 → focus:ring-origen-pradera/50
+              "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2",
               checked ? "bg-origen-bosque border-origen-bosque" : "border-gray-300 hover:border-origen-pradera",
               error && "border-destructive"
             )}
@@ -252,15 +263,18 @@ const BusinessTypeSelector: React.FC<BusinessTypeSelectorProps> = ({
               className={cn(
                 "relative bg-white rounded-xl p-5 border-2 transition-all",
                 "hover:shadow-lg hover:scale-[1.02]",
-                "focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+                // CORREGIDO: focus:ring-origen-menta/50 → focus:ring-origen-pradera/50
+                "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
                 isSelected
-                  ? "border-origen-menta bg-origen-menta/5 shadow-md"
+                  // CORREGIDO: border-origen-menta bg-origen-menta/5 → border-origen-pradera bg-origen-pradera/5
+                  ? "border-origen-pradera bg-origen-pradera/5 shadow-md"
                   : "border-gray-200 hover:border-origen-pradera"
               )}
             >
               {isSelected && (
                 <div className="absolute top-3 right-3">
-                  <div className="w-6 h-6 bg-gradient-to-br from-origen-menta to-origen-pradera rounded-full flex items-center justify-center shadow-md">
+                  {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
+                  <div className="w-6 h-6 bg-gradient-to-br from-origen-pradera to-origen-hoja rounded-full flex items-center justify-center shadow-md">
                     <Check className="w-3.5 h-3.5 text-white" />
                   </div>
                 </div>
@@ -269,7 +283,8 @@ const BusinessTypeSelector: React.FC<BusinessTypeSelectorProps> = ({
                 <div className={cn(
                   "w-16 h-16 rounded-xl flex items-center justify-center mb-3 transition-all",
                   isSelected
-                    ? "bg-gradient-to-br from-origen-menta to-origen-pradera text-white shadow-lg"
+                    // CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja
+                    ? "bg-gradient-to-br from-origen-pradera to-origen-hoja text-white shadow-lg"
                     : "bg-origen-crema text-origen-bosque group-hover:scale-110"
                 )}>
                   <Icon className="w-8 h-8" />
@@ -314,9 +329,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       'agricola': 'from-origen-pradera/20 to-origen-hoja/20',
       'ganadero': 'from-origen-hoja/20 to-origen-pino/20',
       'artesano': 'from-origen-pino/20 to-origen-bosque/20',
-      'apicultor': 'from-origen-menta/20 to-origen-pradera/20',
-      'viticultor': 'from-origen-pradera/20 to-origen-pino/20',
-      'especializado': 'from-origen-menta/20 to-origen-hoja/20'
+      'apicultor': 'from-origen-pradera/20 to-origen-hoja/20', // CORREGIDO: eliminado menta
+      'viticultor': 'from-origen-pradera/20 to-origen-pino/20', // CORREGIDO: eliminado menta
+      'especializado': 'from-origen-pradera/20 to-origen-hoja/20' // CORREGIDO: eliminado menta
     };
     return gradients[id] || 'from-origen-pradera/20 to-origen-hoja/20';
   };
@@ -328,15 +343,18 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       className={cn(
         "group relative bg-white rounded-xl p-5 border-2 transition-all",
         "hover:shadow-lg hover:scale-[1.02]",
-        "focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+        // CORREGIDO: focus:ring-origen-menta/50 → focus:ring-origen-pradera/50
+        "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
         isSelected
-          ? "border-origen-menta bg-gradient-to-br from-origen-menta/5 to-origen-pradera/5 shadow-md"
+          // CORREGIDO: border-origen-menta bg-gradient-to-br from-origen-menta/5 to-origen-pradera/5
+          ? "border-origen-pradera bg-gradient-to-br from-origen-pradera/5 to-origen-hoja/5 shadow-md"
           : "border-gray-200 hover:border-origen-pradera"
       )}
     >
       {isSelected && (
         <div className="absolute top-3 right-3">
-          <div className="w-6 h-6 bg-gradient-to-br from-origen-menta to-origen-pradera rounded-full flex items-center justify-center shadow-md">
+          {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
+          <div className="w-6 h-6 bg-gradient-to-br from-origen-pradera to-origen-hoja rounded-full flex items-center justify-center shadow-md">
             <Check className="w-3.5 h-3.5 text-white" />
           </div>
         </div>
@@ -345,7 +363,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         <div className={cn(
           "w-16 h-16 rounded-xl flex items-center justify-center mb-3 transition-all",
           isSelected
-            ? "bg-gradient-to-br from-origen-menta to-origen-pradera text-white shadow-lg"
+            // CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja
+            ? "bg-gradient-to-br from-origen-pradera to-origen-hoja text-white shadow-lg"
             : `bg-gradient-to-br ${getGradient(category.id)} text-origen-bosque group-hover:scale-110`
         )}>
           <IconComponent className="w-8 h-8" />
@@ -387,7 +406,8 @@ const FormSection: React.FC<FormSectionProps> = ({
     )}>
       {badge && (
         <div className="inline-flex items-center gap-2 bg-origen-crema/80 rounded-full px-4 py-1.5 mb-6 border border-origen-pradera/30">
-          <Sparkles className="w-4 h-4 text-origen-menta" />
+          {/* CORREGIDO: text-origen-menta → text-origen-pradera */}
+          <Sparkles className="w-4 h-4 text-origen-pradera" />
           <span className="text-sm font-semibold text-origen-bosque">{badge}</span>
         </div>
       )}
@@ -403,7 +423,7 @@ const FormSection: React.FC<FormSectionProps> = ({
 };
 
 // ============================================================================
-// MODAL DE CONFIRMACIÓN - DISEÑO PREMIUM
+// MODAL DE CONFIRMACIÓN - DISEÑO PREMIUM CORREGIDO
 // ============================================================================
 
 interface SuccessModalProps {
@@ -477,7 +497,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               "overflow-hidden"
             )}
           >
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-origen-menta via-origen-pradera to-origen-hoja" />
+            {/* CORREGIDO: from-origen-menta via-origen-pradera to-origen-hoja → from-origen-pradera via-origen-hoja to-origen-pino */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-origen-pradera via-origen-hoja to-origen-pino" />
             
             <button
               onClick={onClose}
@@ -489,7 +510,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
             <div className="p-8">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 bg-origen-crema rounded-full px-4 py-2 border border-origen-pradera/30 mb-4">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-origen-menta to-origen-pradera flex items-center justify-center">
+                  {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-origen-pradera to-origen-hoja flex items-center justify-center">
                     <CheckCircle className="w-3 h-3 text-white" />
                   </div>
                   <span className="text-sm font-bold text-origen-bosque uppercase tracking-wide">
@@ -508,7 +530,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="bg-origen-crema/30 rounded-xl p-6 border border-gray-200">
                   <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-origen-menta to-origen-pradera flex items-center justify-center flex-shrink-0 shadow-lg">
+                    {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-origen-pradera to-origen-hoja flex items-center justify-center flex-shrink-0 shadow-lg">
                       <span className="text-2xl font-bold text-white">{initial}</span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -537,7 +560,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
                       className="flex-shrink-0 w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
                     >
                       {copied ? (
-                        <CheckCircle className="w-5 h-5 text-origen-menta" />
+                        // CORREGIDO: text-origen-menta → text-origen-pradera
+                        <CheckCircle className="w-5 h-5 text-origen-pradera" />
                       ) : (
                         <Copy className="w-5 h-5 text-white" />
                       )}
@@ -575,7 +599,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 };
 
 // ============================================================================
-// COMPONENTE PRINCIPAL - DISEÑO PREMIUM, SIN CABECERA, MÁRGENES CERO
+// COMPONENTE PRINCIPAL - DISEÑO PREMIUM CORREGIDO
 // ============================================================================
 
 export function SimpleRegistration({
@@ -692,7 +716,7 @@ export function SimpleRegistration({
         {submitStatus !== 'submitting' && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             
-            {/* SECCIÓN 1: Contacto - Diseño premium, campos amplios */}
+            {/* SECCIÓN 1: Contacto */}
             <FormSection 
               title="Información de contacto" 
               description="¿Cómo podemos llamarte?"
@@ -708,7 +732,8 @@ export function SimpleRegistration({
                     placeholder="Ej: María"
                     error={errors.contactName?.message}
                     {...register('contactName')}
-                    className="h-12 text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30"
+                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                    className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                   />
                 </div>
                 <div className="space-y-2">
@@ -720,7 +745,8 @@ export function SimpleRegistration({
                     placeholder="Ej: García López"
                     error={errors.contactSurname?.message}
                     {...register('contactSurname')}
-                    className="h-12 text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30"
+                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                    className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                   />
                 </div>
               </div>
@@ -736,7 +762,8 @@ export function SimpleRegistration({
                     placeholder="tu@email.com"
                     error={errors.email?.message}
                     {...register('email')}
-                    className="h-12 text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30"
+                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                    className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                   />
                 </div>
                 <div className="space-y-2">
@@ -749,13 +776,14 @@ export function SimpleRegistration({
                     placeholder="600 000 000"
                     error={errors.phone?.message}
                     {...register('phone')}
-                    className="h-12 text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30"
+                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                    className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                   />
                 </div>
               </div>
             </FormSection>
 
-            {/* SECCIÓN 2: Negocio - Diseño premium */}
+            {/* SECCIÓN 2: Negocio */}
             <FormSection 
               title="Tu negocio" 
               description="Cuéntanos sobre tu proyecto"
@@ -771,7 +799,8 @@ export function SimpleRegistration({
                     placeholder="Ej: Huerta Ecológica del Valle"
                     error={errors.businessName?.message}
                     {...register('businessName')}
-                    className="h-12 text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30"
+                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                    className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                   />
                 </div>
 
@@ -809,14 +838,15 @@ export function SimpleRegistration({
                       placeholder="Tu localidad"
                       error={errors.city?.message}
                       {...register('city')}
-                      className="h-12 text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30"
+                      // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                      className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                     />
                   </div>
                 </div>
               </div>
             </FormSection>
 
-            {/* SECCIÓN 3: Categoría - Grid premium */}
+            {/* SECCIÓN 3: Categoría */}
             <FormSection 
               title="¿Qué vendes?" 
               description="Selecciona tu categoría principal"
@@ -842,7 +872,7 @@ export function SimpleRegistration({
               )}
             </FormSection>
 
-            {/* SECCIÓN 4: Historia - Premium */}
+            {/* SECCIÓN 4: Historia */}
             <FormSection 
               title="Tu historia" 
               description="Los compradores conectan con personas, no solo con productos"
@@ -859,7 +889,8 @@ export function SimpleRegistration({
                     error={errors.whyOrigin?.message}
                     maxLength={300}
                     {...register('whyOrigin')}
-                    className="min-h-[120px] text-base border-gray-200 focus:border-origen-menta focus:ring-1 focus:ring-origen-menta/30 resize-y"
+                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
+                    className="min-h-[120px] text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30 resize-y"
                   />
                 </div>
                 
@@ -868,7 +899,8 @@ export function SimpleRegistration({
                 )}
                 
                 {textareaValid && (
-                  <div className="flex items-center gap-2 text-base text-origen-menta bg-origen-crema/50 p-4 rounded-lg border border-origen-pradera/30">
+                  // CORREGIDO: text-origen-menta → text-origen-pradera
+                  <div className="flex items-center gap-2 text-base text-origen-pradera bg-origen-crema/50 p-4 rounded-lg border border-origen-pradera/30">
                     <CheckCircle2 className="w-5 h-5" />
                     <span className="font-medium">¡Gracias por compartir tu historia!</span>
                   </div>
@@ -876,7 +908,7 @@ export function SimpleRegistration({
               </div>
             </FormSection>
 
-            {/* SECCIÓN 5: Legal - Premium */}
+            {/* SECCIÓN 5: Legal */}
             <FormSection 
               title="Confirmación legal" 
               description="Último paso para unirte a la comunidad"
@@ -903,7 +935,7 @@ export function SimpleRegistration({
               </div>
             </FormSection>
 
-            {/* Botón de envío - Mismo estilo que ProcessSection */}
+            {/* Botón de envío */}
             <div className="flex flex-col items-center pt-4">
               <Button
                 type="submit"
@@ -929,7 +961,7 @@ export function SimpleRegistration({
                 )}
               </Button>
               
-              {/* Trust badges - Mismo estilo que footer */}
+              {/* Trust badges */}
               <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-origen-pradera" />

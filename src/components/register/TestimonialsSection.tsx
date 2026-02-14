@@ -1,13 +1,15 @@
 // components/register/TestimonialsSection.tsx
 /**
- * Sección de Testimonios - Social proof de productores
- * @version 1.1.0 - Correcciones de accesibilidad aplicadas
+ * Sección de Testimonios - CORREGIDA v1.2.0
+ * @version 1.2.0 - Correcciones de rendimiento y manual de marca
  * @description Muestra testimonios reales con categorías y calificaciones
  * @author Equipo de Desarrollo Origen
  * @updated Marzo 2026
  * 
- * @note Categorías en color accesible (Verde Hoja: #40916C - 4.7:1 contraste ✓)
- * @important Evitar Menta Vibrante para texto pequeño
+ * @important CORRECCIONES:
+ *   - Eliminado patrón SVG decorativo (innecesario, afectaba rendimiento)
+ *   - Optimizados gradientes y sombras
+ *   - Categorías en color Verde Hoja (#40916C) - contraste 4.7:1 ✓
  */
 
 'use client';
@@ -44,18 +46,6 @@ export function TestimonialsSection() {
 
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-gradient-to-b from-white to-origen-crema">
-      <div className="absolute inset-0 opacity-10">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="leaf-small" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M30,10 Q40,15 35,25 Q30,35 20,30 Q10,25 15,15 Q20,5 30,10 Z" 
-                    fill="none" stroke="#74C69D" strokeWidth="0.5"/> {/* Verde Pradera */}
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#leaf-small)" />
-        </svg>
-      </div>
-      
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-origen-pradera/10 text-origen-bosque rounded-full px-4 py-2 md:px-6 md:py-3 mb-4 md:mb-6 border border-origen-pradera/30">
@@ -95,7 +85,6 @@ export function TestimonialsSection() {
                     <p className="text-gray-600 text-sm md:text-base truncate">
                       {testimonial.business}
                     </p>
-                    {/* Categoría con color accesible - Verde Hoja (4.7:1 contraste) */}
                     <p className="text-xs md:text-sm text-origen-hoja font-semibold mt-1 truncate">
                       {testimonial.category}
                     </p>
@@ -106,7 +95,6 @@ export function TestimonialsSection() {
           ))}
         </div>
         
-        {/* Agregar marca de confianza al final */}
         <div className="text-center mt-12 md:mt-16 pt-8 md:pt-12 border-t border-gray-200">
           <div className="inline-flex items-center gap-3 md:gap-4 bg-white rounded-xl md:rounded-2xl px-6 py-3 md:px-8 md:py-4 shadow-lg border border-gray-200">
             <ShieldCheck className="w-6 h-6 md:w-8 md:h-8 text-origen-pradera" />

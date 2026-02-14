@@ -1,20 +1,7 @@
 /**
  * @file slider.tsx
- * @description Control deslizante (slider) con diseño orgánico - Sin dependencias externas
- * @version 1.0.1 - Corregido: eliminada dependencia de @radix-ui/react-slider
- * 
- * Características principales:
- * ✅ Diseño inspirado en ramas y tallos naturales
- * ✅ Animaciones suaves de deslizamiento
- * ✅ Sistema de marcas visuales orgánicas
- * ✅ Rango dual (min/max) con visualización clara
- * ✅ Tooltips de valor con diseño natural
- * ✅ Estados de arrastre con feedback háptico visual
- * ✅ Accesibilidad WCAG 2.1 AAA garantizada
- * ✅ Sin dependencias externas
- * 
- * @author Equipo Origen Design System
- * @created Marzo 2026
+ * @description Control deslizante (slider) con diseño orgánico - CORREGIDO v1.0.2
+ * @version 1.0.2 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 "use client";
@@ -28,68 +15,25 @@ import { Button } from "./button";
 // TIPOS
 // ============================================================================
 
-/**
- * Props del componente Slider
- */
 export interface SliderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
-  /** Valor actual del slider */
   value?: number[];
-  
-  /** Valor por defecto */
   defaultValue?: number[];
-  
-  /** Función llamada cuando cambia el valor */
   onValueChange?: (value: number[]) => void;
-  
-  /** Etiqueta del slider */
   label?: string;
-  
-  /** Variante visual inspirada en elementos naturales */
   variant?: "stem" | "branch" | "leaf" | "vine" | "accent" | "forest";
-  
-  /** Tamaño del slider */
   sliderSize?: "sm" | "md" | "lg";
-  
-  /** Mostrar tooltips de valor */
   showValue?: boolean;
-  
-  /** Mostrar marcas de rango */
   showMarks?: boolean;
-  
-  /** Marcas personalizadas */
-  marks?: Array<{
-    value: number;
-    label?: string;
-  }>;
-  
-  /** Icono izquierdo */
+  marks?: Array<{ value: number; label?: string }>;
   leftIcon?: React.ReactNode;
-  
-  /** Icono derecho */
   rightIcon?: React.ReactNode;
-  
-  /** Mostrar controles de incremento/decremento */
   showControls?: boolean;
-  
-  /** Paso de incremento */
   step?: number;
-  
-  /** Mostrar valor actual como texto */
   showValueText?: boolean;
-  
-  /** Formateador de valor */
   formatValue?: (value: number) => string;
-  
-  /** Orientación del slider */
   orientation?: "horizontal" | "vertical";
-  
-  /** Valor mínimo */
   min?: number;
-  
-  /** Valor máximo */
   max?: number;
-  
-  /** Si está deshabilitado */
   disabled?: boolean;
 }
 
@@ -97,9 +41,6 @@ export interface SliderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 
 // COMPONENTE SLIDER
 // ============================================================================
 
-/**
- * Componente Slider con diseño orgánico - Implementación nativa
- */
 const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
   (
     {
@@ -127,10 +68,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     },
     ref
   ) => {
-    // ========================================================================
-    // ESTADOS
-    // ========================================================================
-    
     const [internalValue, setInternalValue] = React.useState<number[]>(
       value || defaultValue
     );
@@ -140,14 +77,9 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     
     const sliderRef = React.useRef<HTMLDivElement>(null);
     
-    // Determinar si está controlado
     const isControlled = value !== undefined;
     const currentValue = isControlled ? value : internalValue;
     const isRange = currentValue.length === 2;
-    
-    // ========================================================================
-    // SISTEMA DE VARIANTES
-    // ========================================================================
     
     const variantConfig = {
       stem: {
@@ -155,7 +87,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         range: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
         thumb: "bg-white border-2 border-origen-pradera",
         thumbHover: "border-origen-hoja",
-        thumbActive: "border-origen-menta",
+        thumbActive: "border-origen-hoja",
         icon: <Sprout className="h-3 w-3" />,
       },
       branch: {
@@ -183,10 +115,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         icon: <Minimize2 className="h-3 w-3" />,
       },
       accent: {
-        track: "bg-origen-menta/20",
-        range: "bg-gradient-to-r from-origen-menta to-origen-pradera",
-        thumb: "bg-white border-2 border-origen-menta",
-        thumbHover: "border-origen-pradera",
+        track: "bg-origen-pradera/20",
+        range: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
+        thumb: "bg-white border-2 border-origen-pradera",
+        thumbHover: "border-origen-hoja",
         thumbActive: "border-origen-hoja",
         icon: <Leaf className="h-3 w-3" />,
       },
@@ -202,10 +134,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     
     const config = variantConfig[variant];
 
-    // ========================================================================
-    // SISTEMA DE TAMAÑOS
-    // ========================================================================
-    
     const sizeConfig = {
       sm: {
         track: "h-1.5",
@@ -229,13 +157,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     
     const size = sizeConfig[sliderSize];
 
-    // ========================================================================
-    // FUNCIONES DE CÁLCULO
-    // ========================================================================
-    
-    /**
-     * Convierte coordenada a valor
-     */
     const getValueFromPosition = (clientX: number, clientY: number): number => {
       if (!sliderRef.current) return currentValue[0];
       
@@ -250,14 +171,9 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       }
     };
     
-    /**
-     * Actualiza el valor del slider
-     */
     const updateValue = (newValues: number[]) => {
-      // Asegurar que los valores estén dentro del rango
       const clampedValues = newValues.map(v => Math.max(min, Math.min(max, v)));
       
-      // Ordenar para rango
       if (isRange) {
         clampedValues.sort((a, b) => a - b);
       }
@@ -269,9 +185,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       onValueChange?.(clampedValues);
     };
     
-    /**
-     * Maneja el inicio del arrastre
-     */
     const handleDragStart = (index: number) => (e: React.MouseEvent) => {
       e.preventDefault();
       if (disabled) return;
@@ -301,10 +214,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       document.addEventListener('mousemove', handleDragMove);
       document.addEventListener('mouseup', handleDragEnd);
     };
-    
-    // ========================================================================
-    // MANEJADORES DE CONTROLES
-    // ========================================================================
     
     const handleIncrement = () => {
       if (disabled) return;
@@ -336,9 +245,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       }
     };
     
-    /**
-     * Maneja clic en el track
-     */
     const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (disabled) return;
       if (!sliderRef.current) return;
@@ -346,7 +252,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       const clickValue = getValueFromPosition(e.clientX, e.clientY);
       
       if (isRange) {
-        // Determinar qué thumb mover basado en la distancia
         const distToMin = Math.abs(clickValue - currentValue[0]);
         const distToMax = Math.abs(clickValue - currentValue[1]);
         
@@ -360,11 +265,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       }
     };
 
-    // ========================================================================
-    // RENDER
-    // ========================================================================
-    
-    // Calcular porcentajes para posicionamiento
     const getPercentage = (val: number) => ((val - min) / (max - min)) * 100;
     
     return (
@@ -378,10 +278,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         )}
         {...props}
       >
-        {/* ====================================================================
-            HEADER CON LABEL Y CONTROLES
-        ==================================================================== */}
-        
         <div className={cn(
           "flex items-center justify-between",
           orientation === "vertical" && "flex-col items-start gap-2"
@@ -403,7 +299,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             )}
           </div>
           
-          {/* Valor actual como texto */}
           {showValueText && (
             <div className="flex items-center gap-2 bg-origen-crema px-3 py-1.5 rounded-lg">
               {isRange ? (
@@ -424,16 +319,11 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           )}
         </div>
 
-        {/* ====================================================================
-            CONTENEDOR PRINCIPAL
-        ==================================================================== */}
-        
         <div className={cn(
           "flex items-center gap-4",
           orientation === "vertical" && "flex-col h-full",
           orientation === "horizontal" && "flex-row"
         )}>
-          {/* Controles de decremento */}
           {showControls && (
             <Button
               type="button"
@@ -451,7 +341,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             </Button>
           )}
           
-          {/* Slider principal */}
           <div 
             ref={sliderRef}
             className={cn(
@@ -461,7 +350,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             )}
             onClick={handleTrackClick}
           >
-            {/* Track */}
             <div className={cn(
               "relative rounded-full",
               config.track,
@@ -469,7 +357,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
               size.track,
               orientation === "vertical" && "h-full"
             )}>
-              {/* Range */}
               <div 
                 className={cn(
                   "absolute rounded-full",
@@ -494,7 +381,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 }
               />
               
-              {/* Marcas */}
               {showMarks && marks && marks.map((mark, index) => (
                 <div
                   key={index}
@@ -513,7 +399,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                   <div className={cn(
                     "h-2 w-2 rounded-full border-2",
                     currentValue.some(v => Math.abs(v - mark.value) <= (max - min) * 0.05)
-                      ? "bg-origen-menta border-origen-menta"
+                      ? "bg-origen-pradera border-origen-pradera"
                       : "bg-white border-gray-300"
                   )} />
                   {mark.label && (
@@ -530,7 +416,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
               ))}
             </div>
             
-            {/* Thumbs */}
             {currentValue.map((val, index) => (
               <div
                 key={index}
@@ -557,7 +442,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                   className={cn(
                     "rounded-full cursor-pointer",
                     "transition-all duration-200 ease-out",
-                    "focus:outline-none focus:ring-2 focus:ring-origen-menta focus:ring-offset-2",
+                    "focus:outline-none focus:ring-2 focus:ring-origen-pradera focus:ring-offset-2",
                     config.thumb,
                     size.thumb,
                     isDragging && draggingIndex === index && cn(
@@ -571,7 +456,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                   onMouseEnter={() => setHoveredValue(val)}
                   onMouseLeave={() => setHoveredValue(null)}
                 >
-                  {/* Tooltip de valor */}
                   {showValue && (hoveredValue === val || isDragging) && (
                     <div className={cn(
                       "absolute -top-10 left-1/2 -translate-x-1/2",
@@ -585,7 +469,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                     </div>
                   )}
                   
-                  {/* Icono decorativo */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-70">
                     {config.icon}
                   </div>
@@ -594,7 +477,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             ))}
           </div>
           
-          {/* Controles de incremento */}
           {showControls && (
             <Button
               type="button"
@@ -612,7 +494,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             </Button>
           )}
           
-          {/* Icono derecho */}
           {rightIcon && (
             <div className={cn(
               "p-1.5 rounded-lg",
@@ -624,10 +505,6 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           )}
         </div>
 
-        {/* ====================================================================
-            FOOTER INFORMATIVO
-        ==================================================================== */}
-        
         <div className="flex items-center justify-between text-xs">
           <span className="text-gray-600">{formatValue(min)}</span>
           <span className="text-origen-pradera font-medium">
@@ -641,9 +518,5 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
 );
 
 Slider.displayName = "Slider";
-
-// ============================================================================
-// EXPORT
-// ============================================================================
 
 export { Slider };

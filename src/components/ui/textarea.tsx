@@ -1,7 +1,7 @@
 /**
  * @file textarea.tsx
- * @description Componente Textarea con diseño orgánico - Versión corregida sin duplicación
- * @version 3.0.2 - Eliminada barra de progreso duplicada
+ * @description Componente Textarea con diseño orgánico - CORREGIDO v3.0.3
+ * @version 3.0.3 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 "use client";
@@ -90,10 +90,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                           loading ? "loading" : null;
 
     const variantClasses = {
-      default: "bg-white border border-origen-pradera/50 hover:border-origen-hoja focus:border-origen-menta",
-      outline: "bg-transparent border-2 border-origen-bosque/30 hover:border-origen-bosque/50 focus:border-origen-menta focus:ring-2 focus:ring-origen-menta/20",
-      filled: "bg-origen-crema border border-transparent hover:bg-origen-pastel focus:bg-white focus:border-origen-menta",
-      minimal: "bg-transparent border-b border-origen-pradera/30 hover:border-origen-hoja focus:border-origen-menta focus:border-b-2 rounded-none px-0",
+      default: "bg-white border border-origen-pradera/50 hover:border-origen-hoja focus:border-origen-pradera",
+      outline: "bg-transparent border-2 border-origen-bosque/30 hover:border-origen-bosque/50 focus:border-origen-pradera focus:ring-2 focus:ring-origen-pradera/20",
+      filled: "bg-origen-crema border border-transparent hover:bg-origen-pastel focus:bg-white focus:border-origen-pradera",
+      minimal: "bg-transparent border-b border-origen-pradera/30 hover:border-origen-hoja focus:border-origen-pradera focus:border-b-2 rounded-none px-0",
     };
 
     const sizeClasses = {
@@ -173,25 +173,24 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     }, [fontSize]);
 
     const getProgressColor = () => {
-      if (!maxLength) return "bg-origen-menta";
+      if (!maxLength) return "bg-origen-pradera";
       if (isAtLimit) return "bg-red-500";
       if (isNearLimit) return "bg-amber-500";
       if (charCount > maxLength * 0.5) return "bg-origen-hoja";
-      return "bg-origen-menta";
+      return "bg-origen-pradera";
     };
     
     const progressColor = getProgressColor();
 
     return (
       <div className="w-full space-y-3">
-        {/* Header con label y controles */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className={cn(
               "p-1.5 rounded-lg",
-              "bg-gradient-to-br from-origen-menta/10 to-origen-pradera/10",
+              "bg-gradient-to-br from-origen-pradera/10 to-origen-hoja/10",
               "text-origen-hoja transition-all duration-300",
-              isFocused && "from-origen-menta/20 to-origen-pradera/20",
+              isFocused && "from-origen-pradera/20 to-origen-hoja/20",
               error && "from-red-100 to-red-50 text-red-500",
               success && !error && "from-green-100 to-green-50 text-green-500"
             )}>
@@ -217,7 +216,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             )}
           </div>
           
-          {/* Controles superiores */}
           <div className="flex items-center gap-2">
             {showZoomControls && (
               <div className="flex items-center gap-1 bg-origen-crema rounded-lg p-1">
@@ -268,7 +266,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               <Button
                 type="button"
                 size="icon-sm"
-                variant={showPreview ? "accent" : "ghost"}
+                variant={showPreview ? "secondary" : "ghost"}
                 onClick={() => setShowPreview(!showPreview)}
                 className="h-8 w-8 rounded-lg"
                 aria-label={showPreview ? "Ocultar preview" : "Mostrar preview"}
@@ -279,7 +277,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           </div>
         </div>
 
-        {/* Contenedor principal */}
         <div 
           className="relative"
           onMouseEnter={handleMouseEnter}
@@ -303,8 +300,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
               "focus:outline-none focus:ring-0",
               isFocused && !validationState && cn(
-                "shadow-origen-md shadow-origen-menta/20",
-                "ring-2 ring-origen-menta/20"
+                "shadow-origen-md shadow-origen-pradera/20",
+                "ring-2 ring-origen-pradera/20"
               ),
               isHovered && !isFocused && "shadow-origen",
               variantClasses[variant],
@@ -318,7 +315,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             {...props}
           />
 
-          {/* Indicadores de estado */}
           <div className="absolute right-3 top-3 flex items-center gap-2">
             {loading && (
               <Loader2 className="h-5 w-5 animate-spin text-origen-hoja" />
@@ -335,7 +331,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             )}
           </div>
           
-          {/* Barra de progreso - SOLO UNA, eliminada la duplicada */}
           {showCharCount && maxLength && (
             <div className="absolute -bottom-1 left-0 right-0 h-1 bg-origen-pastel rounded-full overflow-hidden">
               <div 
@@ -350,7 +345,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           )}
         </div>
 
-        {/* Footer con mensajes y contador */}
         <div className="flex items-start justify-between gap-2 min-h-[24px]">
           <div className="flex-1 space-y-1">
             {error && (

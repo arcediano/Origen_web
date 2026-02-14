@@ -1,7 +1,7 @@
 /**
  * @file alert.tsx
- * @description Componente Alert con diseño orgánico - Versión corregida
- * @version 3.0.1 - Corregidas props de AlertStack
+ * @description Componente Alert con diseño orgánico - CORREGIDO v3.0.2
+ * @version 3.0.2 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 "use client";
@@ -84,7 +84,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       warning: "bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 text-amber-900 [&>svg]:text-amber-600",
       error: "bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 text-red-900 [&>svg]:text-red-600",
       info: "bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 text-blue-900 [&>svg]:text-blue-600",
-      organic: "bg-gradient-to-br from-origen-pastel to-origen-crema border-2 border-origen-menta/30 text-origen-oscuro [&>svg]:text-origen-menta shadow-lg shadow-origen-menta/10",
+      // CORREGIDO: Eliminado Menta, usando Verde Pradera
+      organic: "bg-gradient-to-br from-origen-pastel to-origen-crema border-2 border-origen-pradera/30 text-origen-oscuro [&>svg]:text-origen-pradera shadow-lg shadow-origen-pradera/10",
     };
 
     const sizeClasses = {
@@ -168,12 +169,14 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
               "absolute right-3 top-3 rounded-lg p-1.5",
               "opacity-70 hover:opacity-100 transition-all",
               "focus:outline-none focus:ring-2 focus:ring-offset-2",
-              variant === "default" && "hover:bg-origen-pradera/20 focus:ring-origen-menta",
+              // CORREGIDO: Eliminado Menta de focus rings
+              variant === "default" && "hover:bg-origen-pradera/20 focus:ring-origen-pradera",
               variant === "success" && "hover:bg-green-200/50 focus:ring-green-500",
               variant === "warning" && "hover:bg-amber-200/50 focus:ring-amber-500",
               variant === "error" && "hover:bg-red-200/50 focus:ring-red-500",
               variant === "info" && "hover:bg-blue-200/50 focus:ring-blue-500",
-              variant === "organic" && "hover:bg-origen-menta/20 focus:ring-origen-menta"
+              // CORREGIDO: Eliminado Menta, usando Verde Pradera
+              variant === "organic" && "hover:bg-origen-pradera/20 focus:ring-origen-pradera"
             )}
             aria-label="Cerrar alerta"
           >
@@ -183,7 +186,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         
         {variant === "organic" && (
           <>
-            <div className="absolute -bottom-2 -right-2 h-6 w-6 text-origen-menta/30 rotate-12">
+            {/* CORREGIDO: Eliminado Menta, usando Verde Pradera */}
+            <div className="absolute -bottom-2 -right-2 h-6 w-6 text-origen-pradera/30 rotate-12">
               <Leaf className="h-full w-full" />
             </div>
             <div className="absolute -top-2 -left-2 h-4 w-4 text-origen-pradera/30 -rotate-12">
@@ -252,7 +256,7 @@ const AlertWithIcon = React.forwardRef<HTMLDivElement, AlertWithIconProps>(
 AlertWithIcon.displayName = "AlertWithIcon";
 
 // ============================================================================
-// ALERT STACK - CORREGIDO (con className en props)
+// ALERT STACK
 // ============================================================================
 
 export interface AlertStackProps {
@@ -260,7 +264,7 @@ export interface AlertStackProps {
   spacing?: "sm" | "md" | "lg";
   align?: "start" | "center" | "end";
   children?: React.ReactNode;
-  className?: string; // ✅ AÑADIDO className
+  className?: string;
 }
 
 const AlertStack = React.forwardRef<HTMLDivElement, AlertStackProps>(

@@ -1,70 +1,71 @@
 /**
- * Layout del dashboard
- * @description Layout compartido para todas las páginas del dashboard
+ * @layout DashboardLayout
+ * @description Layout principal con banner flotante ultra compacto
  */
 
-import { Logo } from '@/components/shared/Logo';
-import { LayoutDashboard, Package, ShoppingCart, Settings, LogOut } from 'lucide-react';
-import Link from 'next/link';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { DashboardSidebar } from '@/components/dashboard/layout/DashboardSidebar';
+import { DashboardHeader } from '@/components/dashboard/layout/DashboardHeader';
+import { StatusBanner } from '@/components/shared/status/StatusBanner';
+import { cn } from '@/lib/utils';
+import { type SellerStatus } from '@/types/seller';
+
+// Datos mock - @todo: GET /api/producer/status
+const MOCK_PRODUCER_STATUS = {
+  status: 'pending_verification' as SellerStatus,
+  details: {
+    documentsVerified: 3,
+    totalDocuments: 7,
+  }
+};
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200">
-        <div className="p-6">
-          <Logo />
-        </div>
-        
-        <nav className="px-4 space-y-1">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-origen-crema rounded-lg transition"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <span>Dashboard</span>
-          </Link>
-          
-          <Link
-            href="/dashboard/productos"
-            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-origen-crema rounded-lg transition"
-          >
-            <Package className="w-5 h-5" />
-            <span>Productos</span>
-          </Link>
-          
-          <Link
-            href="/dashboard/pedidos"
-            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-origen-crema rounded-lg transition"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span>Pedidos</span>
-          </Link>
-          
-          <Link
-            href="/dashboard/configuracion"
-            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-origen-crema rounded-lg transition"
-          >
-            <Settings className="w-5 h-5" />
-            <span>Configuración</span>
-          </Link>
-        </nav>
-        
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <button className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition w-full">
-            <LogOut className="w-5 h-5" />
-            <span>Cerrar Sesión</span>
-          </button>
-        </div>
-      </aside>
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-      {/* Main content */}
-      <main className="ml-64 p-8">
-        {children}
+  useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F8FAF5] via-white to-[#F0F7F0]">
+      <DashboardSidebar
+        isMobileOpen={isMobileMenuOpen}
+        onMobileClose={() => setIsMobileMenuOpen(false)}
+      />
+
+      <main className={cn(
+        "transition-all duration-300",
+        !isMobile && "lg:ml-64"
+      )}>
+        <DashboardHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
+        
+        {/* BANNER FLOTANTE ULTRA COMPACTO */}
+        <StatusBanner 
+          status={MOCK_PRODUCER_STATUS.status}
+          details={MOCK_PRODUCER_STATUS.details}
+          dismissible={true}
+        />
+        
+        <div className="w-full">
+          {children}
+        </div>
       </main>
     </div>
   );

@@ -1,13 +1,17 @@
 // components/register/HeroSection.tsx
 /**
- * Hero Section Mejorado - Overlay ajustado y tarjeta de registro optimizada
- * @version 1.3.0 - Mejoras de legibilidad y diseño de tarjeta
- * @description Sección hero con overlay corregido y tarjeta de registro más clara
+ * Hero Section Mejorado - CORREGIDO v1.4.0
+ * @version 1.4.0 - Correcciones de accesibilidad y manual de marca
+ * @description Sección hero con overlay optimizado y tarjeta de registro con colores oficiales
  * @author Equipo de Desarrollo Origen
  * @updated Marzo 2026
  * 
- * @important Overlay corregido para mejor contraste del texto
- * @note Tarjeta de registro con colores sólidos para mejor legibilidad
+ * @important CORRECCIONES CRÍTICAS:
+ *   - Eliminado uso de Menta (#06D6A0) como fondo de botón sobre imagen
+ *   - Eliminados degradados con Menta en tarjeta de registro
+ *   - Barra de progreso cambiada a Verde Pradera sólido
+ *   - Iconos estandarizados con Verde Pastel/Blanco Crema
+ *   - Botón CTA principal cambiado a Verde Bosque (contraste AAA ✓)
  */
 
 'use client';
@@ -37,28 +41,29 @@ export function HeroSection() {
       label: 'Comisión', 
       icon: TrendingUp, 
       sublabel: 'Solo al vender',
-      color: 'from-origen-menta/60 to-origen-pradera/60'
+      // CORREGIDO: Eliminado Menta del degradado
+      color: 'from-origen-pradera/70 to-origen-hoja/70'
     },
     { 
       value: '24-48h', 
       label: 'Aprobación', 
       icon: Clock, 
       sublabel: 'Rápido',
-      color: 'from-origen-pradera/60 to-origen-hoja/60'
+      color: 'from-origen-pradera/70 to-origen-hoja/70'
     },
     { 
       value: '0€', 
       label: 'Sin cuota', 
       icon: ShieldCheck, 
       sublabel: 'Costes fijos',
-      color: 'from-origen-hoja/60 to-origen-pino/60'
+      color: 'from-origen-hoja/70 to-origen-pino/70'
     },
     { 
       value: 'España', 
       label: 'Cobertura', 
       icon: Globe, 
       sublabel: 'Nacional',
-      color: 'from-origen-pino/60 to-origen-bosque/60'
+      color: 'from-origen-pino/70 to-origen-bosque/70'
     },
   ];
 
@@ -93,7 +98,6 @@ export function HeroSection() {
     <section className="relative lg:min-h-[85vh] md:min-h-[75vh] min-h-[70vh] flex items-center overflow-hidden">
       {/* Background con overlay mejorado */}
       <div className="absolute inset-0">
-        {/* Imagen de fondo - Optimizada */}
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=70"
@@ -109,9 +113,8 @@ export function HeroSection() {
           />
         </div>
         
-        {/* OVERLAY MEJORADO - Sin biselado blanco que afecte legibilidad */}
+        {/* OVERLAY - Verde Bosque sólido con opacidad controlada */}
         <div className="absolute inset-0 z-10">
-          {/* Capa principal - Overlay más oscuro y uniforme */}
           <div 
             className="absolute inset-0" 
             style={{
@@ -121,27 +124,14 @@ export function HeroSection() {
             }}
           />
           
-          {/* Gradiente sutil solo en los bordes (no en el centro) */}
+          {/* Gradiente inferior sutil */}
           <div 
-            className="absolute bottom-0 left-0 right-0 h-1/4 opacity-40"
+            className="absolute bottom-0 left-0 right-0 h-1/4 opacity-30"
             style={{
-              background: 'linear-gradient(to top, rgba(241, 250, 238, 0.3) 0%, transparent 80%)',
+              background: 'linear-gradient(to top, rgba(241, 250, 238, 0.2) 0%, transparent 80%)',
               mask: 'linear-gradient(to top, black 0%, transparent 100%)'
             }}
           />
-          
-          {/* Patrón sutil de textura orgánica */}
-          <div className="absolute inset-0 opacity-[0.03]">
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="organic-texture" width="100" height="100" patternUnits="userSpaceOnUse">
-                  <path d="M20,50 Q40,30 60,50 Q80,70 100,50" fill="none" stroke="#F1FAEE" strokeWidth="0.5"/>
-                  <path d="M0,30 Q20,10 40,30 Q60,50 80,30" fill="none" stroke="#F1FAEE" strokeWidth="0.5"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#organic-texture)" />
-            </svg>
-          </div>
         </div>
       </div>
       
@@ -155,21 +145,23 @@ export function HeroSection() {
               {/* Badge destacado */}
               <div className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-sm rounded-full px-4 py-2 md:py-2.5 mb-4 md:mb-5 border border-white/40 max-w-max shadow-lg">
                 <div className="flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-origen-menta" />
+                  <Sparkles className="w-4 h-4 text-origen-pradera" /> {/* CORREGIDO: Menta → Pradera */}
                   <span className="text-xs md:text-sm font-semibold text-white whitespace-nowrap">
                     Programa exclusivo para productores
                   </span>
                 </div>
-                <CheckCircle className="w-3.5 h-3.5 text-origen-menta" />
+                <CheckCircle className="w-3.5 h-3.5 text-origen-pradera" /> {/* CORREGIDO: Menta → Pradera */}
               </div>
               
-              {/* Título con mejor contraste */}
+              {/* Título */}
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-5 leading-tight text-white drop-shadow-xl">
                 Conecta tu pasión
-                <span className="block text-origen-menta mt-1 md:mt-2 drop-shadow-2xl">con quien la valora</span>
+                <span className="block text-origen-pradera mt-1 md:mt-2 drop-shadow-2xl"> {/* CORREGIDO: Menta → Pradera */}
+                  con quien la valora
+                </span>
               </h1>
               
-              {/* Descripción con buen contraste */}
+              {/* Descripción */}
               <p className="text-sm sm:text-base md:text-lg text-white/95 mb-6 md:mb-7 max-w-xl leading-relaxed drop-shadow-md">
                 Únete al marketplace líder para productores locales españoles. 
                 Llega a consumidores conscientes que valoran la autenticidad, 
@@ -183,7 +175,7 @@ export function HeroSection() {
                     const Icon = stat.icon;
                     return (
                       <div key={index} className="group">
-                        <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 md:p-4 border border-white/30 group-hover:border-origen-menta transition-all duration-300 h-full hover:shadow-lg hover:scale-[1.02]">
+                        <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 md:p-4 border border-white/30 group-hover:border-origen-pradera transition-all duration-300 h-full hover:shadow-lg hover:scale-[1.02]">
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
                               <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -207,11 +199,16 @@ export function HeroSection() {
                 </div>
               </div>
               
-              {/* CTA principal y social proof */}
+              {/* CTA principal y social proof - CORREGIDO */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                {/* 
+                  BOTÓN CTA PRINCIPAL - CORREGIDO
+                  @error: Antes usaba bg-origen-menta sobre imagen (violación manual de marca)
+                  @fix: Cambiado a bg-origen-bosque con texto blanco (contraste 10.5:1 AAA ✓)
+                */}
                 <Button 
                   size="lg"
-                  className="bg-origen-menta hover:bg-origen-menta/90 text-white text-base md:text-lg px-7 md:px-10 py-4 md:py-5 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto font-semibold"
+                  className="bg-origen-bosque hover:bg-origen-pino text-white text-base md:text-lg px-7 md:px-10 py-4 md:py-5 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto font-semibold border-2 border-white/30"
                   onClick={() => document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <span className="flex items-center justify-center gap-2.5">
@@ -223,8 +220,8 @@ export function HeroSection() {
                 <div className="flex items-center gap-3 text-white/90">
                   <div className="flex -space-x-2">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/30 border-2 border-origen-menta/50 flex items-center justify-center shadow-md">
-                        <Leaf className="w-3.5 h-3.5 text-origen-menta" />
+                      <div key={i} className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/30 border-2 border-origen-pradera/50 flex items-center justify-center shadow-md">
+                        <Leaf className="w-3.5 h-3.5 text-origen-pradera" />
                       </div>
                     ))}
                   </div>
@@ -240,20 +237,28 @@ export function HeroSection() {
               </div>
             </div>
             
-            {/* Columna derecha - TARJETA DE REGISTRO MEJORADA */}
+            {/* Columna derecha - TARJETA DE REGISTRO CORREGIDA */}
             <div className="flex-1 w-full lg:w-5/12 mt-8 lg:mt-0">
               <div className="relative">
-                {/* Efecto de sombra exterior */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-origen-menta/20 to-origen-pradera/20 rounded-3xl blur-xl opacity-70"></div>
+                {/* 
+                  EFECTO DE SOMBRA - CORREGIDO
+                  @error: Antes usaba from-origen-menta/20 to-origen-pradera/20
+                  @fix: Sombra simple sin Menta, solo opacidad de Verde Bosque
+                */}
+                <div className="absolute -inset-1 bg-origen-bosque/5 rounded-3xl blur-xl"></div>
                 
-                {/* Tarjeta principal - FONDO SÓLIDO PARA MEJOR LEGIBILIDAD */}
-                <div className="relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-2xl border border-white/50">
+                {/* Tarjeta principal */}
+                <div className="relative bg-white rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-2xl border border-gray-200">
                   {/* Encabezado de la tarjeta */}
                   <div className="text-center mb-5 md:mb-6">
                     <div className="inline-flex items-center justify-center w-16 h-16 md:w-18 md:h-18 mx-auto mb-3 md:mb-4 relative">
-                      {/* Logo de verificación animado */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-origen-menta to-origen-pradera rounded-full animate-pulse opacity-20"></div>
-                      <div className="relative w-full h-full bg-gradient-to-br from-origen-menta to-origen-pradera rounded-full flex items-center justify-center shadow-lg">
+                      {/* 
+                        Logo de verificación - CORREGIDO
+                        @error: Antes usaba from-origen-menta to-origen-pradera
+                        @fix: Cambiado a from-origen-pradera to-origen-hoja
+                      */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-origen-pradera to-origen-hoja rounded-full animate-pulse opacity-20"></div>
+                      <div className="relative w-full h-full bg-gradient-to-br from-origen-pradera to-origen-hoja rounded-full flex items-center justify-center shadow-lg">
                         <CheckCircle className="w-8 h-8 md:w-9 md:h-9 text-white" />
                       </div>
                     </div>
@@ -265,26 +270,30 @@ export function HeroSection() {
                     </p>
                   </div>
                   
-                  {/* Progreso del registro - DISEÑO MEJORADO */}
+                  {/* Progreso del registro */}
                   <div className="mb-5 md:mb-6">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-medium text-origen-bosque">
                         Progreso del registro
                       </span>
-                      <span className="text-sm font-bold text-origen-menta">
+                      <span className="text-sm font-bold text-origen-pradera"> {/* CORREGIDO: Menta → Pradera */}
                         50%
                       </span>
                     </div>
                     
-                    {/* Barra de progreso */}
+                    {/* 
+                      Barra de progreso - CORREGIDA
+                      @error: Antes usaba from-origen-menta to-origen-pradera
+                      @fix: Cambiado a bg-origen-pradera sólido
+                    */}
                     <div className="h-2.5 bg-origen-crema rounded-full overflow-hidden mb-4">
                       <div 
-                        className="h-full bg-gradient-to-r from-origen-menta to-origen-pradera rounded-full transition-all duration-700"
+                        className="h-full bg-origen-pradera rounded-full transition-all duration-700"
                         style={{ width: '50%' }}
                       ></div>
                     </div>
                     
-                    {/* Pasos del registro - ICONOS CLAROS */}
+                    {/* Pasos del registro - CORREGIDOS */}
                     <div className="grid grid-cols-2 gap-3">
                       {registrationSteps.map((step, index) => {
                         const Icon = step.icon;
@@ -292,9 +301,9 @@ export function HeroSection() {
                           <div key={index} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-origen-crema/50">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                               step.completed 
-                                ? 'bg-origen-menta/20 text-origen-menta' 
+                                ? 'bg-origen-pradera/20 text-origen-pradera'  /* CORREGIDO: Menta → Pradera */
                                 : step.current
-                                ? 'bg-origen-pradera/20 text-origen-pradera'
+                                ? 'bg-origen-hoja/20 text-origen-hoja'
                                 : 'bg-gray-100 text-gray-400'
                             }`}>
                               <Icon className="w-4 h-4" />
@@ -312,11 +321,11 @@ export function HeroSection() {
                               <div className="flex items-center gap-1">
                                 {step.completed ? (
                                   <>
-                                    <CheckCircle className="w-2.5 h-2.5 text-origen-menta" />
-                                    <span className="text-[10px] text-origen-menta font-medium">Completado</span>
+                                    <CheckCircle className="w-2.5 h-2.5 text-origen-pradera" /> {/* CORREGIDO: Menta → Pradera */}
+                                    <span className="text-[10px] text-origen-pradera font-medium">Completado</span>
                                   </>
                                 ) : step.current ? (
-                                  <span className="text-[10px] text-origen-pradera font-medium">En progreso</span>
+                                  <span className="text-[10px] text-origen-hoja font-medium">En progreso</span>
                                 ) : (
                                   <span className="text-[10px] text-gray-400">Pendiente</span>
                                 )}
@@ -328,7 +337,7 @@ export function HeroSection() {
                     </div>
                   </div>
                   
-                  {/* Información de comisión - DESTACADA */}
+                  {/* Información de comisión */}
                   <div className="bg-gradient-to-r from-origen-crema to-white rounded-xl p-4 md:p-5 border border-origen-pradera/30">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-3">
                       <div className="text-center md:text-left">
@@ -350,14 +359,14 @@ export function HeroSection() {
                     {/* Beneficios adicionales */}
                     <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-origen-crema">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-full bg-origen-menta/10 flex items-center justify-center">
-                          <CheckCircle className="w-2.5 h-2.5 text-origen-menta" />
+                        <div className="w-5 h-5 rounded-full bg-origen-pradera/10 flex items-center justify-center">
+                          <CheckCircle className="w-2.5 h-2.5 text-origen-pradera" />
                         </div>
                         <span className="text-xs text-origen-bosque">Sin cuota mensual</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-full bg-origen-menta/10 flex items-center justify-center">
-                          <CheckCircle className="w-2.5 h-2.5 text-origen-menta" />
+                        <div className="w-5 h-5 rounded-full bg-origen-pradera/10 flex items-center justify-center">
+                          <CheckCircle className="w-2.5 h-2.5 text-origen-pradera" />
                         </div>
                         <span className="text-xs text-origen-bosque">Pagos seguros</span>
                       </div>

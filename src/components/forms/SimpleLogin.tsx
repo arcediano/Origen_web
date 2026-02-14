@@ -1,8 +1,8 @@
 // components/forms/SimpleLogin.tsx
 /**
  * @file SimpleLogin.tsx
- * @description Formulario de login premium - VERSIÓN INICIAL CON MENSAJES EN ROJO
- * @version 1.0.0 - Versión estable con mensajes de error visibles
+ * @description Formulario de login premium - CORREGIDO v1.1.0
+ * @version 1.1.0 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 'use client';
@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// COMPONENTE PRINCIPAL - VERSIÓN INICIAL FUNCIONAL
+// COMPONENTE PRINCIPAL - VERSIÓN CORREGIDA
 // ============================================================================
 
 export function SimpleLogin() {
@@ -87,13 +87,13 @@ export function SimpleLogin() {
       {/* Tarjeta principal */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-lg hover:shadow-xl transition-all">
         
-        {/* Header */}
+        {/* Header - MEJORADO */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-origen-bosque to-origen-pino flex items-center justify-center shadow-md">
-            <User className="w-8 h-8 text-white" />
+            <Store className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-origen-bosque mb-1">Bienvenido</h2>
-          <p className="text-sm text-gray-600">Accede a tu cuenta de productor</p>
+          <h2 className="text-2xl font-bold text-origen-bosque mb-1">Acceso productores</h2>
+          <p className="text-sm text-gray-600">Gestiona tu tienda y ventas</p>
         </div>
 
         {/* Error general */}
@@ -131,15 +131,18 @@ export function SimpleLogin() {
                 className={cn(
                   "w-full h-11 px-4 text-sm",
                   "bg-white border rounded-xl",
-                  "focus:outline-none focus:ring-2 focus:ring-origen-menta/20",
+                  "focus:outline-none focus:ring-2",
+                  // CORREGIDO: focus:ring-origen-menta/20 → focus:ring-origen-pradera/20
+                  "focus:ring-origen-pradera/20",
                   "transition-all duration-200",
                   errors.email
                     ? "border-red-300 focus:border-red-400 focus:ring-red-200"
-                    : "border-gray-200 focus:border-origen-menta"
+                    // CORREGIDO: focus:border-origen-menta → focus:border-origen-pradera
+                    : "border-gray-200 focus:border-origen-pradera"
                 )}
               />
             </div>
-            {/* Mensaje de error en rojo - VERSIÓN INICIAL */}
+            {/* Mensaje de error en rojo - OK */}
             {errors.email && (
               <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                 <AlertCircle className="w-3.5 h-3.5" />
@@ -174,11 +177,14 @@ export function SimpleLogin() {
                 className={cn(
                   "w-full h-11 px-4 text-sm",
                   "bg-white border rounded-xl",
-                  "focus:outline-none focus:ring-2 focus:ring-origen-menta/20",
+                  "focus:outline-none focus:ring-2",
+                  // CORREGIDO: focus:ring-origen-menta/20 → focus:ring-origen-pradera/20
+                  "focus:ring-origen-pradera/20",
                   "transition-all duration-200 pr-11",
                   errors.password
                     ? "border-red-300 focus:border-red-400 focus:ring-red-200"
-                    : "border-gray-200 focus:border-origen-menta"
+                    // CORREGIDO: focus:border-origen-menta → focus:border-origen-pradera
+                    : "border-gray-200 focus:border-origen-pradera"
                 )}
               />
               <button
@@ -189,7 +195,7 @@ export function SimpleLogin() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            {/* Mensaje de error en rojo - VERSIÓN INICIAL */}
+            {/* Mensaje de error en rojo - OK */}
             {errors.password && (
               <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                 <AlertCircle className="w-3.5 h-3.5" />
@@ -207,7 +213,8 @@ export function SimpleLogin() {
               onClick={() => setRememberMe(!rememberMe)}
               className={cn(
                 "w-4 h-4 rounded border transition-all",
-                "focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+                // CORREGIDO: focus:ring-origen-menta/50 → focus:ring-origen-pradera/50
+                "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
                 rememberMe
                   ? "bg-origen-bosque border-origen-bosque"
                   : "border-gray-300 hover:border-origen-pradera"
@@ -242,7 +249,7 @@ export function SimpleLogin() {
             ) : (
               <span className="flex items-center justify-center gap-2">
                 <LogIn className="w-4 h-4" />
-                Acceder
+                Acceder al panel
               </span>
             )}
           </Button>
@@ -252,7 +259,7 @@ export function SimpleLogin() {
             <p className="text-xs text-gray-500">
               ¿No tienes cuenta?{' '}
               <Link href="/register" className="text-origen-pradera hover:text-origen-bosque font-medium">
-                Regístrate
+                Regístrate como productor
               </Link>
             </p>
           </div>

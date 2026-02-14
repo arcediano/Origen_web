@@ -1,19 +1,7 @@
 /**
  * @file toggle.tsx
- * @description Interruptor (toggle switch) con diseño orgánico inspirado en elementos naturales
- * @version 1.0.1 - Corregidos errores de tipos y dependencias
- * 
- * Características principales:
- * ✅ Diseño inspirado en hojas que giran y semillas que brotan
- * ✅ Animaciones suaves y naturales
- * ✅ Sistema de iconografía orgánica
- * ✅ Estados de carga y validación
- * ✅ Variantes de tamaño y color
- * ✅ Accesibilidad WCAG 2.1 AAA garantizada
- * ✅ Sin dependencias externas (no requiere @radix-ui/react-switch)
- * 
- * @author Equipo Origen Design System
- * @created Marzo 2026
+ * @description Interruptor (toggle switch) con diseño orgánico - CORREGIDO v1.0.2
+ * @version 1.0.2 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 "use client";
@@ -26,62 +14,24 @@ import { Check, X, Moon, Sun, Leaf, Sprout, Loader2 } from "lucide-react";
 // TIPOS
 // ============================================================================
 
-/**
- * Props del componente Toggle
- */
 export interface ToggleProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
-  /** Estado del toggle (controlado) */
   checked?: boolean;
-  
-  /** Estado inicial (no controlado) */
   defaultChecked?: boolean;
-  
-  /** Función llamada cuando cambia el estado */
   onCheckedChange?: (checked: boolean) => void;
-  
-  /** Variante visual inspirada en elementos naturales */
   variant?: "leaf" | "seed" | "sun" | "moon" | "accent" | "forest";
-  
-  /** Tamaño del toggle */
   toggleSize?: "sm" | "md" | "lg";
-  
-  /** Icono cuando está activo */
   activeIcon?: React.ReactNode;
-  
-  /** Icono cuando está inactivo */
   inactiveIcon?: React.ReactNode;
-  
-  /** Etiqueta del toggle */
   label?: string;
-  
-  /** Descripción adicional */
   description?: string;
-  
-  /** Posición del label */
   labelPosition?: "left" | "right" | "top" | "bottom";
-  
-  /** Mostrar como toggle con carga */
   loading?: boolean;
-  
-  /** Estado de éxito */
   success?: boolean;
-  
-  /** Estado de error */
   error?: boolean;
-  
-  /** Texto de error */
   errorText?: string;
-  
-  /** Mostrar etiquetas de estado */
   showStateLabels?: boolean;
-  
-  /** Texto para estado activo */
   activeLabel?: string;
-  
-  /** Texto para estado inactivo */
   inactiveLabel?: string;
-  
-  /** Si el campo es requerido */
   required?: boolean;
 }
 
@@ -89,10 +39,6 @@ export interface ToggleProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
 // COMPONENTE TOGGLE
 // ============================================================================
 
-/**
- * Componente Toggle con diseño orgánico
- * @description Interruptor inspirado en elementos naturales
- */
 const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
   (
     {
@@ -120,28 +66,19 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
     },
     ref
   ) => {
-    // ========================================================================
-    // ESTADOS
-    // ========================================================================
-    
     const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
     const [isHovered, setIsHovered] = React.useState(false);
     
-    // Determinar si está controlado o no
     const isControlled = checked !== undefined;
     const isChecked = isControlled ? checked : internalChecked;
-    
-    // ========================================================================
-    // SISTEMA DE VARIANTES
-    // ========================================================================
     
     const variantConfig = {
       leaf: {
         background: "bg-origen-crema",
-        checkedBackground: "bg-gradient-to-r from-origen-menta to-origen-hoja",
+        checkedBackground: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
         thumb: "bg-white",
         iconColor: "text-origen-hoja",
-        checkedIconColor: "text-origen-menta",
+        checkedIconColor: "text-origen-pradera",
         defaultActiveIcon: <Leaf className="h-3 w-3" />,
         defaultInactiveIcon: <Sprout className="h-3 w-3" />,
       },
@@ -173,11 +110,11 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         defaultInactiveIcon: <Sun className="h-3 w-3" />,
       },
       accent: {
-        background: "bg-origen-menta/20",
-        checkedBackground: "bg-gradient-to-r from-origen-menta to-origen-pradera",
+        background: "bg-origen-pradera/20",
+        checkedBackground: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
         thumb: "bg-white",
-        iconColor: "text-origen-menta",
-        checkedIconColor: "text-origen-pradera",
+        iconColor: "text-origen-pradera",
+        checkedIconColor: "text-origen-hoja",
         defaultActiveIcon: <Check className="h-3 w-3" />,
         defaultInactiveIcon: <X className="h-3 w-3" />,
       },
@@ -194,14 +131,9 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
     
     const config = variantConfig[variant];
     
-    // Iconos finales
     const finalActiveIcon = activeIcon || config.defaultActiveIcon;
     const finalInactiveIcon = inactiveIcon || config.defaultInactiveIcon;
 
-    // ========================================================================
-    // SISTEMA DE TAMAÑOS
-    // ========================================================================
-    
     const sizeConfig = {
       sm: {
         switch: "w-10 h-6",
@@ -228,10 +160,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
     
     const size = sizeConfig[toggleSize];
 
-    // ========================================================================
-    // MANEJADORES
-    // ========================================================================
-    
     const handleToggle = () => {
       if (disabled || loading) return;
       
@@ -254,10 +182,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       }
     };
 
-    // ========================================================================
-    // RENDER DEL TOGGLE
-    // ========================================================================
-    
     const toggleElement = (
       <button
         ref={ref}
@@ -270,21 +194,17 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         aria-busy={loading}
         disabled={disabled || loading}
         className={cn(
-          // Estilos base
           "group relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent",
           "transition-all duration-300 ease-out",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
           "disabled:cursor-not-allowed disabled:opacity-50",
           
-          // Estados de validación
           error && !disabled && "border-red-500",
           success && !error && !disabled && "border-green-500",
           
-          // Aplicar tamaños y fondos
           size.switch,
           isChecked ? config.checkedBackground : config.background,
           
-          // Efectos de hover
           !disabled && !loading && isHovered && "scale-105",
           
           className
@@ -296,7 +216,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         data-state={isChecked ? "checked" : "unchecked"}
         {...props}
       >
-        {/* Thumb (control deslizante) */}
         <span
           className={cn(
             "pointer-events-none inline-block transform rounded-full transition-all duration-300 ease-out",
@@ -308,7 +227,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
             loading && "animate-pulse"
           )}
         >
-          {/* Icono dentro del thumb */}
           {loading ? (
             <Loader2 className={cn("animate-spin", size.icon)} />
           ) : isChecked ? (
@@ -322,14 +240,12 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
           )}
         </span>
         
-        {/* Efecto de brillo */}
         <span className={cn(
           "absolute inset-0 rounded-full bg-gradient-to-b from-white/30 to-transparent",
           "opacity-0 group-hover:opacity-100 group-data-[state=checked]:opacity-50",
           "transition-opacity duration-300"
         )} />
         
-        {/* Etiquetas de estado */}
         {showStateLabels && (
           <span className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
             <span className={cn(
@@ -349,10 +265,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       </button>
     );
 
-    // ========================================================================
-    // RENDER CON LABEL
-    // ========================================================================
-    
     if (label || description || errorText) {
       return (
         <div className="space-y-2">
@@ -404,7 +316,6 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
             )}
           </div>
           
-          {/* Mensaje de error */}
           {error && errorText && (
             <p className="text-xs text-red-600 flex items-center gap-1.5 animate-origen-fade-in ml-1">
               <X className="h-3 w-3 flex-shrink-0" />
@@ -421,45 +332,18 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
 
 Toggle.displayName = "Toggle";
 
-// ============================================================================
-// COMPONENTE TOGGLE GROUP
-// ============================================================================
-
-/**
- * Props para ToggleGroup
- */
 export interface ToggleGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
-  /** Toggles hijos */
   children: React.ReactNode;
-  
-  /** Dirección del grupo */
   direction?: "horizontal" | "vertical";
-  
-  /** Espaciado entre toggles */
   spacing?: "none" | "tight" | "normal" | "loose";
-  
-  /** Etiqueta del grupo */
   groupLabel?: string;
-  
-  /** Descripción del grupo */
   groupDescription?: string;
-  
-  /** Valor seleccionado (para grupo exclusivo) */
   value?: string;
-  
-  /** Valor por defecto */
   defaultValue?: string;
-  
-  /** Función llamada cuando cambia la selección */
   onValueChange?: (value: string) => void;
-  
-  /** Si el grupo es exclusivo (solo uno seleccionable) */
   exclusive?: boolean;
 }
 
-/**
- * Grupo de toggles relacionados
- */
 const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
   ({ 
     className = "",
@@ -497,7 +381,6 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
       }
     };
     
-    // Clonar children para pasar props de contexto
     const childrenWithProps = React.Children.map(children, (child) => {
       if (React.isValidElement<any>(child) && exclusive) {
         const itemValue = child.props.value || child.props.label;
@@ -546,9 +429,5 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
 );
 
 ToggleGroup.displayName = "ToggleGroup";
-
-// ============================================================================
-// EXPORT
-// ============================================================================
 
 export { Toggle, ToggleGroup };

@@ -1,17 +1,15 @@
 // 📁 /src/components/forms/FileUpload.tsx
 /**
- * Componente para subida de archivos - UI puro
- * Reutilizable para múltiples formularios
+ * @file FileUpload.tsx
+ * @description Subida de archivos - VERSIÓN ULTRA MINIMALISTA
+ * @version 5.0.0 - SIN borde en contenedor principal, solo área de drop
  */
 
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Upload, X, FileText, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
+import * as React from 'react';
 import { cn, formatFileSize } from '@/lib/utils';
-import { useState } from 'react';
+import { Upload, X, FileText, Image as ImageIcon, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 export interface UploadedFile {
   id: string;
@@ -19,56 +17,50 @@ export interface UploadedFile {
   size: number;
   type: string;
   previewUrl?: string;
-  status?: 'pending' | 'uploading' | 'verified' | 'rejected';
+  status?: 'pending' | 'verified' | 'rejected';
   error?: string;
 }
 
-interface FileUploadProps {
-  label: string;
-  description?: string;
-  accept?: string;
-  multiple?: boolean;
-  maxSize?: number; // en MB
+export interface FileUploadProps {
   value: UploadedFile[];
   onChange: (files: UploadedFile[]) => void;
+  helperText?: string;
+  multiple?: boolean;
+  accept?: string;
+  maxSize?: number;
   className?: string;
   disabled?: boolean;
 }
 
 export function FileUpload({
-  label,
-  description,
-  accept = "image/*,.pdf,.jpg,.jpeg,.png",
-  multiple = false,
-  maxSize = 5,
   value = [],
   onChange,
+  helperText = 'Arrastra archivos o haz clic para subir',
+  multiple = false,
+  accept = '.pdf,.jpg,.jpeg,.png',
+  maxSize = 5,
   className,
-  disabled = false,
+  disabled = false
 }: FileUploadProps) {
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging, setIsDragging] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    
-    // Validar tamaño máximo
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
     const validFiles = files.filter(file => file.size <= maxSize * 1024 * 1024);
-    
-    // Crear objetos UploadedFile
-    const newUploadedFiles: UploadedFile[] = validFiles.map(file => ({
-      id: Math.random().toString(36).substring(2, 11),
+    const newFiles: UploadedFile[] = validFiles.map(file => ({
+      id: crypto.randomUUID(),
       name: file.name,
       size: file.size,
       type: file.type,
       previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-      status: 'pending',
+      status: 'pending'
     }));
 
-    // Actualizar valor
-    onChange(multiple ? [...value, ...newUploadedFiles] : newUploadedFiles);
-    
-    // Resetear input
-    event.target.value = '';
+    onChange(multiple ? [...value, ...newFiles] : newFiles);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleRemove = (id: string) => {
@@ -77,7 +69,7 @@ export function FileUpload({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(true);
+    if (!disabled) setIsDragging(true);
   };
 
   const handleDragLeave = () => {
@@ -87,20 +79,20 @@ export function FileUpload({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+    if (disabled) return;
+
     const files = Array.from(e.dataTransfer.files);
     const validFiles = files.filter(file => file.size <= maxSize * 1024 * 1024);
-    
-    const newUploadedFiles: UploadedFile[] = validFiles.map(file => ({
-      id: Math.random().toString(36).substring(2, 11),
+    const newFiles: UploadedFile[] = validFiles.map(file => ({
+      id: crypto.randomUUID(),
       name: file.name,
       size: file.size,
       type: file.type,
       previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-      status: 'pending',
+      status: 'pending'
     }));
 
-    onChange(multiple ? [...value, ...newUploadedFiles] : newUploadedFiles);
+    onChange(multiple ? [...value, ...newFiles] : newFiles);
   };
 
   const getFileIcon = (file: UploadedFile) => {
@@ -110,152 +102,145 @@ export function FileUpload({
     return <FileText className="w-5 h-5 text-origen-bosque" />;
   };
 
-  // Asegurar que value es un array
-  const safeValue = Array.isArray(value) ? value : [];
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'verified': return 'text-green-600';
+      case 'rejected': return 'text-red-600';
+      default: return 'text-gray-500';
+    }
+  };
+
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case 'verified': return <CheckCircle className="w-3.5 h-3.5" />;
+      case 'rejected': return <AlertCircle className="w-3.5 h-3.5" />;
+      default: return <Clock className="w-3.5 h-3.5" />;
+    }
+  };
+
+  const getStatusText = (status?: string) => {
+    switch (status) {
+      case 'verified': return 'Verificado';
+      case 'rejected': return 'Rechazado';
+      default: return 'Pendiente';
+    }
+  };
 
   return (
-    <div className={cn("w-full space-y-4", className)}>
+    <div className={cn('w-full', className)}>
       
-      {/* Label y descripción */}
-      {(label || description) && (
-        <div className="space-y-1">
-          {label && (
-            <Label className="text-sm font-medium text-origen-bosque">
-              {label}
-            </Label>
-          )}
-          {description && (
-            <p className="text-xs text-gray-500">{description}</p>
-          )}
-        </div>
-      )}
-
-      {/* Área de subida */}
+      {/* ====================================================================
+          ÁREA DE SUBIDA - Único elemento con borde
+          SIN contenedor padre con borde adicional
+      ==================================================================== */}
       <div
         className={cn(
-          "relative rounded-xl border-2 border-dashed p-6 transition-all",
-          isDragging 
-            ? "border-origen-menta bg-origen-menta/5" 
-            : "border-gray-200 hover:border-origen-pradera hover:bg-gray-50/50",
-          disabled && "opacity-50 pointer-events-none bg-gray-50",
-          className
+          'relative rounded-xl border transition-all',
+          isDragging
+            ? 'border-origen-pradera bg-origen-pradera/5'
+            : 'border-gray-200 hover:border-origen-pradera hover:bg-gray-50/50',
+          disabled && 'opacity-50 pointer-events-none bg-gray-50',
+          value.length === 0 ? 'p-8' : 'p-6'
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
         <input
+          ref={fileInputRef}
           type="file"
-          id="file-upload"
           accept={accept}
           multiple={multiple}
           onChange={handleFileSelect}
           disabled={disabled}
           className="hidden"
         />
-        
-        <label 
-          htmlFor="file-upload" 
-          className={cn(
-            "flex flex-col items-center text-center cursor-pointer",
-            disabled && "cursor-not-allowed"
-          )}
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={disabled}
+          className="w-full flex flex-col items-center text-center cursor-pointer disabled:cursor-not-allowed"
         >
           <div className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all",
+            'w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all',
             isDragging
-              ? "bg-origen-menta text-white scale-110"
-              : "bg-origen-crema text-origen-bosque"
+              ? 'bg-origen-pradera text-white scale-110'
+              : 'bg-origen-crema text-origen-bosque'
           )}>
             <Upload className="w-6 h-6" />
           </div>
           
           <p className="text-sm font-medium text-origen-bosque mb-1">
-            Arrastra archivos o haz clic para subir
+            {helperText}
           </p>
           
-          <p className="text-xs text-gray-500 mb-3">
-            Tamaño máximo: {maxSize}MB • {accept.replace(/\./g, '').toUpperCase()}
+          <p className="text-xs text-gray-500">
+            {accept.replace(/\./g, '').toUpperCase()} • Máx {maxSize}MB
           </p>
-          
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={disabled}
-            className="border-origen-pradera text-origen-pradera hover:bg-origen-pradera/10"
-          >
-            Seleccionar archivos
-          </Button>
-        </label>
+        </button>
       </div>
 
-      {/* Archivos subidos */}
-      {safeValue.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-origen-bosque">
-              Archivos subidos ({safeValue.length})
-            </p>
-          </div>
-          
-          <div className="space-y-2">
-            {safeValue.map((file) => (
-              <div
-                key={file.id}
-                className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-origen-pradera transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="flex-shrink-0">
-                    {getFileIcon(file)}
-                  </div>
-                  
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-origen-bosque truncate">
-                        {file.name}
-                      </p>
-                      {file.status === 'verified' && (
-                        <Badge variant="fruit" size="xs">
-                          <CheckCircle2 className="w-2.5 h-2.5 mr-1" />
-                          Verificado
-                        </Badge>
-                      )}
-                      {file.status === 'pending' && (
-                        <Badge variant="seed" size="xs">
-                          Pendiente
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-gray-500">
-                        {formatFileSize(file.size)}
-                      </span>
-                      {file.error && (
-                        <span className="text-xs text-red-600 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          {file.error}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+      {/* ====================================================================
+          LISTA DE ARCHIVOS - Sin borde adicional
+      ==================================================================== */}
+      {value.length > 0 && (
+        <div className="mt-4 space-y-2">
+          {value.map((file) => (
+            <div
+              key={file.id}
+              className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors group"
+            >
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="flex-shrink-0">
+                  {getFileIcon(file)}
                 </div>
                 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => handleRemove(file.id)}
-                  className="h-8 w-8 text-gray-400 hover:text-red-600"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-origen-bosque truncate">
+                      {file.name}
+                    </p>
+                    
+                    <span className={cn(
+                      'text-xs flex items-center gap-1',
+                      getStatusColor(file.status)
+                    )}>
+                      {getStatusIcon(file.status)}
+                      {getStatusText(file.status)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-gray-500">
+                      {formatFileSize(file.size)}
+                    </span>
+                    {file.error && (
+                      <span className="text-xs text-red-600 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {file.error}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
+              
+              <button
+                type="button"
+                onClick={() => handleRemove(file.id)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                aria-label="Eliminar archivo"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
 }
+
+FileUpload.displayName = 'FileUpload';
+
+export default FileUpload;

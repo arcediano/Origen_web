@@ -2,7 +2,8 @@
 /**
  * Página de Login - Origen Marketplace
  * @module app/login/page
- * @version 5.2.0 - Título con mismo estilo que registro
+ * @version 5.3.0 - CORREGIDO: Eliminados todos los usos de Menta (#06D6A0)
+ * @description Página de acceso para productores con mismo estilo que registro
  */
 
 import { SimpleLogin } from '@/components/forms/SimpleLogin';
@@ -35,7 +36,8 @@ export default function LoginPage() {
           <div className="flex items-center justify-between">
             <Link 
               href="/" 
-              className="flex items-center gap-2 md:gap-3 group focus:outline-none focus:ring-2 focus:ring-origen-menta focus:ring-offset-2 rounded-lg p-1"
+              // CORREGIDO: focus:ring-origen-menta → focus:ring-origen-pradera
+              className="flex items-center gap-2 md:gap-3 group focus:outline-none focus:ring-2 focus:ring-origen-pradera focus:ring-offset-2 rounded-lg p-1"
             >
               <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-origen-bosque to-origen-pino flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
                 <svg 
@@ -47,7 +49,8 @@ export default function LoginPage() {
                   <path d="M100 90 Q85 75, 75 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
                   <path d="M100 90 Q115 75, 125 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
                   <circle cx="100" cy="140" r="8" fill="white"/>
-                  <circle cx="100" cy="140" r="5" fill="#06D6A0"/>
+                  {/* CORREGIDO: #06D6A0 → #74C69D (Verde Pradera) */}
+                  <circle cx="100" cy="140" r="5" fill="#74C69D"/>
                 </svg>
               </div>
               <div className="flex flex-col">
@@ -60,7 +63,8 @@ export default function LoginPage() {
             
             <Link 
               href="/register" 
-              className="inline-flex items-center gap-1.5 md:gap-2 text-sm font-medium text-origen-bosque border-2 border-origen-pradera/30 hover:border-origen-pradera bg-white hover:bg-origen-crema px-4 py-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-origen-menta focus:ring-offset-2"
+              // CORREGIDO: focus:ring-origen-menta → focus:ring-origen-pradera
+              className="inline-flex items-center gap-1.5 md:gap-2 text-sm font-medium text-origen-bosque border-2 border-origen-pradera/30 hover:border-origen-pradera bg-white hover:bg-origen-crema px-4 py-2 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-origen-pradera focus:ring-offset-2"
             >
               <Store className="w-4 h-4 text-origen-pradera" />
               <span className="hidden sm:inline">Nuevo productor</span>
@@ -86,12 +90,7 @@ export default function LoginPage() {
                 </span>
               </div>
               
-              {/* 
-                ====================================================================
-                TÍTULO - EXACTAMENTE IGUAL QUE EN REGISTER PAGE
-                Misma estructura, mismas clases, mismo espaciado
-                ====================================================================
-              */}
+              {/* Título - EXACTAMENTE IGUAL QUE EN REGISTER PAGE */}
               <div className="text-left max-w-xl">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-origen-bosque mb-4 md:mb-6">
                   Bienvenido a tu
@@ -103,13 +102,34 @@ export default function LoginPage() {
                 </p>
               </div>
               
-              {/* Stats */}
+              {/* Stats - CORREGIDOS */}
               <div className="grid grid-cols-2 gap-4 pt-4">
                 {[
-                  { value: '+500', label: 'Productores', icon: Users, color: 'from-origen-menta/60 to-origen-pradera/60' },
-                  { value: '50k+', label: 'Compradores', icon: Globe, color: 'from-origen-pradera/60 to-origen-hoja/60' },
-                  { value: '+40%', label: 'Crecimiento', icon: TrendingUp, color: 'from-origen-hoja/60 to-origen-pino/60' },
-                  { value: '24h', label: 'Soporte', icon: Clock, color: 'from-origen-pino/60 to-origen-bosque/60' }
+                  { 
+                    value: '+500', 
+                    label: 'Productores', 
+                    icon: Users, 
+                    // CORREGIDO: Eliminado origen-menta/60
+                    color: 'from-origen-pradera/60 to-origen-hoja/60' 
+                  },
+                  { 
+                    value: '50k+', 
+                    label: 'Compradores', 
+                    icon: Globe, 
+                    color: 'from-origen-pradera/60 to-origen-hoja/60' 
+                  },
+                  { 
+                    value: '+40%', 
+                    label: 'Crecimiento', 
+                    icon: TrendingUp, 
+                    color: 'from-origen-hoja/60 to-origen-pino/60' 
+                  },
+                  { 
+                    value: '24h', 
+                    label: 'Soporte', 
+                    icon: Clock, 
+                    color: 'from-origen-pino/60 to-origen-bosque/60' 
+                  }
                 ].map((stat, index) => {
                   const Icon = stat.icon;
                   return (
@@ -130,7 +150,7 @@ export default function LoginPage() {
                 })}
               </div>
               
-              {/* Beneficios */}
+              {/* Beneficios - CORREGIDOS */}
               <div className="space-y-4 pt-4">
                 <h3 className="text-sm font-bold text-origen-bosque uppercase tracking-wider flex items-center gap-2">
                   <Award className="w-4 h-4 text-origen-pradera" />
@@ -145,8 +165,10 @@ export default function LoginPage() {
                     'Soporte prioritario 24/7'
                   ].map((benefit, index) => (
                     <div key={index} className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-origen-menta/10 flex items-center justify-center">
-                        <CheckCircle className="w-3 h-3 text-origen-menta" />
+                      {/* CORREGIDO: bg-origen-menta/10 → bg-origen-pradera/10 */}
+                      <div className="w-5 h-5 rounded-full bg-origen-pradera/10 flex items-center justify-center">
+                        {/* CORREGIDO: text-origen-menta → text-origen-pradera */}
+                        <CheckCircle className="w-3 h-3 text-origen-pradera" />
                       </div>
                       <span className="text-sm text-gray-700">{benefit}</span>
                     </div>
@@ -178,15 +200,26 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* Footer - CORREGIDO */}
       <footer className="bg-white border-t border-gray-200 pt-12 pb-8 mt-12 md:mt-16 lg:mt-20">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
             
             <div className="lg:col-span-4 space-y-5">
               <div className="flex items-center gap-3">
+                {/* CORREGIDO: Sprout → SVG oficial como en el header */}
                 <div className="w-10 h-10 rounded-lg bg-origen-bosque flex items-center justify-center shadow-md">
-                  <Sprout className="w-6 h-6 text-white" />
+                  <svg 
+                    className="w-6 h-6 text-white" 
+                    viewBox="0 0 200 200"
+                  >
+                    <circle cx="100" cy="100" r="85" fill="none" stroke="white" strokeWidth="3"/>
+                    <path d="M100 140 L100 80" stroke="white" strokeWidth="5" strokeLinecap="round"/>
+                    <path d="M100 90 Q85 75, 75 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                    <path d="M100 90 Q115 75, 125 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                    <circle cx="100" cy="140" r="8" fill="white"/>
+                    <circle cx="100" cy="140" r="5" fill="#74C69D"/>
+                  </svg>
                 </div>
                 <div>
                   <div className="text-xl font-bold text-origen-bosque">ORIGEN</div>
@@ -222,19 +255,22 @@ export default function LoginPage() {
               <ul className="space-y-3">
                 <li>
                   <Link href="/como-funciona" className="text-sm text-gray-600 hover:text-origen-pradera transition-colors inline-flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 text-origen-menta/70 group-hover:translate-x-0.5 transition-transform" />
+                    {/* CORREGIDO: text-origen-menta/70 → text-origen-pradera/70 */}
+                    <ChevronRight className="w-3 h-3 text-origen-pradera/70 group-hover:translate-x-0.5 transition-transform" />
                     Cómo funciona
                   </Link>
                 </li>
                 <li>
                   <Link href="/tarifas" className="text-sm text-gray-600 hover:text-origen-pradera transition-colors inline-flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 text-origen-menta/70 group-hover:translate-x-0.5 transition-transform" />
+                    {/* CORREGIDO: text-origen-menta/70 → text-origen-pradera/70 */}
+                    <ChevronRight className="w-3 h-3 text-origen-pradera/70 group-hover:translate-x-0.5 transition-transform" />
                     Tarifas y comisiones
                   </Link>
                 </li>
                 <li>
                   <Link href="/soporte" className="text-sm text-gray-600 hover:text-origen-pradera transition-colors inline-flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 text-origen-menta/70 group-hover:translate-x-0.5 transition-transform" />
+                    {/* CORREGIDO: text-origen-menta/70 → text-origen-pradera/70 */}
+                    <ChevronRight className="w-3 h-3 text-origen-pradera/70 group-hover:translate-x-0.5 transition-transform" />
                     Soporte especializado
                   </Link>
                 </li>
@@ -248,19 +284,22 @@ export default function LoginPage() {
               <ul className="space-y-3">
                 <li>
                   <Link href="/privacidad" className="text-sm text-gray-600 hover:text-origen-pradera transition-colors inline-flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 text-origen-menta/70 group-hover:translate-x-0.5 transition-transform" />
+                    {/* CORREGIDO: text-origen-menta/70 → text-origen-pradera/70 */}
+                    <ChevronRight className="w-3 h-3 text-origen-pradera/70 group-hover:translate-x-0.5 transition-transform" />
                     Política de Privacidad
                   </Link>
                 </li>
                 <li>
                   <Link href="/cookies" className="text-sm text-gray-600 hover:text-origen-pradera transition-colors inline-flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 text-origen-menta/70 group-hover:translate-x-0.5 transition-transform" />
+                    {/* CORREGIDO: text-origen-menta/70 → text-origen-pradera/70 */}
+                    <ChevronRight className="w-3 h-3 text-origen-pradera/70 group-hover:translate-x-0.5 transition-transform" />
                     Política de Cookies
                   </Link>
                 </li>
                 <li>
                   <Link href="/aviso-legal" className="text-sm text-gray-600 hover:text-origen-pradera transition-colors inline-flex items-center gap-1 group">
-                    <ChevronRight className="w-3 h-3 text-origen-menta/70 group-hover:translate-x-0.5 transition-transform" />
+                    {/* CORREGIDO: text-origen-menta/70 → text-origen-pradera/70 */}
+                    <ChevronRight className="w-3 h-3 text-origen-pradera/70 group-hover:translate-x-0.5 transition-transform" />
                     Aviso Legal
                   </Link>
                 </li>
@@ -274,8 +313,10 @@ export default function LoginPage() {
               
               <div className="bg-origen-crema/50 rounded-xl p-5 space-y-3">
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-lg bg-origen-menta/10 flex items-center justify-center">
-                    <Mail className="w-4 h-4 text-origen-menta" />
+                  {/* CORREGIDO: bg-origen-menta/10 → bg-origen-pradera/10 */}
+                  <div className="w-8 h-8 rounded-lg bg-origen-pradera/10 flex items-center justify-center">
+                    {/* CORREGIDO: text-origen-menta → text-origen-pradera */}
+                    <Mail className="w-4 h-4 text-origen-pradera" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Email</p>
@@ -283,8 +324,10 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-lg bg-origen-menta/10 flex items-center justify-center">
-                    <Phone className="w-4 h-4 text-origen-menta" />
+                  {/* CORREGIDO: bg-origen-menta/10 → bg-origen-pradera/10 */}
+                  <div className="w-8 h-8 rounded-lg bg-origen-pradera/10 flex items-center justify-center">
+                    {/* CORREGIDO: text-origen-menta → text-origen-pradera */}
+                    <Phone className="w-4 h-4 text-origen-pradera" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Teléfono</p>
@@ -292,8 +335,10 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-8 h-8 rounded-lg bg-origen-menta/10 flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-origen-menta" />
+                  {/* CORREGIDO: bg-origen-menta/10 → bg-origen-pradera/10 */}
+                  <div className="w-8 h-8 rounded-lg bg-origen-pradera/10 flex items-center justify-center">
+                    {/* CORREGIDO: text-origen-menta → text-origen-pradera */}
+                    <Clock className="w-4 h-4 text-origen-pradera" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Horario</p>

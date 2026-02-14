@@ -1,7 +1,7 @@
 /**
  * @file card.tsx
- * @description Componente Card con diseño orgánico - Versión corregida
- * @version 3.0.1 - Corregidos imports y typos
+ * @description Componente Card con diseño orgánico - CORREGIDO v3.0.2
+ * @version 3.0.2 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 "use client";
@@ -9,7 +9,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Leaf, Sprout, Flower, ArrowRight, Star } from "lucide-react";
-import { Button } from "./button"; // ✅ IMPORT CORREGIDO
+import { Button } from "./button";
 
 // ============================================================================
 // TIPOS
@@ -73,7 +73,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       elevated: "bg-white border-0 shadow-md shadow-origen-bosque/5 hover:shadow-lg hover:shadow-origen-bosque/10",
       outline: "bg-transparent border-2 border-origen-pradera/30 hover:border-origen-hoja",
       flat: "bg-origen-crema border-0 shadow-none",
-      organic: "bg-gradient-to-br from-white to-origen-crema border border-origen-pradera/30 shadow-lg shadow-origen-menta/5 relative overflow-hidden",
+      // CORREGIDO: Eliminado Menta de la sombra
+      organic: "bg-gradient-to-br from-white to-origen-crema border border-origen-pradera/30 shadow-lg shadow-origen-pradera/5 relative overflow-hidden",
       forest: "bg-gradient-to-br from-origen-bosque to-origen-pino border border-origen-bosque/30 text-white shadow-xl shadow-origen-bosque/20",
     };
 
@@ -102,9 +103,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const hoverClasses = {
       none: "",
       lift: "hover:-translate-y-2 transition-transform duration-300",
-      glow: "hover:shadow-lg hover:shadow-origen-menta/20 transition-shadow duration-300",
+      // CORREGIDO: Eliminado Menta del glow
+      glow: "hover:shadow-lg hover:shadow-origen-pradera/20 transition-shadow duration-300",
       scale: "hover:scale-[1.02] transition-transform duration-300",
-      organic: "hover:shadow-xl hover:shadow-origen-menta/10 hover:border-origen-menta/30 transition-all duration-500",
+      // CORREGIDO: Eliminado Menta del organic hover
+      organic: "hover:shadow-xl hover:shadow-origen-pradera/10 hover:border-origen-pradera/30 transition-all duration-500",
     };
 
     const animationClasses = animate
@@ -156,7 +159,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         
         {variant === "organic" && (
           <>
-            <div className="absolute -bottom-4 -right-4 h-16 w-16 text-origen-menta/10 rotate-12">
+            {/* CORREGIDO: Eliminado Menta, usando Verde Pradera */}
+            <div className="absolute -bottom-4 -right-4 h-16 w-16 text-origen-pradera/10 rotate-12">
               <Leaf className="h-full w-full" />
             </div>
             <div className="absolute -top-4 -left-4 h-12 w-12 text-origen-pradera/10 -rotate-12">
@@ -339,7 +343,8 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
             className={cn(
               "mb-4 inline-flex h-12 w-12 items-center justify-center",
               "rounded-xl",
-              "bg-gradient-to-br from-origen-menta/10 to-origen-pradera/10",
+              // CORREGIDO: Eliminado Menta, usando Verde Pradera
+              "bg-gradient-to-br from-origen-pradera/10 to-origen-hoja/10",
               "text-origen-hoja",
               "group-hover:scale-110 group-hover:shadow-lg",
               "transition-all duration-300",
@@ -357,8 +362,9 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
           </CardFooter>
         )}
         
+        {/* CORREGIDO: Eliminado Menta, usando Verde Pradera */}
         <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <ArrowRight className="h-5 w-5 text-origen-menta" />
+          <ArrowRight className="h-5 w-5 text-origen-pradera" />
         </div>
       </Card>
     );
@@ -427,8 +433,9 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
             {icon && (
               <div className={cn(
                 "p-3 rounded-xl",
-                "bg-gradient-to-br from-origen-menta/10 to-origen-pradera/10",
-                "text-origen-menta"
+                // CORREGIDO: Eliminado Menta, usando Verde Pradera
+                "bg-gradient-to-br from-origen-pradera/10 to-origen-hoja/10",
+                "text-origen-pradera"
               )}>
                 {icon}
               </div>
@@ -436,7 +443,8 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
           </div>
         </CardContent>
         
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-origen-menta to-origen-pradera" />
+        {/* CORREGIDO: Eliminado Menta, usando Verde Pradera */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-origen-pradera to-origen-hoja" />
       </Card>
     );
   }
@@ -445,7 +453,7 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
 StatCard.displayName = "StatCard";
 
 // ============================================================================
-// PRODUCT CARD - CORREGIDO (typo 'baddes' → 'badges')
+// PRODUCT CARD
 // ============================================================================
 
 export interface ProductCardProps extends Omit<CardProps, 'children'> {
@@ -481,7 +489,6 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         className={cn("group", className)}
         {...props}
       >
-        {/* Imagen */}
         <div className="relative -m-6 mb-0 overflow-hidden rounded-t-2xl">
           <div 
             className="h-48 w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
@@ -489,7 +496,6 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
-          {/* Badges - CORREGIDO: badges en lugar de baddes */}
           {badges && badges.length > 0 && (
             <div className="absolute top-4 left-4 flex flex-wrap gap-2">
               {badges}
@@ -529,7 +535,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
               {onAddToCart && (
                 <Button
                   size="sm"
-                  variant="accent"
+                  // CORREGIDO: Cambiado variant="accent" por variant="secondary"
+                  variant="secondary"
                   onClick={onAddToCart}
                   className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 >

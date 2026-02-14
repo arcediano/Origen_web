@@ -1,71 +1,40 @@
 /**
  * @file tabs.tsx
- * @description Sistema de pestañas accesible con diseño orgánico inspirado en el crecimiento natural
- * @version 3.0.0 - Rediseño completo según manual de marca Origen
- * 
- * Características principales:
- * ✅ Diseño inspirado en capas geológicas / estratos naturales
- * ✅ Animaciones suaves de transición entre pestañas
- * ✅ Indicador activo con forma de brote/hoja
- * ✅ Variantes de diseño para diferentes contextos
- * ✅ Totalmente accesible (WCAG 2.1 AAA)
- * ✅ Sin dependencias externas
- * 
- * @author Equipo Origen Design System
- * @created Marzo 2026
+ * @description Sistema de pestañas accesible con diseño orgánico - CORREGIDO v3.0.1
+ * @version 3.0.1 - Eliminados todos los usos de Menta (#06D6A0)
  */
 
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Leaf, Sprout, Flower } from "lucide-react";
+import { Leaf, Sprout } from "lucide-react";
 
 // ============================================================================
 // TIPOS
 // ============================================================================
 
 export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Valor de la pestaña activa (controlado) */
   value?: string;
-  
-  /** Valor por defecto de la pestaña activa (no controlado) */
   defaultValue?: string;
-  
-  /** Función llamada cuando cambia la pestaña activa */
   onValueChange?: (value: string) => void;
-  
-  /** Orientación de las pestañas */
   orientation?: "horizontal" | "vertical";
-  
-  /** Variante de diseño */
   variant?: "default" | "pills" | "underline" | "organic" | "minimal";
-  
-  /** Tamaño de las pestañas */
   tabsSize?: "sm" | "md" | "lg";
-  
-  /** Si las pestañas deben ocupar todo el ancho */
   fullWidth?: boolean;
 }
 
 export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Contenido del listado de pestañas */
   children?: React.ReactNode;
 }
 
 export interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Valor único de la pestaña */
   value: string;
-  
-  /** Si está deshabilitada */
   disabled?: boolean;
-  
-  /** Icono opcional para la pestaña */
   icon?: React.ReactNode;
 }
 
 export interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Valor único que identifica el contenido */
   value: string;
 }
 
@@ -231,7 +200,7 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
     const variantClasses = {
       default: cn(
         "px-4 py-2 rounded-lg font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         isActive 
           ? "bg-white text-origen-bosque shadow-sm" 
@@ -239,57 +208,57 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
       ),
       pills: cn(
         "px-4 py-2 rounded-full font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         isActive 
-          ? "bg-gradient-to-r from-origen-menta to-origen-pradera text-white shadow-md" 
-          : "bg-white border border-origen-pradera/30 text-origen-hoja hover:border-origen-menta hover:text-origen-bosque"
+          ? "bg-gradient-to-r from-origen-pradera to-origen-hoja text-white shadow-md"
+          : "bg-white border border-origen-pradera/30 text-origen-hoja hover:border-origen-pradera hover:text-origen-bosque"
       ),
       underline: cn(
         "px-4 py-2 font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "relative",
         orientation === "horizontal"
           ? cn(
               "border-b-2 -mb-px",
               isActive 
-                ? "border-origen-menta text-origen-bosque" 
+                ? "border-origen-pradera text-origen-bosque"
                 : "border-transparent text-origen-hoja hover:text-origen-bosque hover:border-origen-pradera/50"
             )
           : cn(
               "border-r-2 -mr-px",
               isActive 
-                ? "border-origen-menta text-origen-bosque" 
+                ? "border-origen-pradera text-origen-bosque"
                 : "border-transparent text-origen-hoja hover:text-origen-bosque hover:border-origen-pradera/50"
             )
       ),
       organic: cn(
         "px-5 py-2.5 font-medium transition-all duration-300",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "relative group",
         orientation === "horizontal"
           ? cn(
               "border-b-2 -mb-px",
               isActive 
-                ? "border-origen-menta text-origen-bosque" 
+                ? "border-origen-pradera text-origen-bosque"
                 : "border-transparent text-origen-hoja hover:text-origen-bosque"
             )
           : cn(
               "border-r-2 -mr-px",
               isActive 
-                ? "border-origen-menta text-origen-bosque" 
+                ? "border-origen-pradera text-origen-bosque"
                 : "border-transparent text-origen-hoja hover:text-origen-bosque"
             )
       ),
       minimal: cn(
         "px-3 py-1.5 font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "relative",
         isActive 
-          ? "text-origen-bosque" 
+          ? "text-origen-bosque"
           : "text-gray-500 hover:text-origen-hoja"
       ),
     };
@@ -333,18 +302,16 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
           )}
           <span>{children}</span>
           
-          {/* Indicador decorativo para variante organic */}
           {variant === "organic" && isActive && (
             <span className={cn(
               "absolute -bottom-[2px] left-1/2 -translate-x-1/2",
-              "w-1.5 h-1.5 rounded-full bg-origen-menta",
+              "w-1.5 h-1.5 rounded-full bg-origen-pradera",
               "animate-pulse"
             )} />
           )}
           
-          {/* Efecto de brote para variante organic */}
           {variant === "organic" && isActive && orientation === "horizontal" && (
-            <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-origen-menta animate-bounce">
+            <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-origen-pradera animate-bounce">
               <Leaf className="h-3 w-3" />
             </span>
           )}
@@ -374,7 +341,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
         id={`tabpanel-${value}`}
         aria-labelledby={`tab-${value}`}
         className={cn(
-          "mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
+          "mt-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
           "animate-in fade-in-0 slide-in-from-top-2 duration-300",
           className
         )}
@@ -394,12 +361,10 @@ TabsContent.displayName = "TabsContent";
 // ============================================================================
 
 export interface TabsWithIconProps extends TabsProps {
-  /** Iconos para cada pestaña */
   tabIcons?: Record<string, React.ReactNode>;
 }
 
 const TabsWithIcon: React.FC<TabsWithIconProps> = ({ tabIcons = {}, children, ...props }) => {
-  // Esta es una versión simplificada - los iconos se pasan directamente a TabsTrigger
   return <Tabs {...props}>{children}</Tabs>;
 };
 
