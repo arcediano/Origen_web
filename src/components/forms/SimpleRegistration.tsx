@@ -29,7 +29,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { AlertWithIcon } from '@/components/ui/alert';
-import { Select } from '@/components/ui/select';
+import { 
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  SelectGroup 
+} from '@/components/ui/select';  // ✅ Importación corregida
 import { Loading } from '@/components/shared/Loading';
 
 // ============================================================================
@@ -784,67 +791,75 @@ export function SimpleRegistration({
             </FormSection>
 
             {/* SECCIÓN 2: Negocio */}
-            <FormSection 
-              title="Tu negocio" 
-              description="Cuéntanos sobre tu proyecto"
-              badge="Paso 2 de 5"
-            >
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
-                    <Store className="w-5 h-5 text-origen-pradera" />
-                    Nombre del negocio <span className="text-destructive">*</span>
-                  </label>
-                  <Input
-                    placeholder="Ej: Huerta Ecológica del Valle"
-                    error={errors.businessName?.message}
-                    {...register('businessName')}
-                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
-                    className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
-                  />
-                </div>
+<FormSection 
+  title="Tu negocio" 
+  description="Cuéntanos sobre tu proyecto"
+  badge="Paso 2 de 5"
+>
+  <div className="space-y-6">
+    <div className="space-y-2">
+      <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
+        <Store className="w-5 h-5 text-origen-pradera" />
+        Nombre del negocio <span className="text-destructive">*</span>
+      </label>
+      <Input
+        placeholder="Ej: Huerta Ecológica del Valle"
+        error={errors.businessName?.message}
+        {...register('businessName')}
+        className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
+      />
+    </div>
 
-                <BusinessTypeSelector
-                  value={formValues.businessType}
-                  onChange={(value) => setValue('businessType', value, { shouldValidate: true })}
-                  error={errors.businessType?.message}
-                />
+    <BusinessTypeSelector
+      value={formValues.businessType}
+      onChange={(value) => setValue('businessType', value, { shouldValidate: true })}
+      error={errors.businessType?.message}
+    />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-origen-pradera" />
-                      Provincia <span className="text-destructive">*</span>
-                    </label>
-                    <Select
-                      items={PROVINCIAS_ESPANA.map(p => ({
-                        value: p.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
-                        label: p
-                      }))}
-                      value={formValues.province}
-                      onValueChange={(value) => setValue('province', value, { shouldValidate: true })}
-                      placeholder="Selecciona provincia"
-                      error={errors.province?.message}
-                      searchable
-                      className="h-12 text-base"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-origen-pradera" />
-                      Ciudad <span className="text-destructive">*</span>
-                    </label>
-                    <Input
-                      placeholder="Tu localidad"
-                      error={errors.city?.message}
-                      {...register('city')}
-                      // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
-                      className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
-                    />
-                  </div>
-                </div>
-              </div>
-            </FormSection>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-2">
+        <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-origen-pradera" />
+          Provincia <span className="text-destructive">*</span>
+        </label>
+        <Select
+          value={formValues.province}
+          onValueChange={(value) => setValue('province', value, { shouldValidate: true })}
+          placeholder="Selecciona provincia"
+          error={errors.province?.message} // ✅ Ahora acepta string
+          searchable
+          className="h-12 text-base"
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PROVINCIAS_ESPANA.map((provincia) => {
+              const value = provincia.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              return (
+                <SelectItem key={value} value={value}>
+                  {provincia}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-origen-pradera" />
+          Ciudad <span className="text-destructive">*</span>
+        </label>
+        <Input
+          placeholder="Tu localidad"
+          error={errors.city?.message}
+          {...register('city')}
+          className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
+        />
+      </div>
+    </div>
+  </div>
+</FormSection>
 
             {/* SECCIÓN 3: Categoría */}
             <FormSection 

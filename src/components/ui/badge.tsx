@@ -1,415 +1,244 @@
 /**
  * @file badge.tsx
- * @description Sistema de badges premium - CORREGIDO: Iconos alineados correctamente
- * @version 3.5.0
+ * @description Componente de badge para mostrar estados
  */
 
-"use client";
+'use client';
 
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-
-// ============================================================================
-// VARIANTES
-// ============================================================================
-
-const badgeVariants = cva(
-  cn(
-    "inline-flex items-center justify-center whitespace-nowrap",
-    "rounded-full font-medium transition-all duration-200",
-    "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2"
-  ),
-  {
-    variants: {
-      variant: {
-        seed: cn(
-          "bg-gradient-to-br from-origen-crema to-white",
-          "text-origen-bosque border border-origen-pradera/30",
-          "hover:bg-origen-crema/80"
-        ),
-        
-        leaf: cn(
-          "bg-gradient-to-br from-origen-pastel to-green-50",
-          "text-green-800 border border-green-300/50",
-          "hover:bg-green-100/80"
-        ),
-        
-        fruit: cn(
-          "bg-gradient-to-br from-orange-100 to-amber-50",
-          "text-amber-800 border border-amber-300/50",
-          "hover:bg-amber-100/80"
-        ),
-        
-        forest: cn(
-          "bg-gradient-to-br from-origen-bosque to-origen-pino",
-          "text-white border border-origen-bosque/30",
-          "hover:from-origen-pino hover:to-origen-bosque"
-        ),
-        
-        outline: cn(
-          "bg-transparent text-origen-bosque border border-origen-bosque",
-          "hover:bg-origen-crema/30"
-        ),
-        
-        success: cn(
-          "bg-green-50 text-green-700 border border-green-200",
-          "hover:bg-green-100"
-        ),
-        
-        warning: cn(
-          "bg-amber-50 text-amber-700 border border-amber-200",
-          "hover:bg-amber-100"
-        ),
-        
-        error: cn(
-          "bg-red-50 text-red-700 border border-red-200",
-          "hover:bg-red-100"
-        ),
-        
-        info: cn(
-          "bg-blue-50 text-blue-700 border border-blue-200",
-          "hover:bg-blue-100"
-        ),
-      },
-      size: {
-        xs: "px-1.5 py-0.5 text-[10px] gap-1",
-        sm: "px-2 py-1 text-xs gap-1.5",
-        md: "px-2.5 py-1.5 text-sm gap-2",
-        lg: "px-3 py-2 text-base gap-2.5",
-      },
-    },
-    defaultVariants: {
-      variant: "seed",
-      size: "md",
-    },
-  }
-);
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { CheckCircle, AlertCircle, Clock, XCircle, Package, FileText } from 'lucide-react';
 
 // ============================================================================
 // TIPOS
 // ============================================================================
 
-interface BadgeBaseProps extends VariantProps<typeof badgeVariants> {
-  icon?: React.ReactNode;
-  verified?: boolean;
-  count?: number;
-  tooltip?: string;
-  onRemove?: () => void;
-}
-
-export interface BadgeProps extends BadgeBaseProps, React.HTMLAttributes<HTMLDivElement> {}
-
-// ============================================================================
-// COMPONENTE BADGE
-// ============================================================================
-
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ 
-    className, 
-    variant, 
-    size, 
-    icon, 
-    verified, 
-    count, 
-    tooltip, 
-    onRemove, 
-    children, 
-    ...props 
-  }, ref) => {
-    const [showTooltip, setShowTooltip] = React.useState(false);
-
-    return (
-      <div className="relative inline-block">
-        <div
-          ref={ref}
-          className={cn(badgeVariants({ variant, size }), className)}
-          onMouseEnter={() => tooltip && setShowTooltip(true)}
-          onMouseLeave={() => tooltip && setShowTooltip(false)}
-          {...props}
-        >
-          {/* ✅ Iconos y texto al mismo nivel */}
-          {icon && icon}
-          {verified && <CheckCircle className={cn(
-            size === "xs" && "h-2.5 w-2.5",
-            size === "sm" && "h-3 w-3",
-            size === "md" && "h-3.5 w-3.5",
-            size === "lg" && "h-4 w-4"
-          )} />}
-          {count !== undefined && (
-            <span className="tabular-nums font-bold">{count}</span>
-          )}
-          <span className="truncate">{children}</span>
-          {onRemove && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onRemove(); }}
-              className={cn(
-                "inline-flex items-center justify-center rounded-full",
-                "hover:bg-black/10 active:bg-black/20 transition-colors",
-                size === "xs" && "h-3 w-3",
-                size === "sm" && "h-3.5 w-3.5",
-                size === "md" && "h-4 w-4",
-                size === "lg" && "h-5 w-5"
-              )}
-            >
-              <X className={cn(
-                size === "xs" && "h-2 w-2",
-                size === "sm" && "h-2.5 w-2.5",
-                size === "md" && "h-3 w-3",
-                size === "lg" && "h-3.5 w-3.5"
-              )} />
-            </button>
-          )}
-        </div>
-        
-        {tooltip && showTooltip && (
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 px-2 py-1 rounded bg-origen-oscuro text-white text-xs whitespace-nowrap shadow-lg">
-            {tooltip}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-origen-oscuro rotate-45" />
-          </div>
-        )}
-      </div>
-    );
-  }
-);
-
-Badge.displayName = "Badge";
-
-// ============================================================================
-// BADGE INTERACTIVO (COMO BOTÓN)
-// ============================================================================
-
-export interface InteractiveBadgeProps extends BadgeBaseProps, React.ButtonHTMLAttributes<HTMLButtonElement> {
-  interactive?: boolean;
-}
-
-const InteractiveBadge = React.forwardRef<HTMLButtonElement, InteractiveBadgeProps>(
-  ({ 
-    className, 
-    variant, 
-    size, 
-    icon, 
-    verified, 
-    count, 
-    tooltip, 
-    onRemove, 
-    children, 
-    interactive = true,
-    ...props 
-  }, ref) => {
-    const [showTooltip, setShowTooltip] = React.useState(false);
-
-    return (
-      <div className="relative inline-block">
-        <button
-          ref={ref}
-          className={cn(
-            badgeVariants({ variant, size }),
-            "cursor-pointer hover:scale-105 active:scale-95",
-            className
-          )}
-          onMouseEnter={() => tooltip && setShowTooltip(true)}
-          onMouseLeave={() => tooltip && setShowTooltip(false)}
-          {...props}
-        >
-          {/* ✅ Iconos y texto al mismo nivel */}
-          {icon && icon}
-          {verified && <CheckCircle className={cn(
-            size === "xs" && "h-2.5 w-2.5",
-            size === "sm" && "h-3 w-3",
-            size === "md" && "h-3.5 w-3.5",
-            size === "lg" && "h-4 w-4"
-          )} />}
-          {count !== undefined && (
-            <span className="tabular-nums font-bold">{count}</span>
-          )}
-          <span className="truncate">{children}</span>
-          {onRemove && (
-            <span
-              onClick={(e) => { e.stopPropagation(); onRemove(); }}
-              className={cn(
-                "inline-flex items-center justify-center rounded-full",
-                "hover:bg-black/10 active:bg-black/20 transition-colors",
-                size === "xs" && "h-3 w-3",
-                size === "sm" && "h-3.5 w-3.5",
-                size === "md" && "h-4 w-4",
-                size === "lg" && "h-5 w-5"
-              )}
-            >
-              <X className={cn(
-                size === "xs" && "h-2 w-2",
-                size === "sm" && "h-2.5 w-2.5",
-                size === "md" && "h-3 w-3",
-                size === "lg" && "h-3.5 w-3.5"
-              )} />
-            </span>
-          )}
-        </button>
-        
-        {tooltip && showTooltip && (
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 px-2 py-1 rounded bg-origen-oscuro text-white text-xs whitespace-nowrap shadow-lg">
-            {tooltip}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-origen-oscuro rotate-45" />
-          </div>
-        )}
-      </div>
-    );
-  }
-);
-
-InteractiveBadge.displayName = "InteractiveBadge";
-
-// ============================================================================
-// BADGES ESPECIALIZADOS
-// ============================================================================
-
-export interface ProductBadgeProps {
-  type: 'organic' | 'local' | 'fresh' | 'seasonal' | 'premium' | 'new' | 'trending';
-  size?: 'xs' | 'sm' | 'md' | 'lg';
-  interactive?: boolean;
-  className?: string;
-  onClick?: () => void;
-}
-
-export const ProductBadge = ({ 
-  type, 
-  size = 'sm', 
-  interactive = false,
-  className,
-  onClick 
-}: ProductBadgeProps) => {
-  const config = {
-    organic: { label: "Orgánico", variant: "leaf" as const, icon: <Leaf className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    local: { label: "Local", variant: "leaf" as const, icon: <MapPin className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    fresh: { label: "Fresco", variant: "leaf" as const, icon: <Sprout className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    seasonal: { label: "Temporada", variant: "fruit" as const, icon: <Star className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    premium: { label: "Premium", variant: "forest" as const, icon: <Award className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    new: { label: "Nuevo", variant: "seed" as const, icon: <Sparkles className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    trending: { label: "Tendencia", variant: "fruit" as const, icon: <TrendingUp className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> }
-  };
-
-  const { label, variant, icon } = config[type];
-
-  if (interactive) {
-    return (
-      <InteractiveBadge variant={variant} size={size} icon={icon} className={className} onClick={onClick}>
-        {label}
-      </InteractiveBadge>
-    );
-  }
-
-  return (
-    <Badge variant={variant} size={size} icon={icon} className={className}>
-      {label}
-    </Badge>
-  );
-};
+export type StatusType = 
+  // Estados de producto
+  | 'active' 
+  | 'inactive' 
+  | 'out_of_stock'
+  | 'draft'
+  | 'pending_approval'
+  // Estados de pedido
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  // Estados de verificación
+  | 'verified'
+  | 'pending_verification'
+  | 'approved'
+  | 'suspended'
+  // Estados genéricos
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'info';
 
 export interface StatusBadgeProps {
-  status: 'pending' | 'approved' | 'active' | 'inactive' | 'suspended' | 'verified' | 'pending_verification';
+  /** Estado a mostrar */
+  status: StatusType;
+  /** Tamaño del badge */
   size?: 'xs' | 'sm' | 'md' | 'lg';
-  interactive?: boolean;
+  /** Clase CSS adicional */
   className?: string;
-  onClick?: () => void;
 }
 
-export const StatusBadge = ({ 
-  status, 
-  size = 'sm', 
-  interactive = false,
-  className,
-  onClick 
-}: StatusBadgeProps) => {
-  const config = {
-    pending: { label: "Pendiente", variant: "warning" as const, icon: <Clock className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    approved: { label: "Aprobado", variant: "success" as const, icon: <CheckCircle className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    active: { label: "Activo", variant: "success" as const, icon: <ShieldCheck className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    inactive: { label: "Inactivo", variant: "outline" as const, icon: <X className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    suspended: { label: "Suspendido", variant: "error" as const, icon: <AlertCircle className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    verified: { label: "Verificado", variant: "success" as const, icon: <CheckCircle className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    pending_verification: { label: "Pendiente", variant: "warning" as const, icon: <Clock className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> }
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+
+/**
+ * Badge para mostrar estados con colores semánticos
+ * 
+ * @example
+ * <StatusBadge status="active" />
+ * <StatusBadge status="out_of_stock" size="sm" />
+ */
+export function StatusBadge({ status, size = 'md', className }: StatusBadgeProps) {
+  // Configuración de cada estado
+  const config: Record<StatusType, { label: string; icon: React.ReactNode; classes: string }> = {
+    // Estados de producto
+    active: {
+      label: 'Activo',
+      icon: <CheckCircle className="w-3 h-3" />,
+      classes: 'bg-green-50 text-green-700 border-green-200',
+    },
+    inactive: {
+      label: 'Inactivo',
+      icon: <Clock className="w-3 h-3" />,
+      classes: 'bg-gray-50 text-gray-600 border-gray-200',
+    },
+    out_of_stock: {
+      label: 'Sin stock',
+      icon: <AlertCircle className="w-3 h-3" />,
+      classes: 'bg-red-50 text-red-700 border-red-200',
+    },
+    draft: {
+      label: 'Borrador',
+      icon: <FileText className="w-3 h-3" />,
+      classes: 'bg-gray-50 text-gray-600 border-gray-200',
+    },
+    pending_approval: {
+      label: 'Pendiente aprobación',
+      icon: <Clock className="w-3 h-3" />,
+      classes: 'bg-amber-50 text-amber-700 border-amber-200',
+    },
+    // Estados de pedido
+    pending: {
+      label: 'Pendiente',
+      icon: <Clock className="w-3 h-3" />,
+      classes: 'bg-amber-50 text-amber-700 border-amber-200',
+    },
+    processing: {
+      label: 'Procesando',
+      icon: <Package className="w-3 h-3" />,
+      classes: 'bg-blue-50 text-blue-700 border-blue-200',
+    },
+    shipped: {
+      label: 'Enviado',
+      icon: <Package className="w-3 h-3" />,
+      classes: 'bg-purple-50 text-purple-700 border-purple-200',
+    },
+    delivered: {
+      label: 'Entregado',
+      icon: <CheckCircle className="w-3 h-3" />,
+      classes: 'bg-green-50 text-green-700 border-green-200',
+    },
+    cancelled: {
+      label: 'Cancelado',
+      icon: <XCircle className="w-3 h-3" />,
+      classes: 'bg-red-50 text-red-700 border-red-200',
+    },
+    // Estados de verificación
+    verified: {
+      label: 'Verificado',
+      icon: <CheckCircle className="w-3 h-3" />,
+      classes: 'bg-green-50 text-green-700 border-green-200',
+    },
+    pending_verification: {
+      label: 'Pendiente verificación',
+      icon: <Clock className="w-3 h-3" />,
+      classes: 'bg-amber-50 text-amber-700 border-amber-200',
+    },
+    approved: {
+      label: 'Aprobado',
+      icon: <CheckCircle className="w-3 h-3" />,
+      classes: 'bg-green-50 text-green-700 border-green-200',
+    },
+    suspended: {
+      label: 'Suspendido',
+      icon: <AlertCircle className="w-3 h-3" />,
+      classes: 'bg-red-50 text-red-700 border-red-200',
+    },
+    // Estados genéricos
+    success: {
+      label: 'Éxito',
+      icon: <CheckCircle className="w-3 h-3" />,
+      classes: 'bg-green-50 text-green-700 border-green-200',
+    },
+    warning: {
+      label: 'Advertencia',
+      icon: <AlertCircle className="w-3 h-3" />,
+      classes: 'bg-amber-50 text-amber-700 border-amber-200',
+    },
+    error: {
+      label: 'Error',
+      icon: <XCircle className="w-3 h-3" />,
+      classes: 'bg-red-50 text-red-700 border-red-200',
+    },
+    info: {
+      label: 'Información',
+      icon: <Clock className="w-3 h-3" />,
+      classes: 'bg-blue-50 text-blue-700 border-blue-200',
+    },
   };
 
-  const { label, variant, icon } = config[status];
+  const { label, icon, classes } = config[status] || config.info;
 
-  if (interactive) {
-    return (
-      <InteractiveBadge variant={variant} size={size} icon={icon} className={className} onClick={onClick}>
-        {label}
-      </InteractiveBadge>
-    );
-  }
+  // Tamaños
+  const sizeClasses = {
+    xs: 'px-1.5 py-0.5 text-[10px] gap-1',
+    sm: 'px-2 py-1 text-xs gap-1',
+    md: 'px-2.5 py-1 text-xs gap-1.5',
+    lg: 'px-3 py-1.5 text-sm gap-1.5',
+  };
 
   return (
-    <Badge variant={variant} size={size} icon={icon} className={className}>
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full border font-medium',
+        sizeClasses[size],
+        classes,
+        className
+      )}
+    >
+      {icon}
       {label}
-    </Badge>
+    </span>
   );
-};
-
-export interface ShippingBadgeProps {
-  type: 'express' | 'free' | 'standard' | 'pickup';
-  size?: 'xs' | 'sm' | 'md' | 'lg';
-  interactive?: boolean;
-  className?: string;
-  onClick?: () => void;
 }
 
-export const ShippingBadge = ({ 
-  type, 
-  size = 'sm', 
-  interactive = false,
-  className,
-  onClick 
-}: ShippingBadgeProps) => {
-  const config = {
-    express: { label: "Express", variant: "forest" as const, icon: <Truck className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    free: { label: "Gratis", variant: "success" as const, icon: <Truck className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    standard: { label: "Estándar", variant: "outline" as const, icon: <Truck className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> },
-    pickup: { label: "Recogida", variant: "leaf" as const, icon: <Package className={cn(size === "xs" ? "h-2.5 w-2.5" : size === "sm" ? "h-3 w-3" : "h-3.5 w-3.5")} /> }
+// ============================================================================
+// BADGE SIMPLE (para otros usos)
+// ============================================================================
+
+export interface BadgeProps {
+  /** Texto del badge */
+  children: React.ReactNode;
+  /** Variante de color */
+  variant?: 'default' | 'leaf' | 'success' | 'warning' | 'destructive' | 'outline';
+  /** Tamaño del badge */
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  /** Clase CSS adicional */
+  className?: string;
+  /** Icono opcional */
+  icon?: React.ReactNode;
+}
+
+/**
+ * Badge genérico para otros usos
+ * 
+ * @example
+ * <Badge variant="leaf">Nuevo</Badge>
+ * <Badge variant="success" icon={<CheckCircle className="w-3 h-3" />}>Completado</Badge>
+ */
+export function Badge({ 
+  children, 
+  variant = 'default', 
+  size = 'md', 
+  icon,
+  className 
+}: BadgeProps) {
+  const variants = {
+    default: 'bg-origen-pradera/10 text-origen-bosque border-origen-pradera/30',
+    leaf: 'bg-origen-pastel text-origen-hoja border-origen-pradera/30',
+    success: 'bg-green-50 text-green-700 border-green-200',
+    warning: 'bg-amber-50 text-amber-700 border-amber-200',
+    destructive: 'bg-red-50 text-red-700 border-red-200',
+    outline: 'bg-transparent text-gray-600 border-gray-200',
   };
 
-  const { label, variant, icon } = config[type];
-
-  if (interactive) {
-    return (
-      <InteractiveBadge variant={variant} size={size} icon={icon} className={className} onClick={onClick}>
-        {label}
-      </InteractiveBadge>
-    );
-  }
+  const sizeClasses = {
+    xs: 'px-1.5 py-0.5 text-[10px] gap-1',
+    sm: 'px-2 py-1 text-xs gap-1',
+    md: 'px-2.5 py-1.5 text-xs gap-1.5',
+    lg: 'px-3 py-2 text-sm gap-1.5',
+  };
 
   return (
-    <Badge variant={variant} size={size} icon={icon} className={className}>
-      {label}
-    </Badge>
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full border font-medium',
+        sizeClasses[size],
+        variants[variant],
+        className
+      )}
+    >
+      {icon && <span className="shrink-0">{icon}</span>}
+      {children}
+    </span>
   );
-};
-
-// ============================================================================
-// EXPORT
-// ============================================================================
-
-export { 
-  Badge, 
-  InteractiveBadge,
-  badgeVariants 
-};
-
-// Iconos necesarios
-import { 
-  Leaf, 
-  MapPin, 
-  Sprout, 
-  Star, 
-  Award, 
-  Sparkles, 
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  ShieldCheck,
-  AlertCircle,
-  Truck,
-  Package
-} from 'lucide-react';
+}

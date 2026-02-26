@@ -1,9 +1,6 @@
 /**
  * @component DashboardFooter
  * @description Pie de página del dashboard con enlaces y métricas
- * 
- * @data-services
- * - GET /api/stats/global - Obtener estadísticas globales (productores totales, etc.)
  */
 
 'use client';

@@ -1,12 +1,14 @@
 /**
  * @file percentage-input.tsx
- * @description Input con formato de porcentaje
+ * @description Input de porcentaje premium - 100% responsive
+ * @version 2.0.0 - Paleta oficial Origen
  */
 
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Percent, Info } from "lucide-react";
 
 export interface PercentageInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
@@ -15,9 +17,11 @@ export interface PercentageInputProps
   label?: string;
   error?: string;
   helperText?: string;
-  icon?: React.ReactNode;
+  tooltip?: string;
   min?: number;
   max?: number;
+  required?: boolean;
+  showProgress?: boolean;
 }
 
 const PercentageInput = React.forwardRef<HTMLInputElement, PercentageInputProps>(
@@ -28,20 +32,32 @@ const PercentageInput = React.forwardRef<HTMLInputElement, PercentageInputProps>
     label, 
     error, 
     helperText, 
-    icon,
+    tooltip,
     min = 0,
     max = 100,
     disabled,
+    required,
+    showProgress = true,
     id,
+    placeholder = "0",
     ...props 
   }, ref) => {
     const [displayValue, setDisplayValue] = React.useState(
       value ? value.toString() : ''
     );
+    const [isFocused, setIsFocused] = React.useState(false);
     const inputId = id || React.useId();
+    const errorId = `${inputId}-error`;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const rawValue = e.target.value.replace(/[^\d.-]/g, '');
+      
+      if (rawValue === '') {
+        setDisplayValue('');
+        onChange(0);
+        return;
+      }
+
       const numericValue = parseFloat(rawValue);
       
       if (isNaN(numericValue)) {
@@ -58,25 +74,59 @@ const PercentageInput = React.forwardRef<HTMLInputElement, PercentageInputProps>
       onChange(clampedValue);
     };
 
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      if (displayValue === '') {
+        setDisplayValue('0');
+        onChange(0);
+      }
+      props.onBlur?.(e);
+    };
+
+    const percentage = ((value - min) / (max - min)) * 100;
+
     return (
-      <div className="w-full space-y-2">
-        {label && (
-          <label
-            htmlFor={inputId}
-            className={cn(
-              "block text-sm font-medium text-origen-bosque",
-              error && "text-red-600"
+      <div className="w-full space-y-1.5 sm:space-y-2">
+        {/* Label con tooltip */}
+        {(label || tooltip) && (
+          <div className="flex items-center gap-2">
+            {label && (
+              <label
+                htmlFor={inputId}
+                className={cn(
+                  "text-xs sm:text-sm font-medium text-origen-bosque",
+                  disabled && "opacity-50 cursor-not-allowed",
+                  error && "text-red-600"
+                )}
+              >
+                {label}
+                {required && (
+                  <span className="text-red-500 ml-1" aria-label="requerido">
+                    *
+                  </span>
+                )}
+              </label>
             )}
-          >
-            {label}
-          </label>
+            
+            {tooltip && (
+              <div className="group relative">
+                <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-400 cursor-help" />
+                <div 
+                  className={cn(
+                    "absolute left-0 top-4 sm:top-5 z-50 hidden group-hover:block",
+                    "w-40 sm:w-48 p-2 rounded-lg bg-origen-oscuro text-white text-[10px] sm:text-xs",
+                    "shadow-lg animate-in fade-in-0 zoom-in-95"
+                  )}
+                >
+                  {tooltip}
+                  <div className="absolute -top-1 left-2 w-1.5 h-1.5 bg-origen-oscuro rotate-45" />
+                </div>
+              </div>
+            )}
+          </div>
         )}
+
         <div className="relative">
-          {icon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              {icon}
-            </div>
-          )}
           <input
             ref={ref}
             id={inputId}
@@ -84,26 +134,68 @@ const PercentageInput = React.forwardRef<HTMLInputElement, PercentageInputProps>
             inputMode="decimal"
             value={displayValue}
             onChange={handleChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={handleBlur}
             disabled={disabled}
+            placeholder={placeholder}
+            aria-invalid={!!error}
+            aria-describedby={error ? errorId : undefined}
             className={cn(
-              "flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm",
-              "placeholder:text-gray-400",
-              "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2",
-              "disabled:cursor-not-allowed disabled:opacity-50",
-              icon ? "pl-9" : "pl-3",
-              "pr-8", // Espacio para el %
-              error && "border-red-500 focus:ring-red-500/50",
+              "flex h-9 sm:h-10 w-full rounded-xl border bg-white px-3 py-2 pr-8 sm:pr-9",
+              "text-sm sm:text-base placeholder:text-gray-400",
+              "transition-all duration-200",
+              "focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+              "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
+              
+              error
+                ? "border-red-500 hover:border-red-600 focus:ring-red-500/50"
+                : cn(
+                    "border-origen-pradera/30",
+                    "hover:border-origen-hoja",
+                    isFocused && "border-origen-pradera"
+                  ),
+              
               className
             )}
             {...props}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+          
+          <Percent className={cn(
+            "absolute right-3 top-1/2 -translate-y-1/2",
+            "h-3.5 w-3.5 sm:h-4 sm:w-4",
+            isFocused ? "text-origen-pradera" : "text-gray-400",
+            error && "text-red-500"
+          )} />
         </div>
-        {error && (
-          <p className="text-xs text-red-600">{error}</p>
+
+        {/* Barra de progreso visual */}
+        {showProgress && !error && value > 0 && (
+          <div className="relative h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div 
+              className={cn(
+                "absolute left-0 top-0 h-full transition-all duration-300",
+                value >= 90 ? "bg-amber-500" : "bg-origen-pradera"
+              )}
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
         )}
+
+        {/* Mensajes de ayuda/error */}
+        {error && (
+          <p 
+            id={errorId}
+            className="text-[10px] sm:text-xs text-red-600"
+            role="alert"
+          >
+            {error}
+          </p>
+        )}
+        
         {helperText && !error && (
-          <p className="text-xs text-gray-500">{helperText}</p>
+          <p className="text-[10px] sm:text-xs text-gray-500">
+            {helperText}
+          </p>
         )}
       </div>
     );

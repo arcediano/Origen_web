@@ -1,240 +1,222 @@
 /**
  * @file image-uploader.tsx
- * @description Componente para subida de imágenes con guía de formato
+ * @description Componente para subir imágenes - USA EL MISMO TIPO ProductImage
  */
 
-"use client";
+'use client';
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Upload, X, Image as ImageIcon, Info, Star } from "lucide-react";
+import React, { useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { cn } from '@/lib/utils';
+import { Upload, X, Image as ImageIcon, Star, Loader2 } from 'lucide-react';
+import { type ProductImage } from '@/types/product';
 
-export interface ImageFile {
-  id: string;
-  file: File;
-  preview: string;
-  isMain?: boolean;
-  sortOrder: number;
-}
+// ============================================================================
+// TIPOS
+// ============================================================================
 
 export interface ImageUploaderProps {
-  value: ImageFile[];
-  onChange: (files: ImageFile[]) => void;
+  /** Array de imágenes (usa el mismo tipo que el producto) */
+  value: ProductImage[];
+  /** Callback cuando cambian las imágenes */
+  onChange: (images: ProductImage[]) => void;
+  /** Número máximo de archivos */
   maxFiles?: number;
-  maxSize?: number; // en MB
-  recommendedSize?: string;
-  acceptedFormats?: string[];
-  label?: string;
-  description?: string;
-  error?: string;
-  className?: string;
+  /** Tamaño máximo por archivo en MB */
+  maxSize?: number;
+  /** Mostrar badge de imagen principal */
   showMainBadge?: boolean;
-  seoNote?: string;
+  /** Texto del botón de subida */
+  uploadButtonText?: string;
+  /** Clase CSS adicional */
+  className?: string;
+  /** Aceptar solo imágenes */
+  accept?: Record<string, string[]>;
 }
 
-const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(
-  ({ 
-    value = [], 
-    onChange,
-    maxFiles = 10,
-    maxSize = 5,
-    recommendedSize = "1200x1200px",
-    acceptedFormats = ["jpg", "jpeg", "png", "webp"],
-    label = "Imágenes del producto",
-    description,
-    error,
-    className,
-    showMainBadge = true,
-    seoNote = "Las imágenes que cumplen con las recomendaciones de formato y tamaño tienen mayor probabilidad de aparecer en las primeras posiciones de búsqueda.",
-  }, ref) => {
-    const [isDragging, setIsDragging] = React.useState(false);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
 
-    const handleFileSelect = (files: FileList | null) => {
-      if (!files) return;
+export function ImageUploader({
+  value = [],
+  onChange,
+  maxFiles = 5,
+  maxSize = 10,
+  showMainBadge = true,
+  uploadButtonText = "Arrastra o haz clic para subir imágenes",
+  className,
+  accept = {
+    'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif']
+  }
+}: ImageUploaderProps) {
+  
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const newImages: ProductImage[] = acceptedFiles.map((file, index) => ({
+      id: `temp-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 7)}`,
+      url: URL.createObjectURL(file),
+      file,
+      isMain: value.length === 0 && index === 0,
+      sortOrder: value.length + index,
+      uploading: false,
+      progress: 0,
+      size: file.size,
+      type: file.type,
+    }));
 
-      const newFiles: ImageFile[] = [];
-      const currentCount = value.length;
+    onChange([...value, ...newImages]);
+  }, [value, onChange]);
 
-      for (let i = 0; i < files.length; i++) {
-        if (currentCount + newFiles.length >= maxFiles) break;
-        
-        const file = files[i];
-        
-        // Validar tamaño
-        if (file.size > maxSize * 1024 * 1024) continue;
-        
-        // Validar formato
-        const extension = file.name.split('.').pop()?.toLowerCase();
-        if (!extension || !acceptedFormats.includes(extension)) continue;
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept,
+    maxFiles: maxFiles - value.length,
+    maxSize: maxSize * 1024 * 1024,
+    disabled: value.length >= maxFiles,
+  });
 
-        newFiles.push({
-          id: Math.random().toString(36).substring(2, 11),
-          file,
-          preview: URL.createObjectURL(file),
-          sortOrder: value.length + newFiles.length,
-        });
+  const handleRemove = (id: string) => {
+    const imageToRemove = value.find(img => img.id === id);
+    if (imageToRemove?.url.startsWith('blob:')) {
+      URL.revokeObjectURL(imageToRemove.url);
+    }
+    onChange(value.filter(img => img.id !== id));
+  };
+
+  const handleSetMain = (id: string) => {
+    onChange(value.map(img => ({
+      ...img,
+      isMain: img.id === id,
+    })));
+  };
+
+  const handleCaptionChange = (id: string, caption: string) => {
+    onChange(value.map(img => 
+      img.id === id ? { ...img, caption } : img
+    ));
+  };
+
+  // Función para simular subida (solo para demostración)
+  const simulateUpload = (id: string) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      
+      // CORREGIDO: Usamos value.map en lugar de onChange con función
+      const updatedImages = value.map(img => 
+        img.id === id ? { ...img, uploading: true, progress } : img
+      );
+      onChange(updatedImages);
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        const completedImages = value.map(img => 
+          img.id === id ? { ...img, uploading: false, progress: 100 } : img
+        );
+        onChange(completedImages);
       }
+    }, 200);
+  };
 
-      onChange([...value, ...newFiles]);
-    };
-
-    const handleRemove = (id: string) => {
-      const newFiles = value.filter(f => f.id !== id);
-      // Reordenar sortOrder
-      newFiles.forEach((file, index) => {
-        file.sortOrder = index;
-      });
-      onChange(newFiles);
-    };
-
-    const handleSetMain = (id: string) => {
-      const newFiles = value.map(file => ({
-        ...file,
-        isMain: file.id === id,
-      }));
-      onChange(newFiles);
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(true);
-    };
-
-    const handleDragLeave = () => {
-      setIsDragging(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-      handleFileSelect(e.dataTransfer.files);
-    };
-
-    return (
-      <div ref={ref} className={cn("w-full space-y-4", className)}>
-        {/* Cabecera */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="text-sm font-medium text-origen-bosque">{label}</h3>
-            {description && (
-              <p className="text-xs text-gray-500 mt-1">{description}</p>
-            )}
-          </div>
-          <Badge variant="outline" size="sm" className="bg-orange-50 text-orange-700 border-orange-200">
-            {value.length}/{maxFiles}
-          </Badge>
-        </div>
-
-        {/* Nota SEO */}
-        <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-200 flex items-start gap-2">
-          <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-blue-700">
-            <span className="font-medium">Consejo SEO:</span> {seoNote}
+  return (
+    <div className={cn('space-y-4', className)}>
+      {/* Dropzone */}
+      <div
+        {...getRootProps()}
+        className={cn(
+          'border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer',
+          isDragActive 
+            ? 'border-origen-pradera bg-origen-pradera/5' 
+            : 'border-gray-200 hover:border-origen-pradera/50 hover:bg-gray-50',
+          value.length >= maxFiles && 'opacity-50 cursor-not-allowed'
+        )}
+      >
+        <input {...getInputProps()} />
+        <div className="flex flex-col items-center text-center">
+          <Upload className="w-8 h-8 text-gray-400 mb-2" />
+          <p className="text-sm font-medium text-gray-700">
+            {isDragActive ? 'Suelta las imágenes aquí' : uploadButtonText}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            PNG, JPG, WebP hasta {maxSize}MB
+          </p>
+          <p className="text-xs text-gray-400 mt-2">
+            {value.length} de {maxFiles} imágenes
           </p>
         </div>
+      </div>
 
-        {/* Grid de imágenes */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {value.map((image, index) => (
+      {/* Grid de imágenes */}
+      {value.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {value.map((image) => (
             <div
               key={image.id}
-              className={cn(
-                "relative aspect-square rounded-lg border-2 overflow-hidden group",
-                image.isMain ? "border-origen-pradera ring-2 ring-origen-pradera/20" : "border-gray-200"
-              )}
+              className="relative group aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50"
             >
-              <img
-                src={image.preview}
-                alt={`Producto ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-              
-              {/* Overlay de acciones */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              {/* Imagen */}
+              {image.url ? (
+                <img
+                  src={image.url}
+                  alt={image.alt || 'Producto'}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-gray-300" />
+                </div>
+              )}
+
+              {/* Overlay con acciones */}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                 {showMainBadge && !image.isMain && (
                   <button
                     onClick={() => handleSetMain(image.id)}
-                    className="w-8 h-8 bg-white rounded-lg flex items-center justify-center hover:bg-origen-crema transition-colors"
-                    title="Establecer como principal"
+                    className="p-1.5 bg-white rounded-lg hover:bg-origen-crema transition-colors"
+                    title="Marcar como principal"
                   >
-                    <Star className="w-4 h-4 text-gray-700" />
+                    <Star className="w-4 h-4 text-gray-600" />
                   </button>
                 )}
                 <button
                   onClick={() => handleRemove(image.id)}
-                  className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors"
+                  className="p-1.5 bg-white rounded-lg hover:bg-red-50 transition-colors"
+                  title="Eliminar"
                 >
-                  <X className="w-4 h-4 text-white" />
+                  <X className="w-4 h-4 text-red-500" />
                 </button>
               </div>
 
-              {/* Badge de principal */}
-              {image.isMain && (
-                <div className="absolute top-2 left-2">
-                  <Badge variant="success" size="xs" className="bg-origen-pradera text-white border-0">
-                    Principal
-                  </Badge>
+              {/* Badge de imagen principal */}
+              {showMainBadge && image.isMain && (
+                <div className="absolute top-1 left-1 bg-origen-pradera text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-white" />
+                  Principal
                 </div>
               )}
 
-              {/* Badge de orden */}
-              <div className="absolute bottom-2 right-2">
-                <div className="w-6 h-6 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-xs font-medium text-gray-700">
-                  {index + 1}
+              {/* Indicador de subida */}
+              {image.uploading && (
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-gray-200">
+                  <div 
+                    className="h-full bg-origen-pradera transition-all duration-300"
+                    style={{ width: `${image.progress || 0}%` }}
+                  />
                 </div>
-              </div>
+              )}
+
+              {/* Input para caption */}
+              <input
+                type="text"
+                value={image.caption || ''}
+                onChange={(e) => handleCaptionChange(image.id, e.target.value)}
+                placeholder="Añadir título..."
+                className="absolute bottom-0 inset-x-0 p-1 text-[10px] bg-white/90 border-t border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
             </div>
           ))}
-
-          {/* Botón de añadir */}
-          {value.length < maxFiles && (
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={cn(
-                "aspect-square rounded-lg border-2 border-dashed transition-all",
-                "flex flex-col items-center justify-center gap-2",
-                isDragging
-                  ? "border-origen-pradera bg-origen-pradera/5"
-                  : "border-gray-200 hover:border-origen-pradera hover:bg-gray-50"
-              )}
-            >
-              <Upload className="w-6 h-6 text-gray-400" />
-              <span className="text-xs text-gray-500">Subir imagen</span>
-            </button>
-          )}
         </div>
-
-        {/* Input oculto */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={acceptedFormats.map(f => `.${f}`).join(',')}
-          multiple
-          className="hidden"
-          onChange={(e) => handleFileSelect(e.target.files)}
-        />
-
-        {/* Guía de formato */}
-        <div className="p-3 bg-gray-50/50 rounded-lg text-xs text-gray-500">
-          <p className="font-medium mb-1">Formatos aceptados:</p>
-          <p>{acceptedFormats.join(', ').toUpperCase()} • Máx {maxSize}MB por imagen</p>
-          <p className="mt-1">Tamaño recomendado: {recommendedSize}</p>
-        </div>
-
-        {error && (
-          <p className="text-xs text-red-600">{error}</p>
-        )}
-      </div>
-    );
-  }
-);
-
-ImageUploader.displayName = "ImageUploader";
-
-export { ImageUploader };
+      )}
+    </div>
+  );
+}

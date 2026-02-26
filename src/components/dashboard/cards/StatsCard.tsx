@@ -1,101 +1,92 @@
 /**
- * @component StatsCard
- * @description Tarjeta de estadísticas para el dashboard
- * @version 1.0.0
+ * @file StatsCard.tsx
+ * @description Tarjeta de estadísticas - ESTILO EXACTO DE BENEFITSSECTION
  */
 
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Card } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface StatsCardProps {
-  title: string;
+  label: string;
   value: string | number;
-  icon: React.ElementType;
+  sublabel?: string;
   trend?: {
     value: number;
     isPositive: boolean;
-    label?: string;
   };
-  color?: 'default' | 'green' | 'blue' | 'amber' | 'purple';
+  icon: React.ElementType;
+  gradient?: string;
   className?: string;
 }
 
 export function StatsCard({
-  title,
+  label,
   value,
-  icon: Icon,
+  sublabel,
   trend,
-  color = 'default',
+  icon: Icon,
+  gradient = 'from-origen-pradera to-origen-hoja',
   className
 }: StatsCardProps) {
-  const colorClasses = {
-    default: {
-      bg: 'bg-origen-pradera/10',
-      text: 'text-origen-pradera',
-      icon: 'text-origen-pradera'
-    },
-    green: {
-      bg: 'bg-green-100',
-      text: 'text-green-700',
-      icon: 'text-green-600'
-    },
-    blue: {
-      bg: 'bg-blue-100',
-      text: 'text-blue-700',
-      icon: 'text-blue-600'
-    },
-    amber: {
-      bg: 'bg-amber-100',
-      text: 'text-amber-700',
-      icon: 'text-amber-600'
-    },
-    purple: {
-      bg: 'bg-purple-100',
-      text: 'text-purple-700',
-      icon: 'text-purple-600'
-    }
-  };
-
   return (
-    <Card className={cn(
-      "p-5 border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all",
-      className
-    )}>
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <p className="text-xs text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-origen-bosque">{value}</p>
+    <div className="group relative">
+      {/* EFECTO EXACTO DE BENEFITSSECTION */}
+      <div className={cn(
+        "absolute inset-0 rounded-2xl transition-transform duration-300",
+        "bg-gradient-to-br from-origen-pradera/5 to-origen-hoja/5",
+        "group-hover:scale-[1.02]"
+      )}></div>
+      
+      <div className={cn(
+        "relative bg-white rounded-2xl p-6 border border-gray-200",
+        "shadow-lg group-hover:shadow-xl group-hover:border-origen-pradera",
+        "transition-all duration-300",
+        className
+      )}>
+        <div className="flex items-start gap-4">
+          {/* Icono circular */}
+          <div className={cn(
+            "w-14 h-14 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0 shadow-md",
+            gradient
+          )}>
+            <Icon className="w-7 h-7 text-white" />
+          </div>
           
-          {trend && (
-            <div className="flex items-center gap-1.5">
-              <div className={cn(
-                "flex items-center gap-0.5 text-xs font-medium",
-                trend.isPositive ? "text-green-600" : "text-red-600"
-              )}>
-                {trend.isPositive ? (
-                  <TrendingUp className="w-3.5 h-3.5" />
-                ) : (
-                  <TrendingDown className="w-3.5 h-3.5" />
-                )}
-                <span>{trend.value}%</span>
-              </div>
-              {trend.label && (
-                <span className="text-xs text-gray-500">{trend.label}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
+            
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-origen-bosque">
+                {value}
+              </span>
+              {sublabel && (
+                <span className="text-sm text-gray-500">{sublabel}</span>
               )}
             </div>
-          )}
-        </div>
-        
-        <div className={cn(
-          "w-10 h-10 rounded-lg flex items-center justify-center",
-          colorClasses[color].bg
-        )}>
-          <Icon className={cn("w-5 h-5", colorClasses[color].icon)} />
+            
+            {trend && (
+              <div className="flex items-center gap-2 mt-3">
+                <div className={cn(
+                  "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium",
+                  trend.isPositive 
+                    ? "bg-green-50 text-green-700 border border-green-200" 
+                    : "bg-red-50 text-red-700 border border-red-200"
+                )}>
+                  {trend.isPositive ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
+                  <span>{trend.value}%</span>
+                </div>
+                <span className="text-xs text-gray-400">vs ayer</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

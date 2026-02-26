@@ -1,6 +1,6 @@
 /**
  * @file StatusBanner.tsx
- * @description Banner de estado flotante ultra compacto en la parte inferior derecha
+ * @description Banner de estado flotante ultra compacto - 100% responsive
  */
 
 'use client';
@@ -51,7 +51,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-blue-200',
       text: 'text-blue-800',
       textLight: 'text-blue-600',
-      icon: <Clock className="w-3.5 h-3.5 text-blue-600" />,
+      icon: <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600" />,
       title: 'Solicitud en revisión',
     },
     rejected: {
@@ -59,7 +59,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-red-200',
       text: 'text-red-800',
       textLight: 'text-red-600',
-      icon: <XCircle className="w-3.5 h-3.5 text-red-600" />,
+      icon: <XCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600" />,
       title: 'Solicitud no aprobada',
     },
     approved_access: {
@@ -67,7 +67,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-green-200',
       text: 'text-green-800',
       textLight: 'text-green-600',
-      icon: <Rocket className="w-3.5 h-3.5 text-green-600" />,
+      icon: <Rocket className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600" />,
       title: '¡Bienvenido!',
     },
     onboarding_in_progress: {
@@ -75,7 +75,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-yellow-200',
       text: 'text-yellow-800',
       textLight: 'text-yellow-600',
-      icon: <AlertCircle className="w-3.5 h-3.5 text-yellow-600" />,
+      icon: <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-yellow-600" />,
       title: 'Perfil incompleto',
     },
     pending_verification: {
@@ -83,7 +83,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-purple-200',
       text: 'text-purple-800',
       textLight: 'text-purple-600',
-      icon: <FileText className="w-3.5 h-3.5 text-purple-600" />,
+      icon: <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-600" />,
       title: 'Documentación',
     },
     suspended: {
@@ -91,7 +91,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-orange-200',
       text: 'text-orange-800',
       textLight: 'text-orange-600',
-      icon: <Pause className="w-3.5 h-3.5 text-orange-600" />,
+      icon: <Pause className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600" />,
       title: 'Cuenta suspendida',
     },
     deactivated: {
@@ -99,7 +99,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
       border: 'border-gray-200',
       text: 'text-gray-800',
       textLight: 'text-gray-600',
-      icon: <XCircle className="w-3.5 h-3.5 text-gray-600" />,
+      icon: <XCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-600" />,
       title: 'Cuenta desactivada',
     },
   };
@@ -114,7 +114,9 @@ export function StatusBanner({ status, details, className, dismissible = true }:
 
   return (
     <div className={cn(
-      "fixed bottom-4 right-4 z-50 max-w-xs w-full animate-in slide-in-from-bottom-5 fade-in duration-300",
+      "fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-50",
+      "w-[calc(100%-1rem)] sm:max-w-xs",
+      "animate-in slide-in-from-bottom-5 fade-in duration-300",
       className
     )}>
       <div className={cn(
@@ -136,25 +138,25 @@ export function StatusBanner({ status, details, className, dismissible = true }:
         {dismissible && (
           <button
             onClick={() => setIsVisible(false)}
-            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Cerrar"
           >
-            <X className="w-3 h-3" />
+            <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
           </button>
         )}
 
-        <div className="p-3 pr-7">
-          <div className="flex items-center gap-2">
-            {/* Icono ultra pequeño */}
+        <div className="p-2 sm:p-3 pr-6 sm:pr-7">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Icono */}
             <div className="flex-shrink-0">
               {variant.icon}
             </div>
 
             {/* Contenido compacto */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                 <h4 className={cn(
-                  "text-xs font-medium truncate",
+                  "text-[10px] sm:text-xs font-medium truncate",
                   variant.text
                 )}>
                   {variant.title}
@@ -162,7 +164,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
                 
                 {/* Indicador de progreso mini */}
                 {showProgress && (
-                  <span className="text-[9px] text-purple-600 font-medium whitespace-nowrap">
+                  <span className="text-[8px] sm:text-[9px] text-purple-600 font-medium whitespace-nowrap">
                     {details.documentsVerified}/{details.totalDocuments}
                   </span>
                 )}
@@ -170,7 +172,7 @@ export function StatusBanner({ status, details, className, dismissible = true }:
 
               {/* Barra de progreso ultra mini */}
               {showProgress && (
-                <div className="mt-1 w-full h-1 bg-purple-100 rounded-full overflow-hidden">
+                <div className="mt-0.5 sm:mt-1 w-full h-0.5 sm:h-1 bg-purple-100 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-purple-400 rounded-full transition-all duration-500"
                     style={{ width: `${progress}%` }}
@@ -183,13 +185,13 @@ export function StatusBanner({ status, details, className, dismissible = true }:
                 <Link
                   href={config.nextAction.href}
                   className={cn(
-                    "inline-flex items-center gap-0.5 text-[9px] font-medium mt-1",
+                    "inline-flex items-center gap-0.5 text-[8px] sm:text-[9px] font-medium mt-0.5 sm:mt-1",
                     "hover:underline",
                     variant.textLight
                   )}
                 >
                   {config.nextAction.label}
-                  <ArrowRight className="w-2.5 h-2.5" />
+                  <ArrowRight className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
                 </Link>
               )}
             </div>

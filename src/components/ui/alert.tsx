@@ -1,7 +1,7 @@
 /**
  * @file alert.tsx
- * @description Componente Alert con diseño orgánico - CORREGIDO v3.0.2
- * @version 3.0.2 - Eliminados todos los usos de Menta (#06D6A0)
+ * @description Alertas premium con diseño orgánico - 100% responsive
+ * @version 4.0.1 - CORREGIDO: Añadido AlertWithIcon
  */
 
 "use client";
@@ -39,12 +39,12 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
 // ============================================================================
 
 const variantIcons = {
-  default: <Leaf className="h-5 w-5" />,
-  success: <CheckCircle className="h-5 w-5" />,
-  warning: <AlertTriangle className="h-5 w-5" />,
-  error: <AlertCircle className="h-5 w-5" />,
-  info: <Info className="h-5 w-5" />,
-  organic: <Sprout className="h-5 w-5" />,
+  default: <Info className="h-4 w-4 sm:h-5 sm:w-5" />,
+  success: <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />,
+  warning: <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5" />,
+  error: <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />,
+  info: <Info className="h-4 w-4 sm:h-5 sm:w-5" />,
+  organic: <Leaf className="h-4 w-4 sm:h-5 sm:w-5" />,
 };
 
 // ============================================================================
@@ -79,24 +79,23 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     if (!isVisible) return null;
 
     const variantClasses = {
-      default: "bg-gradient-to-br from-origen-crema to-white border border-origen-pradera/30 text-origen-bosque [&>svg]:text-origen-hoja",
-      success: "bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 text-green-900 [&>svg]:text-green-600",
-      warning: "bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 text-amber-900 [&>svg]:text-amber-600",
-      error: "bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 text-red-900 [&>svg]:text-red-600",
-      info: "bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 text-blue-900 [&>svg]:text-blue-600",
-      // CORREGIDO: Eliminado Menta, usando Verde Pradera
+      default: "bg-origen-crema border border-origen-pradera/30 text-origen-bosque [&>svg]:text-origen-hoja",
+      success: "bg-green-50 border border-green-200 text-green-900 [&>svg]:text-green-600",
+      warning: "bg-amber-50 border border-amber-200 text-amber-900 [&>svg]:text-amber-600",
+      error: "bg-red-50 border border-red-200 text-red-900 [&>svg]:text-red-600",
+      info: "bg-blue-50 border border-blue-200 text-blue-900 [&>svg]:text-blue-600",
       organic: "bg-gradient-to-br from-origen-pastel to-origen-crema border-2 border-origen-pradera/30 text-origen-oscuro [&>svg]:text-origen-pradera shadow-lg shadow-origen-pradera/10",
     };
 
     const sizeClasses = {
-      sm: "p-3 text-sm [&>svg]:h-4 [&>svg]:w-4",
-      md: "p-4 text-base [&>svg]:h-5 [&>svg]:w-5",
-      lg: "p-5 text-lg [&>svg]:h-6 [&>svg]:w-6",
+      sm: "p-3 text-xs sm:text-sm [&>svg]:h-4 [&>svg]:w-4",
+      md: "p-4 text-sm sm:text-base [&>svg]:h-5 [&>svg]:w-5",
+      lg: "p-5 text-base sm:text-lg [&>svg]:h-6 [&>svg]:w-6",
     };
 
     const positionClasses = {
-      top: "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg",
-      bottom: "fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg",
+      top: "fixed top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-full max-w-lg",
+      bottom: "fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] sm:w-full max-w-lg",
       inline: "relative w-full",
     };
 
@@ -115,13 +114,13 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       <div
         ref={ref}
         className={cn(
-          "relative rounded-2xl",
+          "relative rounded-xl sm:rounded-2xl",
           "transition-all duration-300 ease-out",
           "shadow-md backdrop-blur-sm",
-          "flex items-start gap-3",
-          dismissible && alertSize === "sm" && "pr-10",
-          dismissible && alertSize === "md" && "pr-12",
-          dismissible && alertSize === "lg" && "pr-14",
+          "flex items-start gap-2 sm:gap-3",
+          dismissible && alertSize === "sm" && "pr-10 sm:pr-12",
+          dismissible && alertSize === "md" && "pr-12 sm:pr-14",
+          dismissible && alertSize === "lg" && "pr-14 sm:pr-16",
           variantClasses[variant],
           sizeClasses[alertSize],
           positionClasses[position],
@@ -166,31 +165,28 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
             type="button"
             onClick={handleDismiss}
             className={cn(
-              "absolute right-3 top-3 rounded-lg p-1.5",
+              "absolute right-2 sm:right-3 top-2 sm:top-3 rounded-lg p-1.5",
               "opacity-70 hover:opacity-100 transition-all",
               "focus:outline-none focus:ring-2 focus:ring-offset-2",
-              // CORREGIDO: Eliminado Menta de focus rings
               variant === "default" && "hover:bg-origen-pradera/20 focus:ring-origen-pradera",
               variant === "success" && "hover:bg-green-200/50 focus:ring-green-500",
               variant === "warning" && "hover:bg-amber-200/50 focus:ring-amber-500",
               variant === "error" && "hover:bg-red-200/50 focus:ring-red-500",
               variant === "info" && "hover:bg-blue-200/50 focus:ring-blue-500",
-              // CORREGIDO: Eliminado Menta, usando Verde Pradera
               variant === "organic" && "hover:bg-origen-pradera/20 focus:ring-origen-pradera"
             )}
             aria-label="Cerrar alerta"
           >
-            <X className="h-4 w-4" aria-hidden="true" />
+            <X className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
         )}
         
         {variant === "organic" && (
           <>
-            {/* CORREGIDO: Eliminado Menta, usando Verde Pradera */}
-            <div className="absolute -bottom-2 -right-2 h-6 w-6 text-origen-pradera/30 rotate-12">
+            <div className="absolute -bottom-2 -right-2 h-10 w-10 sm:h-12 sm:w-12 text-origen-pradera/30 rotate-12">
               <Leaf className="h-full w-full" />
             </div>
-            <div className="absolute -top-2 -left-2 h-4 w-4 text-origen-pradera/30 -rotate-12">
+            <div className="absolute -top-2 -left-2 h-8 w-8 sm:h-10 sm:w-10 text-origen-pradera/30 -rotate-12">
               <Sprout className="h-full w-full" />
             </div>
           </>
@@ -203,7 +199,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
 Alert.displayName = "Alert";
 
 // ============================================================================
-// COMPONENTES ADICIONALES
+// ALERT TITLE
 // ============================================================================
 
 const AlertTitle = React.forwardRef<
@@ -219,6 +215,10 @@ const AlertTitle = React.forwardRef<
 
 AlertTitle.displayName = "AlertTitle";
 
+// ============================================================================
+// ALERT DESCRIPTION
+// ============================================================================
+
 const AlertDescription = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -232,7 +232,11 @@ const AlertDescription = React.forwardRef<
 
 AlertDescription.displayName = "AlertDescription";
 
-interface AlertWithIconProps extends AlertProps {
+// ============================================================================
+// ALERT WITH ICON (Wrapper con icono predefinido)
+// ============================================================================
+
+export interface AlertWithIconProps extends AlertProps {
   title?: string;
   description?: string;
 }
@@ -256,7 +260,7 @@ const AlertWithIcon = React.forwardRef<HTMLDivElement, AlertWithIconProps>(
 AlertWithIcon.displayName = "AlertWithIcon";
 
 // ============================================================================
-// ALERT STACK
+// ALERT STACK (para múltiples alertas)
 // ============================================================================
 
 export interface AlertStackProps {
@@ -277,12 +281,12 @@ const AlertStack = React.forwardRef<HTMLDivElement, AlertStackProps>(
     ...props 
   }, ref) => {
     const positionClasses = {
-      "top-right": "fixed top-4 right-4",
-      "top-left": "fixed top-4 left-4",
-      "bottom-right": "fixed bottom-4 right-4",
-      "bottom-left": "fixed bottom-4 left-4",
-      "top-center": "fixed top-4 left-1/2 -translate-x-1/2",
-      "bottom-center": "fixed bottom-4 left-1/2 -translate-x-1/2",
+      "top-right": "fixed top-2 sm:top-4 right-2 sm:right-4",
+      "top-left": "fixed top-2 sm:top-4 left-2 sm:left-4",
+      "bottom-right": "fixed bottom-2 sm:bottom-4 right-2 sm:right-4",
+      "bottom-left": "fixed bottom-2 sm:bottom-4 left-2 sm:left-4",
+      "top-center": "fixed top-2 sm:top-4 left-1/2 -translate-x-1/2",
+      "bottom-center": "fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2",
     };
     
     const spacingClasses = {
@@ -301,7 +305,7 @@ const AlertStack = React.forwardRef<HTMLDivElement, AlertStackProps>(
       <div
         ref={ref}
         className={cn(
-          "z-50 flex flex-col w-full max-w-sm",
+          "z-50 flex flex-col w-full max-w-[calc(100%-2rem)] sm:max-w-sm",
           positionClasses[position],
           spacingClasses[spacing],
           alignClasses[align],
@@ -324,7 +328,7 @@ AlertStack.displayName = "AlertStack";
 export { 
   Alert, 
   AlertTitle, 
-  AlertDescription, 
+  AlertDescription,
   AlertWithIcon,
   AlertStack 
 };

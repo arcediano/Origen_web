@@ -1,14 +1,14 @@
 /**
  * @file toggle.tsx
- * @description Interruptor (toggle switch) con diseño orgánico - CORREGIDO v1.0.2
- * @version 1.0.2 - Eliminados todos los usos de Menta (#06D6A0)
+ * @description Toggle switch premium - 100% responsive
+ * @version 4.0.0 - Paleta oficial Origen
  */
 
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Check, X, Moon, Sun, Leaf, Sprout, Loader2 } from "lucide-react";
+import { Check, X, Leaf, Sprout, Loader2 } from "lucide-react";
 
 // ============================================================================
 // TIPOS
@@ -18,7 +18,7 @@ export interface ToggleProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-  variant?: "leaf" | "seed" | "sun" | "moon" | "accent" | "forest";
+  variant?: "leaf" | "seed" | "forest" | "accent";
   toggleSize?: "sm" | "md" | "lg";
   activeIcon?: React.ReactNode;
   inactiveIcon?: React.ReactNode;
@@ -26,17 +26,13 @@ export interface ToggleProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
   description?: string;
   labelPosition?: "left" | "right" | "top" | "bottom";
   loading?: boolean;
-  success?: boolean;
   error?: boolean;
   errorText?: string;
-  showStateLabels?: boolean;
-  activeLabel?: string;
-  inactiveLabel?: string;
   required?: boolean;
 }
 
 // ============================================================================
-// COMPONENTE TOGGLE
+// TOGGLE COMPONENT
 // ============================================================================
 
 const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
@@ -51,12 +47,8 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       description,
       labelPosition = "right",
       loading = false,
-      success = false,
       error = false,
       errorText,
-      showStateLabels = false,
-      activeLabel = "Activo",
-      inactiveLabel = "Inactivo",
       checked,
       defaultChecked = false,
       onCheckedChange,
@@ -75,57 +67,31 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
     const variantConfig = {
       leaf: {
         background: "bg-origen-crema",
-        checkedBackground: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
+        checkedBackground: "bg-origen-pradera",
         thumb: "bg-white",
-        iconColor: "text-origen-hoja",
-        checkedIconColor: "text-origen-pradera",
-        defaultActiveIcon: <Leaf className="h-3 w-3" />,
-        defaultInactiveIcon: <Sprout className="h-3 w-3" />,
+        defaultActiveIcon: <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
+        defaultInactiveIcon: <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
       },
       seed: {
         background: "bg-origen-crema",
-        checkedBackground: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
+        checkedBackground: "bg-origen-pradera",
         thumb: "bg-white",
-        iconColor: "text-origen-pradera",
-        checkedIconColor: "text-origen-hoja",
-        defaultActiveIcon: <Check className="h-3 w-3" />,
-        defaultInactiveIcon: <X className="h-3 w-3" />,
-      },
-      sun: {
-        background: "bg-amber-50",
-        checkedBackground: "bg-gradient-to-r from-amber-400 to-orange-500",
-        thumb: "bg-white",
-        iconColor: "text-amber-500",
-        checkedIconColor: "text-amber-600",
-        defaultActiveIcon: <Sun className="h-3 w-3" />,
-        defaultInactiveIcon: <Moon className="h-3 w-3" />,
-      },
-      moon: {
-        background: "bg-indigo-50",
-        checkedBackground: "bg-gradient-to-r from-indigo-400 to-violet-500",
-        thumb: "bg-white",
-        iconColor: "text-indigo-500",
-        checkedIconColor: "text-violet-600",
-        defaultActiveIcon: <Moon className="h-3 w-3" />,
-        defaultInactiveIcon: <Sun className="h-3 w-3" />,
-      },
-      accent: {
-        background: "bg-origen-pradera/20",
-        checkedBackground: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
-        thumb: "bg-white",
-        iconColor: "text-origen-pradera",
-        checkedIconColor: "text-origen-hoja",
-        defaultActiveIcon: <Check className="h-3 w-3" />,
-        defaultInactiveIcon: <X className="h-3 w-3" />,
+        defaultActiveIcon: <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
+        defaultInactiveIcon: <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
       },
       forest: {
         background: "bg-origen-bosque/10",
-        checkedBackground: "bg-gradient-to-r from-origen-pino to-origen-bosque",
+        checkedBackground: "bg-origen-bosque",
         thumb: "bg-white",
-        iconColor: "text-origen-bosque",
-        checkedIconColor: "text-origen-pino",
-        defaultActiveIcon: <Check className="h-3 w-3" />,
-        defaultInactiveIcon: <X className="h-3 w-3" />,
+        defaultActiveIcon: <Leaf className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
+        defaultInactiveIcon: <Sprout className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
+      },
+      accent: {
+        background: "bg-origen-menta/20",
+        checkedBackground: "bg-origen-menta",
+        thumb: "bg-white",
+        defaultActiveIcon: <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
+        defaultInactiveIcon: <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
       },
     };
     
@@ -136,25 +102,19 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
 
     const sizeConfig = {
       sm: {
-        switch: "w-10 h-6",
-        thumb: "h-5 w-5",
-        thumbTranslate: "translate-x-4",
-        icon: "h-2.5 w-2.5",
-        label: "text-xs",
+        switch: "w-8 h-4 sm:w-10 sm:h-5",
+        thumb: "h-3 w-3 sm:h-4 sm:w-4",
+        thumbTranslate: "translate-x-4 sm:translate-x-5",
       },
       md: {
-        switch: "w-12 h-7",
-        thumb: "h-6 w-6",
-        thumbTranslate: "translate-x-5",
-        icon: "h-3 w-3",
-        label: "text-sm",
+        switch: "w-10 h-5 sm:w-12 sm:h-6",
+        thumb: "h-4 w-4 sm:h-5 sm:w-5",
+        thumbTranslate: "translate-x-5 sm:translate-x-6",
       },
       lg: {
-        switch: "w-14 h-8",
-        thumb: "h-7 w-7",
-        thumbTranslate: "translate-x-6",
-        icon: "h-3.5 w-3.5",
-        label: "text-base",
+        switch: "w-12 h-6 sm:w-14 sm:h-7",
+        thumb: "h-5 w-5 sm:h-6 sm:w-6",
+        thumbTranslate: "translate-x-6 sm:translate-x-7",
       },
     };
     
@@ -196,11 +156,10 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         className={cn(
           "group relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent",
           "transition-all duration-300 ease-out",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta/50 focus-visible:ring-offset-2",
           "disabled:cursor-not-allowed disabled:opacity-50",
           
           error && !disabled && "border-red-500",
-          success && !error && !disabled && "border-green-500",
           
           size.switch,
           isChecked ? config.checkedBackground : config.background,
@@ -220,7 +179,7 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
           className={cn(
             "pointer-events-none inline-block transform rounded-full transition-all duration-300 ease-out",
             "flex items-center justify-center",
-            "shadow-lg",
+            "shadow-md",
             size.thumb,
             config.thumb,
             isChecked && size.thumbTranslate,
@@ -228,48 +187,25 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
           )}
         >
           {loading ? (
-            <Loader2 className={cn("animate-spin", size.icon)} />
+            <Loader2 className={cn("animate-spin", "h-2.5 w-2.5 sm:h-3 sm:w-3")} />
           ) : isChecked ? (
-            <span className={config.checkedIconColor}>
+            <span className="text-white">
               {finalActiveIcon}
             </span>
           ) : (
-            <span className={config.iconColor}>
+            <span className="text-gray-500">
               {finalInactiveIcon}
             </span>
           )}
         </span>
-        
-        <span className={cn(
-          "absolute inset-0 rounded-full bg-gradient-to-b from-white/30 to-transparent",
-          "opacity-0 group-hover:opacity-100 group-data-[state=checked]:opacity-50",
-          "transition-opacity duration-300"
-        )} />
-        
-        {showStateLabels && (
-          <span className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
-            <span className={cn(
-              "text-[10px] font-semibold transition-all duration-300",
-              isChecked ? "text-white/70" : "text-current opacity-50"
-            )}>
-              {inactiveLabel}
-            </span>
-            <span className={cn(
-              "text-[10px] font-semibold transition-all duration-300",
-              isChecked ? "text-white" : "text-current opacity-30"
-            )}>
-              {activeLabel}
-            </span>
-          </span>
-        )}
       </button>
     );
 
     if (label || description || errorText) {
       return (
-        <div className="space-y-2">
+        <div className="space-y-1.5 sm:space-y-2">
           <div className={cn(
-            "flex items-start gap-3",
+            "flex items-start gap-2 sm:gap-3",
             labelPosition === "top" && "flex-col",
             labelPosition === "bottom" && "flex-col-reverse",
             labelPosition === "left" && "flex-row-reverse",
@@ -279,20 +215,17 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
             
             {(label || description) && (
               <div className={cn(
-                "grid gap-1 leading-none flex-1",
+                "grid gap-0.5 sm:gap-1 leading-none flex-1",
                 labelPosition === "left" && "text-right",
-                labelPosition === "right" && "text-left",
-                labelPosition === "top" && "text-left",
-                labelPosition === "bottom" && "text-left"
+                labelPosition === "right" && "text-left"
               )}>
                 {label && (
                   <label
                     className={cn(
-                      "font-medium text-origen-bosque",
+                      "text-xs sm:text-sm font-medium text-origen-bosque",
                       "transition-colors duration-200",
                       disabled && "cursor-not-allowed opacity-50",
-                      isChecked && "text-origen-pino",
-                      size.label
+                      isChecked && "text-origen-pino"
                     )}
                     onClick={() => !disabled && !loading && handleToggle()}
                   >
@@ -306,7 +239,7 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
                 )}
                 {description && (
                   <p className={cn(
-                    "text-xs text-origen-hoja leading-relaxed",
+                    "text-[10px] sm:text-xs text-gray-500",
                     disabled && "opacity-50"
                   )}>
                     {description}
@@ -317,8 +250,8 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
           </div>
           
           {error && errorText && (
-            <p className="text-xs text-red-600 flex items-center gap-1.5 animate-origen-fade-in ml-1">
-              <X className="h-3 w-3 flex-shrink-0" />
+            <p className="text-[10px] sm:text-xs text-red-600 flex items-center gap-1 ml-1">
+              <X className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
               <span>{errorText}</span>
             </p>
           )}
@@ -331,6 +264,10 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
 );
 
 Toggle.displayName = "Toggle";
+
+// ============================================================================
+// TOGGLE GROUP
+// ============================================================================
 
 export interface ToggleGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   children: React.ReactNode;
@@ -364,9 +301,9 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
     
     const spacingClasses = {
       none: "gap-0",
-      tight: "gap-2",
-      normal: "gap-3",
-      loose: "gap-4",
+      tight: "gap-2 sm:gap-3",
+      normal: "gap-3 sm:gap-4",
+      loose: "gap-4 sm:gap-6",
     };
     
     const handleValueChange = (itemValue: string) => {
@@ -394,16 +331,16 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
     });
     
     return (
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {(groupLabel || groupDescription) && (
           <div className="space-y-1">
             {groupLabel && (
-              <h4 className="text-sm font-semibold text-origen-bosque">
+              <h4 className="text-xs sm:text-sm font-semibold text-origen-bosque">
                 {groupLabel}
               </h4>
             )}
             {groupDescription && (
-              <p className="text-xs text-origen-hoja">
+              <p className="text-[10px] sm:text-xs text-gray-500">
                 {groupDescription}
               </p>
             )}
@@ -413,8 +350,9 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
         <div
           ref={ref}
           className={cn(
-            direction === "vertical" && "flex flex-col",
-            direction === "horizontal" && "flex flex-wrap items-center",
+            "flex",
+            direction === "vertical" && "flex-col",
+            direction === "horizontal" && "flex-row flex-wrap",
             spacingClasses[spacing],
             className
           )}
@@ -429,5 +367,9 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
 );
 
 ToggleGroup.displayName = "ToggleGroup";
+
+// ============================================================================
+// EXPORT
+// ============================================================================
 
 export { Toggle, ToggleGroup };

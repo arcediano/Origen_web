@@ -4,11 +4,11 @@ import type { Config } from "tailwindcss";
  * Configuración de Tailwind CSS para Origen
  * Basado en el Manual de Marca v1.1 - Paleta "Bosque Innovador"
  * 
- * @version 1.2.0 - Correcciones aplicadas:
- *   - HSL Verde Bosque corregido: 149° 43% 18%
- *   - Eliminadas utilidades de color duplicadas (se usa solo theme.extend.colors)
- *   - Añadidos estados hover personalizados
- *   - Eliminado selector universal border-border
+ * @version 1.4.0 - MEJORAS APLICADAS:
+ *   - Añadidos breakpoints específicos: xs, tablet, desktop
+ *   - Añadidas animaciones para cards: card-hover, gradient-shift
+ *   - Unificada nomenclatura de colores con variables CSS
+ *   - Añadidas transiciones personalizadas
  * 
  * @created Febrero 2026
  * @updated Marzo 2026
@@ -33,30 +33,42 @@ const config: Config = {
         "2xl": "1400px",
       },
     },
+    
+    // === BREAKPOINTS MOBILE-FIRST (ACTUALIZADO v1.4) ===
+    screens: {
+      'xs': '475px',      // Móviles grandes
+      'sm': '640px',      // Tablets pequeñas
+      'md': '768px',      // Tablets
+      'tablet': '768px',  // Alias semántico
+      'lg': '1024px',     // Desktop
+      'desktop': '1024px', // Alias semántico
+      'xl': '1280px',     // Desktop grande
+      '2xl': '1400px',    // Desktop extra grande
+    },
+    
     extend: {
       // === PALETA DE COLORES OFICIAL - ORIGEN v1.1 ===
       colors: {
         // Colores principales - Manual Sección 3.1
         origen: {
           // Primarios
-          bosque: "#1B4332",      // HSL: 149° 43% 18% - Principal
-          pino: "#2D6A4F",        // HSL: 154° 47% 29% - H2
-          hoja: "#40916C",        // HSL: 154° 43% 39% - H3, enlaces
-          pradera: "#74C69D",     // HSL: 167° 38% 55% - Botones secundarios
-          menta: "#06D6A0",       // HSL: 167° 80% 44% - Acento (solo fondos oscuros)
-          crema: "#F1FAEE",       // HSL: 100° 67% 96% - Fondo principal
+          bosque: "hsl(var(--bosque))",      // #1B4332
+          pino: "hsl(var(--pino))",          // #2D6A4F
+          hoja: "hsl(var(--hoja))",          // #40916C
+          pradera: "hsl(var(--pradera))",    // #74C69D
+          menta: "hsl(var(--menta))",        // #06D6A0
+          crema: "hsl(var(--crema))",        // #F1FAEE
           
           // Apoyo
-          oscuro: "#081C15",      // HSL: 164° 84% 8% - Texto principal
-          pastel: "#D8F3DC",      // HSL: 139° 68% 93% - Fondos suaves
+          oscuro: "hsl(var(--oscuro))",      // #081C15
+          pastel: "hsl(var(--pastel))",      // #D8F3DC
         },
         
         // Estados hover (calculados: 15% más oscuros)
         hover: {
-          bosque: "#0F2A1F",      // #1B4332 hover
-          pino: "#1F4A37",        // #2D6A4F hover
-          pradera: "#5AA67D",     // #74C69D hover
-          menta: "#05B386",       // #06D6A0 hover
+          bosque: "hsl(var(--hover-bosque))",    // #0F2A1F
+          pradera: "hsl(var(--hover-pradera))",  // #5AA67D
+          menta: "hsl(var(--hover-menta))",      // #05B386
         },
         
         // Variables del sistema (shadcn/ui)
@@ -111,7 +123,7 @@ const config: Config = {
       
       // === TIPOGRAFÍA ===
       fontFamily: {
-        sans: ["Arial", "Helvetica Neue", "Helvetica", "sans-serif"],
+        sans: ["var(--font-sans)", "Arial", "Helvetica Neue", "Helvetica", "sans-serif"],
       },
       
       fontSize: {
@@ -133,43 +145,99 @@ const config: Config = {
       
       // === SOMBRAS ===
       boxShadow: {
-        'origen': '0 4px 20px rgba(27, 67, 50, 0.1)',
-        'origen-lg': '0 10px 40px rgba(27, 67, 50, 0.15)',
-        'origen-inner': 'inset 0 2px 4px rgba(27, 67, 50, 0.06)',
-        'subtle': '0 2px 8px rgba(27, 67, 50, 0.08)',
+        'origen': '0 4px 20px hsla(var(--bosque) / 0.1)',
+        'origen-lg': '0 10px 40px hsla(var(--bosque) / 0.15)',
+        'origen-inner': 'inset 0 2px 4px hsla(var(--bosque) / 0.06)',
+        'subtle': '0 2px 8px hsla(var(--bosque) / 0.08)',
+        'card-hover': '0 20px 30px hsla(var(--bosque) / 0.15)',
       },
       
-      // === ANIMACIONES ===
-      animation: {
-        'float': 'float 3s ease-in-out infinite',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      },
-      
+      // === ANIMACIONES (ACTUALIZADO v1.4) ===
       keyframes: {
-        'float': {
+        // Animaciones existentes
+        float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        
+        // NUEVAS ANIMACIONES PARA CARDS (desde la guía)
+        'card-hover': {
+          '0%': { transform: 'translateY(0px)' },
+          '100%': { transform: 'translateY(-5px)' },
+        },
+        
+        'gradient-shift': {
+          '0%': { opacity: '0', transform: 'scale(1)' },
+          '100%': { opacity: '1', transform: 'scale(1.02)' },
+        },
+        
+        // Animaciones para accordion
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+        
+        // Animaciones para sheet/dialog
+        'slide-in-from-bottom': {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        'slide-out-to-bottom': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(100%)' },
+        },
+      },
+      
+      animation: {
+        // Animaciones existentes
+        'float': 'float 3s ease-in-out infinite',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        
+        // NUEVAS ANIMACIONES PARA CARDS
+        'card-hover': 'card-hover 0.3s ease-out forwards',
+        'gradient-shift': 'gradient-shift 0.3s ease-out',
+        
+        // Animaciones para accordion
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        
+        // Animaciones para sheet
+        'slide-in-from-bottom': 'slide-in-from-bottom 0.3s ease-out',
+        'slide-out-to-bottom': 'slide-out-to-bottom 0.3s ease-out',
       },
       
       // === GRADIENTES ===
       backgroundImage: {
-        'gradient-origen': 'linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #74C69D 100%)',
-        'gradient-menta': 'linear-gradient(135deg, #06D6A0 0%, #74C69D 100%)',
-        'gradient-crema': 'linear-gradient(135deg, #F1FAEE 0%, #FFFFFF 100%)',
+        'gradient-origen': 'linear-gradient(135deg, hsl(var(--bosque)) 0%, hsl(var(--pino)) 50%, hsl(var(--pradera)) 100%)',
+        'gradient-menta': 'linear-gradient(135deg, hsl(var(--menta)) 0%, hsl(var(--pradera)) 100%)',
+        'gradient-crema': 'linear-gradient(135deg, hsl(var(--crema)) 0%, #FFFFFF 100%)',
       },
       
       // === TRANSICIONES ===
       transitionDuration: {
         'DEFAULT': '200ms',
+        'fast': '150ms',
+        'slow': '300ms',
       },
       
       transitionTimingFunction: {
         'DEFAULT': 'ease',
+        'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+      },
+      
+      // === TRANSITION PROPERTY ===
+      transitionProperty: {
+        'card': 'transform, box-shadow, border-color',
+        'gradient': 'opacity, transform',
       },
     },
   },
   
+  // Plugins necesarios
   plugins: [require("tailwindcss-animate")],
 };
 

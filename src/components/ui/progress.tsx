@@ -1,25 +1,54 @@
 /**
  * @file progress.tsx
- * @description Componente Progress con diseño orgánico - CORREGIDO v3.0.2
- * @version 3.0.2 - Eliminados todos los usos de Menta (#06D6A0)
+ * @description Barra de progreso premium - 100% responsive
+ * @version 4.0.1 - CORREGIDO: Propiedades track/indicator en variantConfig
  */
 
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Leaf, Sprout, Flower, Check } from "lucide-react";
+import { Leaf, Sprout, Flower, Check, Clock } from "lucide-react";
+
+// ============================================================================
+// TIPOS
+// ============================================================================
 
 export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: number;
   max?: number;
   showLabel?: boolean;
   label?: string;
-  variant?: "seed" | "sprout" | "leaf" | "fruit" | "accent" | "forest";
-  size?: "sm" | "default" | "lg";
-  showStageIcon?: boolean;
+  variant?: "seed" | "sprout" | "leaf" | "fruit" | "forest" | "warning";
+  size?: "sm" | "md" | "lg";
+  showIcon?: boolean;
   description?: string;
+  animated?: boolean;
 }
+
+export interface CircularProgressProps extends React.HTMLAttributes<HTMLDivElement> {
+  value?: number;
+  max?: number;
+  size?: number;
+  strokeWidth?: number;
+  showLabel?: boolean;
+  variant?: "seed" | "sprout" | "leaf" | "fruit" | "forest";
+  showIcon?: boolean;
+  animated?: boolean;
+}
+
+export interface SteppedProgressProps extends React.HTMLAttributes<HTMLDivElement> {
+  steps: number;
+  currentStep: number;
+  stepLabels?: string[];
+  variant?: "seed" | "sprout" | "leaf" | "fruit";
+  size?: "sm" | "md" | "lg";
+  animated?: boolean;
+}
+
+// ============================================================================
+// PROGRESS BAR
+// ============================================================================
 
 const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   (
@@ -30,74 +59,85 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
       showLabel = false,
       label,
       variant = "leaf",
-      size = "default",
-      showStageIcon = true,
+      size = "md",
+      showIcon = true,
       description,
+      animated = true,
       ...props
     },
     ref
   ) => {
     const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
     
+    // CORREGIDO: Configuración con track e indicator
     const variantConfig = {
       seed: {
         track: "bg-origen-crema",
-        indicator: "bg-gradient-to-r from-origen-pradera/50 to-origen-pradera",
-        icon: null,
+        indicator: "bg-origen-pradera",
+        icon: <Sprout className="h-3 w-3 sm:h-4 sm:w-4" />,
       },
       sprout: {
         track: "bg-green-50",
-        indicator: "bg-gradient-to-r from-green-200 to-green-400",
-        icon: <Sprout className="h-4 w-4 text-green-500" />,
+        indicator: "bg-green-400",
+        icon: <Sprout className="h-3 w-3 sm:h-4 sm:w-4" />,
       },
       leaf: {
         track: "bg-origen-pastel",
         indicator: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
-        icon: <Leaf className="h-4 w-4 text-origen-hoja" />,
+        icon: <Leaf className="h-3 w-3 sm:h-4 sm:w-4" />,
       },
       fruit: {
         track: "bg-amber-50",
         indicator: "bg-gradient-to-r from-amber-400 to-orange-500",
-        icon: <Flower className="h-4 w-4 text-amber-500" />,
-      },
-      accent: {
-        track: "bg-origen-pradera/20",
-        indicator: "bg-gradient-to-r from-origen-pradera to-origen-hoja",
-        icon: <Leaf className="h-4 w-4 text-origen-pradera" />,
+        icon: <Flower className="h-3 w-3 sm:h-4 sm:w-4" />,
       },
       forest: {
         track: "bg-origen-bosque/10",
         indicator: "bg-gradient-to-r from-origen-pino to-origen-bosque",
-        icon: <Sprout className="h-4 w-4 text-origen-bosque" />,
+        icon: <Sprout className="h-3 w-3 sm:h-4 sm:w-4 text-white" />,
+      },
+      warning: {
+        track: "bg-amber-100",
+        indicator: "bg-amber-500",
+        icon: <Clock className="h-3 w-3 sm:h-4 sm:w-4" />,
       },
     };
     
-    const config = variantConfig[variant];
+    const config = variantConfig[variant] || variantConfig.leaf;
     
     const sizeClasses = {
-      sm: "h-2",
-      default: "h-3",
-      lg: "h-4",
+      sm: "h-1.5 sm:h-2",
+      md: "h-2 sm:h-2.5",
+      lg: "h-2.5 sm:h-3",
     };
 
     return (
       <div ref={ref} className={cn("w-full space-y-2", className)} {...props}>
         {(showLabel || label) && (
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {showStageIcon && config.icon && (
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-current/10 to-transparent text-current">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {showIcon && config.icon && (
+                <div className={cn(
+                  "p-1 rounded-lg",
+                  variant === "forest" ? "text-white" : "text-origen-pradera"
+                )}>
                   {config.icon}
                 </div>
               )}
               {label && (
-                <span className="text-sm font-medium text-origen-bosque">
+                <span className={cn(
+                  "text-xs sm:text-sm font-medium",
+                  variant === "forest" ? "text-white" : "text-origen-bosque"
+                )}>
                   {label}
                 </span>
               )}
             </div>
             {showLabel && (
-              <span className="font-semibold text-origen-hoja tabular-nums">
+              <span className={cn(
+                "text-xs sm:text-sm font-semibold tabular-nums",
+                variant === "forest" ? "text-white/90" : "text-origen-hoja"
+              )}>
                 {Math.round(percentage)}%
               </span>
             )}
@@ -107,25 +147,28 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
         <div
           className={cn(
             "relative overflow-hidden rounded-full",
-            config.track,
+            config.track,  // AHORA SÍ EXISTE
             sizeClasses[size]
           )}
         >
           <div
             className={cn(
               "h-full transition-all duration-500 ease-out rounded-full",
-              config.indicator,
-              "relative overflow-hidden",
-              "before:absolute before:inset-0",
-              "before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
-              "before:animate-shimmer"
+              config.indicator,  // AHORA SÍ EXISTE
+              animated && "relative overflow-hidden",
+              animated && "after:absolute after:inset-0",
+              animated && "after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent",
+              animated && "after:animate-shimmer"
             )}
             style={{ width: `${percentage}%` }}
           />
         </div>
 
         {description && (
-          <p className="text-xs text-gray-600 leading-relaxed">
+          <p className={cn(
+            "text-xs leading-relaxed",
+            variant === "forest" ? "text-white/80" : "text-gray-600"
+          )}>
             {description}
           </p>
         )}
@@ -136,24 +179,19 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
 
 Progress.displayName = "Progress";
 
-export interface CircularProgressProps extends React.HTMLAttributes<HTMLDivElement> {
-  value?: number;
-  max?: number;
-  size?: number;
-  strokeWidth?: number;
-  showLabel?: boolean;
-  variant?: "seed" | "sprout" | "leaf" | "fruit" | "accent" | "forest";
-  showCenterIcon?: boolean;
-}
+// ============================================================================
+// CIRCULAR PROGRESS
+// ============================================================================
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
   value = 0,
   max = 100,
-  size = 120,
-  strokeWidth = 8,
+  size = 80,
+  strokeWidth = 6,
   showLabel = true,
   variant = "leaf",
-  showCenterIcon = true,
+  showIcon = true,
+  animated = true,
   className = "",
   ...props
 }) => {
@@ -167,36 +205,44 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     sprout: { track: "#D1FAE5", progress: "#10B981" },
     leaf: { track: "#D8F3DC", progress: "#74C69D" },
     fruit: { track: "#FEF3C7", progress: "#F59E0B" },
-    accent: { track: "#D8F3DC", progress: "#74C69D" },
     forest: { track: "#D1E7DD", progress: "#1B4332" },
   };
   
-  const config = variantColors[variant];
+  const config = variantColors[variant] || variantColors.leaf;
 
   const variantIcons = {
-    seed: null,
-    sprout: <Sprout className="h-6 w-6 text-green-500" />,
-    leaf: <Leaf className="h-6 w-6 text-origen-hoja" />,
-    fruit: <Flower className="h-6 w-6 text-amber-500" />,
-    accent: <Leaf className="h-6 w-6 text-origen-pradera" />,
-    forest: <Sprout className="h-6 w-6 text-origen-bosque" />,
+    seed: <Sprout className="h-4 w-4 sm:h-5 sm:w-5 text-origen-pradera" />,
+    sprout: <Sprout className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />,
+    leaf: <Leaf className="h-4 w-4 sm:h-5 sm:w-5 text-origen-hoja" />,
+    fruit: <Flower className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />,
+    forest: <Sprout className="h-4 w-4 sm:h-5 sm:w-5 text-origen-bosque" />,
   };
+
+  // Responsive size
+  const responsiveSize = typeof window !== 'undefined' && window.innerWidth < 640 
+    ? size * 0.8 
+    : size;
 
   return (
     <div className={cn("relative inline-flex flex-col items-center", className)} {...props}>
       <div className="relative">
-        <svg width={size} height={size} className="transform -rotate-90">
+        <svg 
+          width={responsiveSize} 
+          height={responsiveSize} 
+          className="transform -rotate-90"
+          viewBox={`0 0 ${responsiveSize} ${responsiveSize}`}
+        >
           <circle
-            cx={size / 2}
-            cy={size / 2}
+            cx={responsiveSize / 2}
+            cy={responsiveSize / 2}
             r={radius}
             stroke={config.track}
             strokeWidth={strokeWidth}
             fill="none"
           />
           <circle
-            cx={size / 2}
-            cy={size / 2}
+            cx={responsiveSize / 2}
+            cy={responsiveSize / 2}
             r={radius}
             stroke={config.progress}
             strokeWidth={strokeWidth}
@@ -204,18 +250,21 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            className="transition-all duration-700 ease-out"
+            className={cn(
+              "transition-all duration-700 ease-out",
+              animated && "animate-[spin_3s_linear_infinite]"
+            )}
           />
         </svg>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {showCenterIcon && variantIcons[variant] && (
-            <div className="mb-1 animate-pulse">
+          {showIcon && variantIcons[variant] && (
+            <div className="mb-0.5 sm:mb-1">
               {variantIcons[variant]}
             </div>
           )}
           {showLabel && (
-            <span className="text-2xl font-bold text-origen-bosque tabular-nums">
+            <span className="text-sm sm:text-base font-bold text-origen-bosque tabular-nums">
               {Math.round(percentage)}%
             </span>
           )}
@@ -225,18 +274,19 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   );
 };
 
-export interface SteppedProgressProps extends React.HTMLAttributes<HTMLDivElement> {
-  steps: number;
-  currentStep: number;
-  stepLabels?: string[];
-  variant?: "seed" | "sprout" | "leaf" | "fruit";
-}
+CircularProgress.displayName = "CircularProgress";
+
+// ============================================================================
+// STEPPED PROGRESS
+// ============================================================================
 
 const SteppedProgress: React.FC<SteppedProgressProps> = ({
   steps,
   currentStep,
   stepLabels = [],
   variant = "leaf",
+  size = "md",
+  animated = true,
   className = "",
   ...props
 }) => {
@@ -263,7 +313,25 @@ const SteppedProgress: React.FC<SteppedProgressProps> = ({
     },
   };
   
-  const config = stepVariants[variant];
+  const config = stepVariants[variant] || stepVariants.leaf;
+
+  const sizeClasses = {
+    sm: {
+      step: "h-6 w-6 sm:h-8 sm:w-8",
+      icon: "h-3 w-3 sm:h-4 sm:w-4",
+      label: "text-[10px] sm:text-xs",
+    },
+    md: {
+      step: "h-8 w-8 sm:h-10 sm:w-10",
+      icon: "h-4 w-4 sm:h-5 sm:w-5",
+      label: "text-xs sm:text-sm",
+    },
+    lg: {
+      step: "h-10 w-10 sm:h-12 sm:w-12",
+      icon: "h-5 w-5 sm:h-6 sm:w-6",
+      label: "text-sm sm:text-base",
+    },
+  };
 
   return (
     <div className={cn("w-full", className)} {...props}>
@@ -279,7 +347,7 @@ const SteppedProgress: React.FC<SteppedProgressProps> = ({
               {index < steps - 1 && (
                 <div 
                   className={cn(
-                    "flex-1 h-0.5 mx-2 transition-all duration-300",
+                    "flex-1 h-0.5 mx-1 sm:mx-2 transition-all duration-300",
                     isCompleted ? "bg-origen-hoja" : "bg-gray-200"
                   )}
                 />
@@ -287,18 +355,27 @@ const SteppedProgress: React.FC<SteppedProgressProps> = ({
               
               <div className="flex flex-col items-center relative z-10">
                 <div className={cn(
-                  "flex items-center justify-center h-8 w-8 rounded-full border-2",
+                  "flex items-center justify-center rounded-full border-2",
                   "transition-all duration-300",
-                  isActive && "scale-110 shadow-lg",
+                  sizeClasses[size].step,
                   isActive && config.active,
                   isCompleted && config.completed,
-                  isUpcoming && config.upcoming
+                  isUpcoming && config.upcoming,
+                  animated && isActive && "animate-pulse"
                 )}>
                   {isCompleted ? (
-                    <Check className="h-4 w-4 text-white" />
+                    <Check className={cn(
+                      "text-white",
+                      sizeClasses[size].icon
+                    )} />
+                  ) : isActive ? (
+                    <Clock className={cn(
+                      "text-white",
+                      sizeClasses[size].icon
+                    )} />
                   ) : (
                     <span className={cn(
-                      "text-sm font-semibold",
+                      "font-semibold",
                       isActive ? "text-white" : "text-gray-600"
                     )}>
                       {stepNumber}
@@ -308,7 +385,8 @@ const SteppedProgress: React.FC<SteppedProgressProps> = ({
                 
                 {stepLabels[index] && (
                   <span className={cn(
-                    "text-xs mt-2 text-center max-w-[80px]",
+                    "mt-1 sm:mt-2 text-center max-w-[60px] sm:max-w-[80px]",
+                    sizeClasses[size].label,
                     isActive ? "font-semibold text-origen-bosque" : "text-gray-600"
                   )}>
                     {stepLabels[index]}
@@ -320,11 +398,17 @@ const SteppedProgress: React.FC<SteppedProgressProps> = ({
         })}
       </div>
       
-      <div className="mt-4 text-center text-sm text-origen-bosque">
+      <div className="mt-3 sm:mt-4 text-center text-xs sm:text-sm text-origen-bosque">
         Paso {currentStep} de {steps}
       </div>
     </div>
   );
 };
+
+SteppedProgress.displayName = "SteppedProgress";
+
+// ============================================================================
+// EXPORT
+// ============================================================================
 
 export { Progress, CircularProgress, SteppedProgress };

@@ -1,14 +1,14 @@
 /**
  * @file select.tsx
- * @description Componente Select accesible con diseño orgánico
- * @version 4.1.0 - API estándar con todos los subcomponentes
+ * @description Select premium con diseño orgánico - 100% responsive
+ * @version 4.0.2 - CORREGIDO: error como string
  */
 
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { Check, ChevronDown, Search, X, AlertCircle } from "lucide-react";
 
 // ============================================================================
 // CONTEXTO DEL SELECT
@@ -24,6 +24,7 @@ interface SelectContextType {
   setSearchTerm: (term: string) => void;
   searchable?: boolean;
   disabled?: boolean;
+  error?: string; // Cambiado de boolean a string
 }
 
 const SelectContext = React.createContext<SelectContextType | undefined>(undefined);
@@ -49,7 +50,10 @@ export interface SelectProps {
   disabled?: boolean;
   required?: boolean;
   name?: string;
+  error?: string; // Cambiado de boolean a string
   children: React.ReactNode;
+  items?: Array<{ value: string; label: string }>; // Añadido para compatibilidad
+  className?: string;
 }
 
 const Select = ({
@@ -61,7 +65,10 @@ const Select = ({
   disabled = false,
   required = false,
   name,
+  error,
   children,
+  items,
+  className,
 }: SelectProps) => {
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -91,9 +98,10 @@ const Select = ({
         setSearchTerm,
         searchable,
         disabled,
+        error,
       }}
     >
-      <div className="relative w-full">
+      <div className={cn("relative w-full", className)}>
         <select
           name={name}
           value={currentValue}
@@ -105,9 +113,22 @@ const Select = ({
           required={required}
         >
           <option value="">{placeholder}</option>
+          {items?.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
         </select>
 
         {children}
+        
+        {/* Mensaje de error */}
+        {error && (
+          <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            {error}
+          </p>
+        )}
       </div>
     </SelectContext.Provider>
   );
@@ -126,7 +147,7 @@ export interface SelectTriggerProps extends React.ButtonHTMLAttributes<HTMLButto
 
 const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
   ({ className, children, ...props }, ref) => {
-    const { open, setOpen, disabled: contextDisabled } = useSelect();
+    const { open, setOpen, disabled: contextDisabled, error } = useSelect();
     const disabled = props.disabled || contextDisabled;
 
     return (
@@ -137,24 +158,34 @@ const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
         onClick={() => !disabled && setOpen(!open)}
         className={cn(
           "flex w-full items-center justify-between gap-2",
-          "rounded-xl border border-gray-200 bg-white px-4 py-3 text-left",
+          "rounded-xl border bg-white px-3 py-2 sm:px-4 sm:py-3 text-left",
           "transition-all duration-200",
-          "hover:border-origen-pradera",
-          "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2",
+          "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:ring-offset-2",
           "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
-          open && "border-origen-pradera ring-2 ring-origen-pradera/20",
+          
+          error
+            ? "border-red-500 hover:border-red-600"
+            : cn(
+                "border-origen-pradera/30",
+                "hover:border-origen-hoja",
+                open && "border-origen-pradera ring-2 ring-origen-menta/20"
+              ),
+          
           className
         )}
         aria-expanded={open}
         aria-haspopup="listbox"
+        aria-invalid={!!error}
         disabled={disabled}
         {...props}
       >
         {children || (
           <>
-            <span className="flex-1 truncate">Seleccionar</span>
+            <span className="flex-1 truncate text-sm sm:text-base">
+              Seleccionar
+            </span>
             <ChevronDown className={cn(
-              "h-4 w-4 text-gray-500 transition-transform",
+              "h-4 w-4 text-gray-500 transition-transform shrink-0",
               open && "rotate-180"
             )} />
           </>
@@ -181,11 +212,15 @@ const SelectValue = ({ placeholder: customPlaceholder, className, children }: Se
   const displayPlaceholder = customPlaceholder || placeholder;
 
   if (children) {
-    return <span className={cn("flex-1 truncate", className)}>{children}</span>;
+    return <span className={cn("flex-1 truncate text-sm sm:text-base", className)}>{children}</span>;
   }
 
   return (
-    <span className={cn("flex-1 truncate", !value && "text-gray-400", className)}>
+    <span className={cn(
+      "flex-1 truncate text-sm sm:text-base",
+      !value && "text-gray-400",
+      className
+    )}>
       {value || displayPlaceholder}
     </span>
   );
@@ -231,26 +266,34 @@ const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
       <div
         ref={contentRef}
         className={cn(
-          "absolute z-50 w-full mt-2",
+          "absolute z-50 w-full mt-1 sm:mt-2",
           "rounded-xl border border-gray-200 bg-white",
           "shadow-lg animate-in fade-in-0 zoom-in-95",
-          "max-h-80 overflow-hidden flex flex-col",
+          "max-h-60 sm:max-h-80 overflow-hidden flex flex-col",
           className
         )}
         {...props}
       >
         {searchable && (
-          <div className="p-3 border-b border-gray-200">
+          <div className="p-2 sm:p-3 border-b border-gray-200">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-3 text-sm outline-none focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 sm:py-2 pl-8 sm:pl-10 pr-3 text-xs sm:text-sm outline-none focus:border-origen-pradera focus:ring-1 focus:ring-origen-menta"
                 onClick={(e) => e.stopPropagation()}
               />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -282,18 +325,25 @@ export interface SelectItemProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 
 const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
   ({ value, className, children, disabled, ...props }, ref) => {
-    const { value: selectedValue, onValueChange } = useSelect();
+    const { value: selectedValue, onValueChange, searchTerm } = useSelect();
     const isSelected = selectedValue === value;
+    
+    // Filtrar por término de búsqueda si existe
+    if (searchTerm && typeof children === 'string') {
+      if (!children.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return null;
+      }
+    }
 
     return (
       <button
         ref={ref}
         type="button"
         className={cn(
-          "relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-3 pr-9 text-sm outline-none",
+          "relative flex w-full cursor-pointer select-none items-center rounded-lg py-1.5 sm:py-2 pl-2 sm:pl-3 pr-8 sm:pr-9 text-xs sm:text-sm outline-none",
           "transition-all duration-150",
           "hover:bg-origen-crema hover:text-origen-bosque",
-          "focus:bg-origen-crema focus:text-origen-bosque focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
+          "focus:bg-origen-crema focus:text-origen-bosque focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
           disabled && "pointer-events-none opacity-50",
           isSelected && "bg-origen-crema/80 font-medium text-origen-bosque",
           className
@@ -307,8 +357,8 @@ const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
         <span className="truncate">{children}</span>
         
         {isSelected && (
-          <span className="absolute right-3 flex h-4 w-4 items-center justify-center">
-            <Check className="h-4 w-4 text-origen-pradera animate-in zoom-in-50" />
+          <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center">
+            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-origen-pradera animate-in zoom-in-50" />
           </span>
         )}
       </button>
@@ -331,7 +381,7 @@ const SelectGroup = ({ label, children, className, ...props }: SelectGroupProps)
   return (
     <div role="group" aria-label={label} className={className} {...props}>
       {label && (
-        <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50/50">
+        <div className="px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50/50">
           {label}
         </div>
       )}

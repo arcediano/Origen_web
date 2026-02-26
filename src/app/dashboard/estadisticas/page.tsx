@@ -108,7 +108,7 @@ export default function EstadisticasPage() {
           <Card className="p-6 bg-white border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-origen-bosque">Productos más vendidos</h3>
-              <Link href="/dashboard/productos" className="text-xs text-origen-pradera hover:text-origen-bosque">
+              <Link href="/dashboard/products" className="text-xs text-origen-pradera hover:text-origen-bosque">
                 Ver todos
               </Link>
             </div>
