@@ -67,7 +67,8 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
   }, ref) => {
     const [displayValue, setDisplayValue] = React.useState('');
     const [isFocused, setIsFocused] = React.useState(false);
-    const inputId = id || React.useId();
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
 
     // ============================================================================

@@ -166,7 +166,8 @@ const CheckboxWithLabel = React.forwardRef<
   required,
   ...props 
 }, ref) => {
-  const checkboxId = id || React.useId();
+  const generatedId = React.useId();
+  const checkboxId = id || generatedId;
   
   return (
     <div className="space-y-1">
