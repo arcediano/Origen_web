@@ -1,7 +1,6 @@
 /**
  * @file input.tsx
- * @description Input premium con diseño orgánico - VERSIÓN CORREGIDA
- * @version 4.5.0 - Eliminado div vacío que causaba descuadres
+ * @description Input premium con diseño orgánico
  */
 
 "use client";
@@ -82,7 +81,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const [charCount, setCharCount] = React.useState(0);
     const [isFocused, setIsFocused] = React.useState(false);
     
-    const inputId = id || React.useId();
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
     const helperId = `${inputId}-helper`;
     
@@ -191,13 +191,35 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     };
 
     /**
-     * Padding horizontal uniforme (cuando no hay iconos)
+     * Padding horizontal:
+     * - Si hay icono izquierdo Y elementos derecha → ambos lados gestionados aparte
+     * - Si solo hay icono izquierdo → añadir padding derecho
+     * - Si solo hay elementos derecha → añadir padding IZQUIERDO (bug fix: antes se omitía)
+     * - Sin iconos → padding simétrico
      */
     const getHorizontalPadding = () => {
-      if (leftIcon || rightIcon || isPassword || validationState) {
-        return "";
+      const hasRightElements = rightIcon || isPassword || validationState;
+
+      if (leftIcon && hasRightElements) return "";
+
+      if (leftIcon) {
+        switch (inputSize) {
+          case "sm": return "pr-3";
+          case "md": return "pr-4";
+          case "lg": return "pr-5";
+          default: return "pr-4";
+        }
       }
-      
+
+      if (hasRightElements) {
+        switch (inputSize) {
+          case "sm": return "pl-3";
+          case "md": return "pl-4";
+          case "lg": return "pl-5";
+          default: return "pl-4";
+        }
+      }
+
       switch (inputSize) {
         case "sm": return "px-3";
         case "md": return "px-4";
@@ -340,7 +362,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "text-origen-oscuro placeholder:text-gray-400",
               "transition-all duration-200",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
-              "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:border-origen-pradera",
+              "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:border-origen-pradera",
               
               variantClasses[variant],
               sizeClasses[inputSize],
@@ -366,7 +388,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
             
             {validationState === "loading" && (
-              <Loader2 className={cn(getIconSize(), "animate-spin text-origen-menta")} />
+              <Loader2 className={cn(getIconSize(), "animate-spin text-origen-pradera")} />
             )}
             
             {validationState === "error" && (
@@ -423,7 +445,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         {/* Footer - SOLO se renderiza si hay contenido */}
         {hasFooterContent && (
-          <div className="flex items-start justify-between gap-2 min-h-[20px]">
+          <div className="flex items-start justify-between gap-2">
             <div className="flex-1">
               {error && (
                 <p 

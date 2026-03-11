@@ -1,7 +1,6 @@
 /**
  * @file progress.tsx
  * @description Barra de progreso premium - 100% responsive
- * @version 4.0.1 - CORREGIDO: Propiedades track/indicator en variantConfig
  */
 
 "use client";

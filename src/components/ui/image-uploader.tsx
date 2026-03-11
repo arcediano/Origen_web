@@ -1,6 +1,6 @@
 /**
  * @file image-uploader.tsx
- * @description Componente para subir imágenes - USA EL MISMO TIPO ProductImage
+ * @description Componente para subir imágenes - USA ProductImage
  */
 
 'use client';
@@ -8,7 +8,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { cn } from '@/lib/utils';
-import { Upload, X, Image as ImageIcon, Star, Loader2 } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Star } from 'lucide-react';
 import { type ProductImage } from '@/types/product';
 
 // ============================================================================
@@ -94,28 +94,6 @@ export function ImageUploader({
     onChange(value.map(img => 
       img.id === id ? { ...img, caption } : img
     ));
-  };
-
-  // Función para simular subida (solo para demostración)
-  const simulateUpload = (id: string) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      
-      // CORREGIDO: Usamos value.map en lugar de onChange con función
-      const updatedImages = value.map(img => 
-        img.id === id ? { ...img, uploading: true, progress } : img
-      );
-      onChange(updatedImages);
-      
-      if (progress >= 100) {
-        clearInterval(interval);
-        const completedImages = value.map(img => 
-          img.id === id ? { ...img, uploading: false, progress: 100 } : img
-        );
-        onChange(completedImages);
-      }
-    }, 200);
   };
 
   return (

@@ -27,7 +27,7 @@ export default function ConfiguracionPage() {
       icon: User, 
       title: 'Perfil público', 
       description: 'Información de tu negocio', 
-      href: '/dashboard/configuracion/perfil' 
+      href: '/dashboard/configuracion/profile' 
     },
     { 
       icon: Truck, 

@@ -1,7 +1,6 @@
 /**
  * @file toggle.tsx
  * @description Toggle switch premium - 100% responsive
- * @version 4.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -87,8 +86,8 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         defaultInactiveIcon: <Sprout className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
       },
       accent: {
-        background: "bg-origen-menta/20",
-        checkedBackground: "bg-origen-menta",
+        background: "bg-origen-pradera/20",
+        checkedBackground: "bg-origen-pradera",
         thumb: "bg-white",
         defaultActiveIcon: <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
         defaultInactiveIcon: <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />,
@@ -156,7 +155,7 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
         className={cn(
           "group relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent",
           "transition-all duration-300 ease-out",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta/50 focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera/50 focus-visible:ring-offset-2",
           "disabled:cursor-not-allowed disabled:opacity-50",
           
           error && !disabled && "border-red-500",

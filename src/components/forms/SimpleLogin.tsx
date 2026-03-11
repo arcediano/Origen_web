@@ -7,12 +7,15 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { loginUser } from '@/lib/api/auth';
+import { GatewayError } from '@/lib/api/client';
 
 // ============================================================================
 // ICONOS
@@ -41,6 +44,7 @@ import {
 // ============================================================================
 
 export function SimpleLogin() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -73,10 +77,14 @@ export function SimpleLogin() {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Login exitoso');
-    } catch {
-      setErrors({ general: 'Credenciales incorrectas' });
+      await loginUser({ email, password });
+      router.push('/dashboard');
+    } catch (err) {
+      if (err instanceof GatewayError && err.status === 401) {
+        setErrors({ general: 'Credenciales incorrectas. Revisa tu email y contraseña.' });
+      } else {
+        setErrors({ general: 'No se pudo conectar con el servidor. Inténtalo de nuevo.' });
+      }
     } finally {
       setIsLoading(false);
     }

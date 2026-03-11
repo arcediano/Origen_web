@@ -1,60 +1,48 @@
 /**
  * @file product.ts
- * @description Tipos completos para la gestión de productos (UNIFICADO Y CORREGIDO)
+ * @description Tipos completos para la gestión de productos (UNIFICADO)
  */
 
-import { type UploadedFile } from '@/components/forms/FileUpload';
+// ============================================================================
+// TIPO PARA DOCUMENTOS - DEFINICIÓN ÚNICA
+// ============================================================================
+
+export interface DocumentFile {
+  id: string;
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+  uploadedAt: Date;
+  file?: File;
+  uploading?: boolean;
+  progress?: number;
+  error?: string;
+}
 
 // ============================================================================
-// TIPO ÚNICO DE IMAGEN - SIRVE PARA TODO
+// TIPO PARA IMÁGENES
 // ============================================================================
 
 export interface ProductImage {
-  /** ID único de la imagen */
   id: string;
-  
-  /** URL de la imagen (puede ser blob: temporal o https:// definitiva) */
   url: string;
-  
-  /** Texto alternativo para accesibilidad */
   alt?: string;
-  
-  /** Título o descripción corta */
   caption?: string;
-  
-  /** Indica si es la imagen principal del producto */
   isMain: boolean;
-  
-  /** Orden para la galería */
   sortOrder: number;
-  
-  /** Archivo original (solo durante la subida, null después) */
   file?: File | null;
-  
-  /** Progreso de subida (0-100) */
   progress?: number;
-  
-  /** Indica si se está subiendo */
   uploading?: boolean;
-  
-  /** Mensaje de error si la subida falló */
   error?: string;
-  
-  /** Ancho de la imagen en píxeles */
   width?: number;
-  
-  /** Alto de la imagen en píxeles */
   height?: number;
-  
-  /** Tamaño del archivo en bytes */
   size?: number;
-  
-  /** Tipo MIME del archivo */
   type?: string;
 }
 
 // ============================================================================
-// TIPOS DE PRECIOS Y DESCUENTOS
+// TIPOS DE PRECIOS
 // ============================================================================
 
 export interface PriceTier {
@@ -66,16 +54,25 @@ export interface PriceTier {
   buyQuantity?: number;
   payQuantity?: number;
   label?: string;
+  savings?: number;
 }
 
 // ============================================================================
 // TIPOS DE INFORMACIÓN NUTRICIONAL
 // ============================================================================
 
+export interface VitaminInfo {
+  id?: string;
+  name: string;
+  amount: number;
+  unit: string;
+  dailyValue?: number;
+}
+
 export interface NutritionalInfo {
   servingSize: string;
-  servingSizeValue?: number;
-  servingSizeUnit?: string;
+  servingSizeValue: number;
+  servingSizeUnit: 'g' | 'ml';
   calories?: number;
   protein?: number;
   totalFat?: number;
@@ -87,12 +84,12 @@ export interface NutritionalInfo {
   dietaryFiber?: number;
   sugars?: number;
   addedSugars?: number;
-  vitamins?: VitaminInfo[];
+  vitamins: VitaminInfo[];
   allergens: string[];
-  mayContain?: string[];
+  mayContain: string[];
   ingredients: string[];
-  preparationInstructions?: string;
-  storageInstructions?: string;
+  preparationInstructions: string;
+  storageInstructions: string;
   isGlutenFree?: boolean;
   isLactoseFree?: boolean;
   isVegan?: boolean;
@@ -102,79 +99,115 @@ export interface NutritionalInfo {
   isSoyFree?: boolean;
 }
 
-export interface VitaminInfo {
-  name: string;
-  amount: number;
-  unit: string;
-  dailyValue?: number;
-}
-
 // ============================================================================
-// TIPOS DE CERTIFICACIONES
+// TIPOS DE CERTIFICACIONES - DEFINICIÓN ÚNICA
 // ============================================================================
 
-export interface ProductCertification {
+export type CertificationStatus = 'active' | 'expired' | 'pending';
+export type CertificationCategory = 'organic' | 'quality' | 'safety' | 'sustainability' | 'origin';
+
+export interface Certification {
   id: string;
-  certificationId: string;
   name: string;
   issuingBody: string;
-  logo?: string;
+  certificateNumber?: string;
+  issueDate?: Date;
+  expiryDate?: Date;
+  status: CertificationStatus;
   verified: boolean;
-  expiryDate?: Date;
-  documentUrl?: string;
+  documents?: DocumentFile[];
+  verificationUrl?: string;
+  category?: CertificationCategory;
+  logo?: string;
 }
 
-// ============================================================================
-// TIPOS DE INFORMACIÓN DE PRODUCCIÓN
-// ============================================================================
-
-export interface ProductionMedia {
-  id: string;
-  type: 'image' | 'video';
-  url: string;
-  caption?: string;
-  thumbnail?: string;
-}
-
-export interface ProductionInfo {
-  story?: string;
-  origin?: string;
-  farmName?: string;
-  producerName?: string;
-  harvestDate?: Date;
-  productionDate?: Date;
-  expiryDate?: Date;
-  batchNumber?: string;
-  productionMethod?: string;
-  sustainabilityInfo?: string;
-  animalWelfare?: string;
-  artisanProcess?: string;
-  practices?: string[];
-  media?: ProductionMedia[];
+// Para compatibilidad (opcional)
+export interface ProductCertification extends Certification {
+  certificationId?: string;
 }
 
 // ============================================================================
 // TIPOS DE ATRIBUTOS DINÁMICOS
 // ============================================================================
 
-export interface ProductAttribute {
+export type AttributeType = 'text' | 'number' | 'boolean' | 'date';
+
+export interface DynamicAttribute {
   id: string;
   name: string;
+  type: AttributeType;
   value: string | number | boolean;
-  type: 'text' | 'number' | 'boolean' | 'date' | 'select';
   unit?: string;
   visible: boolean;
+  example?: string;
+  description?: string;
+}
+
+export interface ProductAttribute extends DynamicAttribute {}
+
+// ============================================================================
+// TIPOS DE PRODUCCIÓN
+// ============================================================================
+
+export interface ProductionMedia {
+  id: string;
+  type: 'image' | 'video';
+  url: string;
+  preview?: string;
+  thumbnail?: string;
+  file?: File | null;
+  sortOrder?: number;
+  caption?: string;
+  width?: number;
+  height?: number;
+  size?: number;
+  uploading?: boolean;
+  progress?: number;
+  error?: string;
+  alt?: string;
+}
+
+export interface ProductionInfo {
+  story: string;
+  farmName: string;
+  origin: string;
+  productionMethod: string;
+  harvestDate?: Date;
+  productionDate?: Date;
+  expiryDate?: Date;
+  batchNumber: string;
+  sustainabilityInfo: string;
+  animalWelfare: string;
+  artisanProcess: string;
+  practices: string[];
+  media: ProductionMedia[];
+  producerName?: string;
 }
 
 // ============================================================================
-// TIPOS DE DIMENSIONES
+// TIPOS DE INVENTARIO
 // ============================================================================
 
 export interface Dimensions {
-  length: number;
-  width: number;
-  height: number;
-  unit: 'cm' | 'm';
+  length?: number;
+  width?: number;
+  height?: number;
+  unit?: 'cm' | 'm';
+}
+
+export interface InventoryData {
+  sku: string;
+  barcode?: string;
+  stock: number;
+  lowStockThreshold: number;
+  trackInventory: boolean;
+  allowBackorders: boolean;
+  weight?: number;
+  weightUnit?: 'kg' | 'g';
+  dimensions?: Dimensions;
+  shippingClass?: string;
+  reorderPoint?: number;
+  maxStock?: number;
 }
 
 // ============================================================================
@@ -194,7 +227,7 @@ export interface Product {
   tags: string[];
   mainImage?: ProductImage;
   gallery: ProductImage[];
-  basePrice: number; // ← En el producto guardado SIEMPRE es number
+  basePrice: number;
   comparePrice?: number;
   priceTiers: PriceTier[];
   sku: string;
@@ -208,9 +241,9 @@ export interface Product {
   dimensions?: Dimensions;
   shippingClass?: string;
   nutritionalInfo?: NutritionalInfo;
-  certifications: ProductCertification[];
+  certifications: Certification[];
   productionInfo?: ProductionInfo;
-  attributes: ProductAttribute[];
+  attributes: DynamicAttribute[];
   status: 'draft' | 'active' | 'inactive' | 'out_of_stock';
   visibility: 'public' | 'private' | 'password';
   publishedAt?: Date;
@@ -226,11 +259,10 @@ export interface Product {
 }
 
 // ============================================================================
-// TIPO PARA FORMULARIO DE CREACIÓN - CORREGIDO
+// TIPO PARA FORMULARIO
 // ============================================================================
 
-export type ProductFormData = {
-  // Información básica
+export interface ProductFormData {
   name: string;
   shortDescription: string;
   fullDescription: string;
@@ -238,17 +270,11 @@ export type ProductFormData = {
   categoryName: string;
   subcategoryId?: string;
   tags: string[];
-  
-  // Imágenes
   mainImage?: ProductImage;
   gallery: ProductImage[];
-  
-  // Precios - EN EL FORMULARIO PUEDEN SER UNDEFINED
-  basePrice?: number;        // ← CORREGIDO: explícitamente opcional
-  comparePrice?: number;     // ← CORREGIDO: explícitamente opcional
+  basePrice?: number;
+  comparePrice?: number;
   priceTiers: PriceTier[];
-  
-  // Inventario
   sku: string;
   barcode?: string;
   stock: number;
@@ -259,26 +285,16 @@ export type ProductFormData = {
   weightUnit?: 'kg' | 'g';
   dimensions?: Dimensions;
   shippingClass?: string;
-  
-  // Información nutricional
-  nutritionalInfo?: NutritionalInfo;
-  
-  // Certificaciones
-  certifications: ProductCertification[];
-  
-  // Información de producción
-  productionInfo?: ProductionInfo;
-  
-  // Atributos dinámicos
-  attributes: ProductAttribute[];
-  
-  // Estado - específico del formulario
+  nutritionalInfo: NutritionalInfo;
+  certifications: Certification[];
+  productionInfo: ProductionInfo;
+  attributes: DynamicAttribute[];
   status: 'draft' | 'pending_approval' | 'active' | 'scheduled';
   visibility: 'public' | 'private' | 'password';
-};
+}
 
 // ============================================================================
-// CONSTANTES
+// CONSTANTES Y VALORES POR DEFECTO
 // ============================================================================
 
 export const FORM_STEPS = [
@@ -292,10 +308,6 @@ export const FORM_STEPS = [
 ] as const;
 
 export type FormStepId = typeof FORM_STEPS[number]['id'];
-
-// ============================================================================
-// VALORES POR DEFECTO PARA EL FORMULARIO
-// ============================================================================
 
 export const defaultNutritionalInfo: NutritionalInfo = {
   servingSize: '100g',
@@ -373,33 +385,6 @@ export const defaultFormData: ProductFormData = {
   status: 'draft',
   visibility: 'private',
 };
-
-// ============================================================================
-// FUNCIÓN UTILITARIA PARA CONVERTIR FORMULARIO A PRODUCTO
-// ============================================================================
-
-/**
- * Convierte los datos del formulario a un producto válido para la API
- * Asigna valores por defecto a los campos opcionales que son requeridos en Product
- */
-export function formDataToProduct(formData: ProductFormData, producerId: string): Omit<Product, 'id' | 'createdAt' | 'updatedAt'> {
-  return {
-    ...formData,
-    producerId,
-    slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
-    basePrice: formData.basePrice || 0,  // ← Convertimos undefined a 0
-    status: formData.status === 'pending_approval' ? 'draft' : 
-            formData.status === 'scheduled' ? 'draft' : 
-            formData.status as any,
-    publishedAt: formData.status === 'active' ? new Date() : undefined,
-    sales: 0,
-    revenue: 0,
-    rating: 0,
-    reviewCount: 0,
-    views: 0,
-    conversion: 0,
-  };
-}
 
 // ============================================================================
 // CONSTANTES COMPARTIDAS

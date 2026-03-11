@@ -1,6 +1,6 @@
 /**
  * @file StatusIndicator.tsx
- * @description Indicador de estado minimalista para navbar/perfil
+ * @description Indicador de estado minimalista para navbar/profile
  */
 
 'use client';

@@ -1,7 +1,6 @@
 /**
  * @file textarea.tsx
  * @description Textarea premium con diseño orgánico - 100% responsive
- * @version 4.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -57,7 +56,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const [isFocused, setIsFocused] = React.useState(false);
     
     const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-    const textareaId = id || React.useId();
+    const generatedId = React.useId();
+    const textareaId = id || generatedId;
     const errorId = `${textareaId}-error`;
     const helperId = `${textareaId}-helper`;
 
@@ -76,7 +76,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       default: cn(
         "bg-white border border-origen-pradera/30",
         "hover:border-origen-hoja",
-        "focus:border-origen-pradera focus:ring-2 focus:ring-origen-menta/20",
+        "focus:border-origen-pradera focus:ring-2 focus:ring-origen-pradera/20",
         error && "border-red-500 hover:border-red-600 focus:ring-red-500/20",
         success && !error && "border-green-500 hover:border-green-600 focus:ring-green-500/20"
       ),
@@ -84,7 +84,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       outline: cn(
         "bg-transparent border-2 border-origen-bosque/30",
         "hover:border-origen-bosque/50",
-        "focus:border-origen-pradera focus:ring-2 focus:ring-origen-menta/20",
+        "focus:border-origen-pradera focus:ring-2 focus:ring-origen-pradera/20",
         error && "border-red-500",
         success && !error && "border-green-500"
       ),
@@ -232,7 +232,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               "text-origen-oscuro placeholder:text-gray-400",
               "transition-all duration-200",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
-              "focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+              "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
               
               variantClasses[variant],
               sizeClasses[textareaSize],
@@ -247,7 +247,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {/* Indicadores de estado */}
           <div className="absolute right-3 top-3 flex items-center gap-2">
             {loading && (
-              <Loader2 className="h-4 w-4 animate-spin text-origen-menta" />
+              <Loader2 className="h-4 w-4 animate-spin text-origen-pradera" />
             )}
             {success && !error && !loading && (
               <Check className="h-4 w-4 text-green-500" />
@@ -258,50 +258,52 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           </div>
         </div>
 
-        {/* Mensajes de ayuda/error */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            {error && (
-              <p 
-                id={errorId}
-                className="text-xs text-red-600 flex items-center gap-1"
-                role="alert"
+        {/* Mensajes de ayuda/error — solo se renderiza si hay contenido */}
+        {(error || helperText || (showCharCount && maxLength)) && (
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1">
+              {error && (
+                <p
+                  id={errorId}
+                  className="text-xs text-red-600 flex items-center gap-1"
+                  role="alert"
+                >
+                  <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                  <span>{error}</span>
+                </p>
+              )}
+
+              {helperText && !error && (
+                <p
+                  id={helperId}
+                  className="text-xs text-gray-500"
+                >
+                  {helperText}
+                </p>
+              )}
+
+              {showCharCount && maxLength && isNearLimit && !isAtLimit && !error && (
+                <p className="text-xs text-amber-600 flex items-center gap-1">
+                  <Info className="h-3 w-3 flex-shrink-0" />
+                  <span>Cerca del límite ({Math.round(warningLevel)}%)</span>
+                </p>
+              )}
+            </div>
+
+            {/* Contador de caracteres */}
+            {showCharCount && maxLength && (
+              <span
+                className={cn(
+                  "text-xs tabular-nums",
+                  isAtLimit ? "text-red-600" :
+                  isNearLimit ? "text-amber-600" : "text-gray-500"
+                )}
               >
-                <AlertCircle className="h-3 w-3 flex-shrink-0" />
-                <span>{error}</span>
-              </p>
-            )}
-            
-            {helperText && !error && (
-              <p 
-                id={helperId}
-                className="text-xs text-gray-500"
-              >
-                {helperText}
-              </p>
-            )}
-            
-            {showCharCount && maxLength && isNearLimit && !isAtLimit && !error && (
-              <p className="text-xs text-amber-600 flex items-center gap-1">
-                <Info className="h-3 w-3 flex-shrink-0" />
-                <span>Cerca del límite ({Math.round(warningLevel)}%)</span>
-              </p>
+                {charCount}/{maxLength}
+              </span>
             )}
           </div>
-
-          {/* Contador de caracteres */}
-          {showCharCount && maxLength && (
-            <span 
-              className={cn(
-                "text-xs tabular-nums",
-                isAtLimit ? "text-red-600" : 
-                isNearLimit ? "text-amber-600" : "text-gray-500"
-              )}
-            >
-              {charCount}/{maxLength}
-            </span>
-          )}
-        </div>
+        )}
       </div>
     );
   }

@@ -1,7 +1,6 @@
 /**
  * @file percentage-input.tsx
  * @description Input de porcentaje premium - 100% responsive
- * @version 2.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -46,7 +45,8 @@ const PercentageInput = React.forwardRef<HTMLInputElement, PercentageInputProps>
       value ? value.toString() : ''
     );
     const [isFocused, setIsFocused] = React.useState(false);
-    const inputId = id || React.useId();
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +144,7 @@ const PercentageInput = React.forwardRef<HTMLInputElement, PercentageInputProps>
               "flex h-9 sm:h-10 w-full rounded-xl border bg-white px-3 py-2 pr-8 sm:pr-9",
               "text-sm sm:text-base placeholder:text-gray-400",
               "transition-all duration-200",
-              "focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+              "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
               
               error

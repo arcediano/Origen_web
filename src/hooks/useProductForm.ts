@@ -1,15 +1,53 @@
 /**
  * @file useProductForm.ts
- * @description Hook global para la lógica del formulario de productos - VERSIÓN SIMPLIFICADA
+ * @description Hook global para la gestión del formulario de productos
+ * 
+ * FUNCIONALIDADES PRINCIPALES:
+ * 
+ * 1. CARGA DE DATOS
+ *    - Con productId → Carga de API y transforma a FormData
+ *    - Sin productId → Carga borrador de localStorage
+ * 
+ * 2. GESTIÓN DEL FORMULARIO
+ *    - formData: Estado del formulario (tipo ProductFormData)
+ *    - activeTab: Pestaña activa
+ *    - completedTabs: Pasos completados
+ * 
+ * 3. AUTO-GUARDADO (solo creación)
+ *    - Cada 2 segundos en localStorage
+ *    - Indicadores isAutoSaving / lastSaved
+ * 
+ * 4. ACCIONES
+ *    - handleSave: Guarda (localStorage o API)
+ *    - handlePublish: Publica (createProduct o updateProduct)
+ *    - handleCancel: Vuelve al listado
+ * 
+ * 5. UTILIDADES
+ *    - skuSuggestion: Sugerencia de SKU en tiempo real
+ *    - isEditMode: Detección de modo edición
+ *    - reloadProduct: Recarga manual
  */
 
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { PriceTier, ProductFormData, FormStepId, ProductCertification, ProductImage } from '@/types/product';
+import type { 
+  PriceTier, 
+  ProductFormData, 
+  FormStepId, 
+  ProductCertification, 
+  ProductImage,
+  Product 
+} from '@/types/product';
 import { defaultFormData } from '@/types/product';
-import { createProduct, saveProductDraft, suggestSku } from '@/lib/api/products';
+import { 
+  createProduct, 
+  saveProductDraft, 
+  suggestSku,
+  updateProduct,
+  fetchProductById 
+} from '@/lib/api/products';
 
 // ============================================================================
 // CONSTANTES
@@ -19,18 +57,105 @@ const STORAGE_KEY = 'origen-nuevo-producto-draft-v10';
 const TOTAL_STEPS = 7;
 
 // ============================================================================
+// FUNCIONES DE TRANSFORMACIÓN (helpers puros)
+// ============================================================================
+
+/**
+ * Convierte un Product de API a ProductFormData para el formulario
+ */
+const productToFormData = (product: Product): ProductFormData => ({
+  name: product.name,
+  shortDescription: product.shortDescription,
+  fullDescription: product.fullDescription,
+  categoryId: product.categoryId,
+  categoryName: product.categoryName,
+  subcategoryId: product.subcategoryId,
+  tags: product.tags,
+  mainImage: product.mainImage,
+  gallery: product.gallery,
+  basePrice: product.basePrice,
+  comparePrice: product.comparePrice,
+  priceTiers: product.priceTiers || [],
+  sku: product.sku,
+  barcode: product.barcode,
+  stock: product.stock,
+  lowStockThreshold: product.lowStockThreshold,
+  trackInventory: product.trackInventory,
+  allowBackorders: product.allowBackorders,
+  weight: product.weight,
+  weightUnit: product.weightUnit || 'kg',
+  dimensions: product.dimensions,
+  shippingClass: product.shippingClass,
+  nutritionalInfo: product.nutritionalInfo || defaultFormData.nutritionalInfo,
+  certifications: product.certifications || [],
+  productionInfo: product.productionInfo || defaultFormData.productionInfo,
+  attributes: product.attributes || [],
+  status: product.status === 'active' ? 'active' : 'draft',
+  visibility: product.visibility || 'public',
+});
+
+/**
+ * Convierte ProductFormData a Partial<Product> para enviar a la API
+ */
+const formDataToProduct = (formData: ProductFormData): Partial<Product> => {
+  // Mapeo de estados del formulario a estados del producto
+  const statusMap: Record<string, 'draft' | 'active' | 'inactive' | 'out_of_stock'> = {
+    'draft': 'draft',
+    'active': 'active',
+    'pending_approval': 'draft',
+    'scheduled': 'draft',
+  };
+
+  return {
+    name: formData.name,
+    shortDescription: formData.shortDescription,
+    fullDescription: formData.fullDescription,
+    categoryId: formData.categoryId,
+    categoryName: formData.categoryName,
+    subcategoryId: formData.subcategoryId,
+    tags: formData.tags,
+    mainImage: formData.mainImage,
+    gallery: formData.gallery,
+    basePrice: formData.basePrice,
+    comparePrice: formData.comparePrice,
+    priceTiers: formData.priceTiers,
+    sku: formData.sku,
+    barcode: formData.barcode,
+    stock: formData.stock,
+    lowStockThreshold: formData.lowStockThreshold,
+    trackInventory: formData.trackInventory,
+    allowBackorders: formData.allowBackorders,
+    weight: formData.weight,
+    weightUnit: formData.weightUnit,
+    dimensions: formData.dimensions,
+    shippingClass: formData.shippingClass,
+    nutritionalInfo: formData.nutritionalInfo,
+    certifications: formData.certifications,
+    productionInfo: formData.productionInfo,
+    attributes: formData.attributes,
+    status: statusMap[formData.status] || 'draft',
+    visibility: formData.visibility,
+  };
+};
+
+// ============================================================================
 // HOOK PRINCIPAL
 // ============================================================================
 
-export function useProductForm() {
+export function useProductForm(productId?: string) {
   const router = useRouter();
   
-  // Estado del formulario
+  // ==========================================================================
+  // ESTADO
+  // ==========================================================================
+  
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
   const [activeTab, setActiveTab] = useState<FormStepId>('basic');
   const [completedTabs, setCompletedTabs] = useState<Record<string, boolean>>({});
   
-  // Estados de UI
+  // UI States
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -38,15 +163,42 @@ export function useProductForm() {
   const [publishStatus, setPublishStatus] = useState<'idle' | 'success' | 'pending_approval' | 'error'>('idle');
   const [skuSuggestion, setSkuSuggestion] = useState<string>('');
   
-  // Estados de diálogos
+  // Dialog States
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // ==========================================================================
-  // CARGAR BORRADOR
+  // CARGA INICIAL
   // ==========================================================================
 
   useEffect(() => {
+    if (productId) {
+      loadProduct(productId);
+    } else {
+      loadDraft();
+    }
+  }, [productId]);
+
+  const loadProduct = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetchProductById(id);
+      if (response.error) {
+        setError(response.error);
+      } else if (response.data) {
+        setFormData(productToFormData(response.data));
+        setLastSaved(new Date());
+      }
+    } catch (err) {
+      setError('Error al cargar el producto');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadDraft = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
@@ -56,30 +208,30 @@ export function useProductForm() {
         console.error('Error al cargar borrador:', e);
       }
     }
-  }, []);
+  };
 
   // ==========================================================================
-  // AUTO-GUARDADO
+  // AUTO-GUARDADO (solo creación)
   // ==========================================================================
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (Object.keys(formData).length > 0) {
+    if (!productId && Object.keys(formData).length > 0) {
+      const timer = setTimeout(() => {
         setIsAutoSaving(true);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
         setLastSaved(new Date());
         setTimeout(() => setIsAutoSaving(false), 500);
-      }
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [formData]);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [formData, productId]);
 
   // ==========================================================================
-  // VALIDACIÓN DE PASOS COMPLETADOS
+  // VALIDACIÓN DE PASOS
   // ==========================================================================
 
   useEffect(() => {
-    const newCompleted: Record<string, boolean> = {
+    setCompletedTabs({
       basic: !!(formData.name && formData.categoryId),
       images: !!(formData.gallery && formData.gallery.length > 0),
       pricing: !!(formData.basePrice && formData.basePrice > 0),
@@ -95,17 +247,16 @@ export function useProductForm() {
       ),
       inventory: true,
       certifications: true,
-    };
-    setCompletedTabs(newCompleted);
+    });
   }, [formData]);
 
   // ==========================================================================
-  // OBTENER SUGERENCIA DE SKU
+  // SUGERENCIA DE SKU
   // ==========================================================================
 
   useEffect(() => {
     const getSkuSuggestion = async () => {
-      if (formData.name && formData.name.length >= 3 && formData.categoryId) {
+      if (formData.name?.length >= 3 && formData.categoryId) {
         const response = await suggestSku(formData.name, formData.categoryId);
         if (response.data) {
           setSkuSuggestion(response.data.suggestedSku);
@@ -115,15 +266,12 @@ export function useProductForm() {
       }
     };
 
-    const timer = setTimeout(() => {
-      getSkuSuggestion();
-    }, 500);
-
+    const timer = setTimeout(getSkuSuggestion, 500);
     return () => clearTimeout(timer);
   }, [formData.name, formData.categoryId]);
 
   // ==========================================================================
-  // HANDLERS DEL FORMULARIO - SIN CONVERSIONES
+  // HANDLERS DEL FORMULARIO
   // ==========================================================================
 
   const handleInputChange = useCallback((field: string, value: any) => {
@@ -144,7 +292,6 @@ export function useProductForm() {
     setFormData(prev => ({ ...prev, priceTiers }));
   }, []);
 
-  // AHORA ES DIRECTO - MISMO TIPO
   const handleImagesChange = useCallback((images: ProductImage[]) => {
     setFormData(prev => ({ ...prev, gallery: images }));
   }, []);
@@ -157,63 +304,76 @@ export function useProductForm() {
     setIsSaving(true);
     
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-      setLastSaved(new Date());
-      await saveProductDraft(formData);
+      if (productId) {
+        // Edición: convertir y enviar a API
+        const productData = formDataToProduct(formData);
+        const response = await updateProduct(productId, productData);
+        if (response.error) setError(response.error);
+        else setLastSaved(new Date());
+      } else {
+        // Creación: guardar en localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+        setLastSaved(new Date());
+        await saveProductDraft(formData);
+      }
     } catch (error) {
-      console.error('Error al guardar:', error);
+      setError('Error al guardar el producto');
     } finally {
       setIsSaving(false);
     }
-  }, [formData]);
+  }, [formData, productId]);
 
   const handlePublish = useCallback(async () => {
-    const allStepsCompleted = Object.keys(completedTabs).length === TOTAL_STEPS;
-    if (!allStepsCompleted) return;
+    if (Object.keys(completedTabs).length !== TOTAL_STEPS) return;
     
     setIsPublishing(true);
     setPublishStatus('idle');
     
     try {
-      const response = await createProduct(formData);
-      
-      if (response.error) {
-        setPublishStatus('error');
-        return;
-      }
-      
-      if (response.data) {
-        const hasCertifications = formData.certifications.length > 0;
-        const certificationsApproved = formData.certifications.every((c: ProductCertification) => c.verified) || false;
+      if (productId) {
+        // Edición: actualizar y publicar
+        const productData = {
+          ...formDataToProduct(formData),
+          status: 'active' as const,
+          publishedAt: new Date()
+        };
+        const response = await updateProduct(productId, productData);
         
-        if (hasCertifications && !certificationsApproved) {
-          setPublishStatus('pending_approval');
+        if (response.error) {
+          setPublishStatus('error');
         } else {
           setPublishStatus('success');
           setShowSuccessModal(true);
         }
+      } else {
+        // Creación: crear nuevo producto
+        const response = await createProduct(formData);
         
-        localStorage.removeItem(STORAGE_KEY);
+        if (response.error) {
+          setPublishStatus('error');
+        } else {
+          const needsApproval = formData.certifications.length > 0 && 
+            !formData.certifications.every(c => c.verified);
+          
+          setPublishStatus(needsApproval ? 'pending_approval' : 'success');
+          if (!needsApproval) setShowSuccessModal(true);
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
-      
     } catch (error) {
       setPublishStatus('error');
     } finally {
       setIsPublishing(false);
     }
-  }, [formData, completedTabs]);
+  }, [formData, completedTabs, productId]);
 
   const handleCancel = useCallback(() => {
-    router.push('/dashboard/products');
+    router.push('/products');
   }, [router]);
 
   // ==========================================================================
-  // VALORES COMPUTADOS
+  // RETURN
   // ==========================================================================
-
-  const allStepsCompleted = Object.keys(completedTabs).length === TOTAL_STEPS;
-  const hasCertifications = formData.certifications.length > 0;
-  const certificationsApproved = formData.certifications.every((c: ProductCertification) => c.verified) || false;
 
   return {
     // Estado
@@ -222,7 +382,9 @@ export function useProductForm() {
     setActiveTab,
     completedTabs,
     
-    // UI
+    // UI States
+    isLoading,
+    error,
     isSaving,
     isAutoSaving,
     lastSaved,
@@ -234,18 +396,22 @@ export function useProductForm() {
     setShowSuccessModal,
     skuSuggestion,
     
-    // Valores
-    allStepsCompleted,
-    hasCertifications,
-    certificationsApproved,
+    // Valores computados
+    allStepsCompleted: Object.keys(completedTabs).length === TOTAL_STEPS,
+    hasCertifications: formData.certifications.length > 0,
+    certificationsApproved: formData.certifications.every(c => c.verified) || false,
+    isEditMode: !!productId,
     
-    // Handlers - TODO DIRECTO, SIN CONVERSIONES
+    // Handlers
     handleInputChange,
     handleNestedChange,
     handlePriceTiersChange,
-    handleImagesChange,      // ← Recibe ProductImage[] directamente
+    handleImagesChange,
     handleSave,
     handlePublish,
     handleCancel,
+    
+    // Utilidades
+    reloadProduct: productId ? () => loadProduct(productId) : undefined,
   };
 }

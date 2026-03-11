@@ -1,7 +1,6 @@
 /**
  * @file attribute-card.tsx
  * @description Tarjeta de atributo premium - 100% responsive
- * @version 2.0.1 - CORREGIDO: inputSize en lugar de size
  */
 
 "use client";

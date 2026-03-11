@@ -6,22 +6,22 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion'; // ← IMPORTAR Variants
 import { Package, Sparkles, TrendingUp, Lightbulb } from 'lucide-react';
 
 // Componentes UI
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PageHeader } from '../../components/layout/PageHeader';
+import { PageHeader } from '@/app/dashboard/components/PageHeader';
 
 // Steps del formulario
-import { StepBasic } from '@/app/dashboard/components/products/create/steps/StepBasic';
-import { StepImages } from '@/app/dashboard/components/products/create/steps/StepImages';
-import { StepPricing } from '@/app/dashboard/components/products/create/steps/StepPricing';
-import { StepNutritional } from '@/app/dashboard/components/products/create/steps/StepNutritional';
-import { StepProduction } from '@/app/dashboard/components/products/create/steps/StepProduction';
-import { StepInventory } from '@/app/dashboard/components/products/create/steps/StepInventory';
-import { StepCertificationsAttributes } from '@/app/dashboard/components/products/create/steps/StepCertificationsAttributes';
+import { StepBasic } from '@/app/dashboard/products/components/steps/StepBasic';
+import { StepImages } from '@/app/dashboard/products/components/steps/StepImages';
+import { StepPricing } from '@/app/dashboard/products/components/steps/StepPricing';
+import { StepNutritional } from '@/app/dashboard/products/components/steps/StepNutritional';
+import { StepProduction } from '@/app/dashboard/products/components/steps/StepProduction';
+import { StepInventory } from '@/app/dashboard/products/components/steps/StepInventory';
+import { StepCertificationsAttributes } from '@/app/dashboard/products/components/steps/StepCertificationsAttributes';
 
 // Componentes de creación
 import {
@@ -29,11 +29,11 @@ import {
   CreateProductNavigation,
   CreateProductCancelDialog,
   SuccessPublishModal,
-} from '@/app/dashboard/components/products/create';
+} from '@/app/dashboard/products/components';
 
 // Hooks y tipos
 import { useProductForm } from '@/hooks/useProductForm';
-import { FORM_STEPS, defaultNutritionalInfo, defaultProductionInfo } from '@/types/product';
+import { FORM_STEPS, defaultNutritionalInfo, defaultProductionInfo, type FormStepId } from '@/types/product';
 
 // ============================================================================
 // HOOK PARA GENERAR CONSEJOS POR PASO
@@ -165,22 +165,30 @@ const useStepTips = (step: number, formData: any) => {
 };
 
 // ============================================================================
-// ANIMACIONES
+// ANIMACIONES CORREGIDAS
 // ============================================================================
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { 
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+    transition: { 
+      staggerChildren: 0.1, 
+      delayChildren: 0.2 
+    }
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
-    opacity: 1, y: 0,
-    transition: { type: "spring", stiffness: 300, damping: 25 }
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      type: "spring", 
+      stiffness: 300, 
+      damping: 25 
+    }
   }
 };
 
@@ -217,7 +225,6 @@ export default function CreateProductPage() {
     handleNestedChange,
     handlePriceTiersChange,
     handleImagesChange,
-    generateSku,
     handleSave,
     handlePublish,
     handleCancel,
@@ -236,6 +243,11 @@ export default function CreateProductPage() {
     5: 'Los productos con historia tienen un 50% más de reseñas positivas',
     6: 'El 15% de los pedidos cancelados son por falta de stock',
     7: 'Los productos con certificaciones tienen un 35% más de confianza',
+  };
+
+  // Función para manejar el cambio de tab con el tipo correcto
+  const handleTabChange = (tab: FormStepId) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -268,7 +280,7 @@ export default function CreateProductPage() {
         <CreateProductProgress
           currentTab={activeTab}
           completedTabs={completedTabs}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
         />
 
         <motion.div 
@@ -337,7 +349,6 @@ export default function CreateProductPage() {
                     formData={formData}
                     onInputChange={handleInputChange}
                     onNestedChange={handleNestedChange}
-                    onGenerateSku={generateSku}
                     completed={completedTabs.inventory}
                   />
                 )}
@@ -357,7 +368,7 @@ export default function CreateProductPage() {
 
             <CreateProductNavigation
               currentTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={handleTabChange}
               completedTabs={completedTabs}
               onSave={handleSave}
               isSaving={isSaving}

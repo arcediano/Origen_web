@@ -1,7 +1,6 @@
 /**
  * @file accordion.tsx
  * @description Accordion premium - 100% responsive
- * @version 2.0.2 - CORREGIDO: Type assertion para Accordion
  */
 
 "use client";

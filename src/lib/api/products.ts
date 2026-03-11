@@ -431,28 +431,18 @@ export async function createProduct(
     const productId = generateProductId();
     const slug = generateSlug(formData.name);
 
-    // CORREGIDO: Determinar el estado correcto para el producto
-    // ProductFormData.status puede ser: 'draft' | 'pending_approval' | 'active' | 'scheduled'
-    // Product.status puede ser: 'draft' | 'active' | 'inactive' | 'out_of_stock'
-    let productStatus: 'draft' | 'active' | 'inactive' | 'out_of_stock' = 'draft';
-    
+    // CORREGIDO: Usar un objeto de mapeo simple
     // Mapeo de estados del formulario a estados del producto
-    switch (formData.status) {
-      case 'active':
-        productStatus = 'active';
-        break;
-      case 'draft':
-        productStatus = 'draft';
-        break;
-      case 'pending_approval':
-        productStatus = 'draft'; // Pendiente de aprobación se guarda como borrador
-        break;
-      case 'scheduled':
-        productStatus = 'draft'; // Programado se guarda como borrador
-        break;
-      default:
-        productStatus = 'draft';
-    }
+    const statusMap: Record<string, 'draft' | 'active' | 'inactive' | 'out_of_stock'> = {
+      'draft': 'draft',
+      'pending_approval': 'draft',
+      'active': 'active',
+      'scheduled': 'draft',
+      'inactive': 'inactive',
+      'out_of_stock': 'out_of_stock'
+    };
+
+    const productStatus = statusMap[formData.status] || 'draft';
 
     const newProduct: Product = {
       id: productId,
@@ -502,7 +492,7 @@ export async function createProduct(
     console.log('✅ Producto creado:', newProduct.name, 'SKU:', newProduct.sku);
 
     return {
-      data: { product: newProduct, redirectUrl: `/dashboard/products/${newProduct.id}` },
+      data: { product: newProduct, redirectUrl: `/products/${newProduct.id}` },
       status: 201,
     };
   } catch (error) {
@@ -610,8 +600,9 @@ export async function updateProductStock(
     const productIndex = MOCK_PRODUCTS.findIndex((p: Product) => p.id === id);
     if (productIndex === -1) return { error: 'Producto no encontrado', status: 404 };
     
-    // CORREGIDO: Determinar el nuevo estado basado en el stock
     const currentProduct = MOCK_PRODUCTS[productIndex];
+    
+    // Determinar el nuevo estado basado en el stock
     let newStatus: 'active' | 'inactive' | 'out_of_stock' | 'draft' = currentProduct.status;
     
     if (stock === 0) {
@@ -619,7 +610,6 @@ export async function updateProductStock(
     } else if (stock > 0 && currentProduct.status === 'out_of_stock') {
       newStatus = 'active';
     }
-    // Si no, mantener el estado actual
     
     const updatedProduct = {
       ...currentProduct,

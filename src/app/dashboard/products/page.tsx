@@ -7,25 +7,22 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { Package, Plus, RefreshCw } from 'lucide-react';
 
 // Componentes UI
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-
-// Componentes de dashboard (rutas relativas)
-import { PageHeader } from '../components/layout/PageHeader';
-import { Pagination } from '../components/layout/Pagination';
-import { ProductStats } from '../components/products/ProductStats';
-import { ProductFilters } from '../components/products/ProductFilters';
-import { ProductTable } from '../components/products/ProductTable';
-import { ProductCard } from '../components/products/ProductCard';
-import { AdjustStockDialog } from '../components/products/ProductDialogs/AdjustStockDialog';
-import { DeleteProductDialog } from '../components/products/ProductDialogs/DeleteProductDialog';
+import { LoadingPage } from '@/components/ui/loading';
+import { ErrorDisplay } from '@/components/ui/error';
+import { Card } from '@/components/ui/card'
+import { PageHeader } from '@/app/dashboard/components/PageHeader';
+import { Pagination } from '@/components/ui/Pagination';
+import { ProductStats, ProductFilters, ProductTable, ProductCard } from './components';
+import { AdjustStockDialog } from './components/ProductDialogs/AdjustStockDialog';
+import { DeleteProductDialog } from './components/ProductDialogs/DeleteProductDialog';
 
 // Hooks y APIs
-import { useProductFilters } from '../hooks/useProductFilters';
+import { useProductFilters } from '@/hooks/useProductFilters';
 import { fetchProducts, fetchProductStats } from '@/lib/api/products';
 import { type Product } from '@/types/product';
 
@@ -33,20 +30,27 @@ import { type Product } from '@/types/product';
 // ANIMACIONES
 // ============================================================================
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05 },
+    transition: { 
+      staggerChildren: 0.05,
+      delayChildren: 0.1
+    },
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
+  visible: { 
+    opacity: 1, 
     y: 0,
-    transition: { type: 'spring', stiffness: 300, damping: 25 },
+    transition: { 
+      type: "spring",
+      stiffness: 300, 
+      damping: 25
+    },
   },
 };
 
@@ -105,24 +109,22 @@ export default function ProductosPage() {
     loadData();
   }, []);
 
-  /**
-   * Carga los productos y estadísticas desde la API
-   */
   const loadData = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Cargar productos
-      const productsResponse = await fetchProducts();
+      const [productsResponse, statsResponse] = await Promise.all([
+        fetchProducts(),
+        fetchProductStats()
+      ]);
+
       if (productsResponse.error) {
         setError(productsResponse.error);
       } else if (productsResponse.data) {
         setProducts(productsResponse.data.items);
       }
 
-      // Cargar estadísticas
-      const statsResponse = await fetchProductStats();
       if (statsResponse.data) {
         setStats(statsResponse.data);
       }
@@ -138,7 +140,7 @@ export default function ProductosPage() {
   // ==========================================================================
 
   const handleNewProduct = () => router.push('/dashboard/products/create');
-  const handleEdit = (id: string) => router.push(`/dashboard/products/${id}/editar`);
+  const handleEdit = (id: string) => router.push(`/dashboard/products/${id}/edit`);
   const handleView = (id: string) => router.push(`/dashboard/products/${id}`);
 
   const handleAdjustStock = (product: Product) => {
@@ -170,31 +172,17 @@ export default function ProductosPage() {
   // ==========================================================================
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-origen-crema flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="w-12 h-12 text-origen-pradera animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Cargando productos...</p>
-        </div>
-      </div>
-    );
+    return <LoadingPage message="Cargando productos..." />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-origen-crema flex items-center justify-center">
-        <Card className="p-8 max-w-md text-center">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-            <Package className="w-8 h-8 text-red-500" />
-          </div>
-          <h2 className="text-xl font-bold text-origen-bosque mb-2">Error al cargar</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <Button onClick={loadData} className="bg-origen-bosque hover:bg-origen-pino text-white">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Reintentar
-          </Button>
-        </Card>
-      </div>
+      <ErrorDisplay
+        title="Error al cargar"
+        message={error}
+        onRetry={loadData}
+        size="lg"
+      />
     );
   }
 

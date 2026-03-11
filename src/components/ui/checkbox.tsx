@@ -1,7 +1,6 @@
 /**
  * @file checkbox.tsx
  * @description Checkbox premium con diseño orgánico - 100% responsive
- * @version 4.0.1 - CORREGIDO: Tipado compatible
  */
 
 "use client";
@@ -86,10 +85,10 @@ const Checkbox = React.forwardRef<
     ),
     
     accent: cn(
-      "border-origen-menta/30 bg-white",
-      "hover:border-origen-menta hover:bg-origen-menta/5",
-      "data-[state=checked]:bg-origen-menta data-[state=checked]:border-origen-menta",
-      "data-[state=indeterminate]:bg-origen-menta data-[state=indeterminate]:border-origen-menta",
+      "border-origen-pradera/30 bg-white",
+      "hover:border-origen-pradera hover:bg-origen-pradera/5",
+      "data-[state=checked]:bg-origen-pradera data-[state=checked]:border-origen-pradera",
+      "data-[state=indeterminate]:bg-origen-pradera data-[state=indeterminate]:border-origen-pradera",
       hasError && "border-red-500 hover:border-red-600"
     ),
   };
@@ -115,7 +114,7 @@ const Checkbox = React.forwardRef<
       className={cn(
         "shrink-0 border-2 bg-white",
         "transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta/50 focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera/50 focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "disabled:data-[state=checked]:bg-gray-400 disabled:data-[state=checked]:border-gray-400",
         

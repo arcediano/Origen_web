@@ -1,7 +1,6 @@
 /**
  * @file sheet.tsx
  * @description Sheet (panel lateral) premium - 100% responsive
- * @version 2.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -85,7 +84,7 @@ const SheetContent = React.forwardRef<
             "rounded-lg p-1.5 sm:p-2",
             "opacity-70 ring-offset-white transition-opacity",
             "hover:opacity-100 hover:bg-origen-crema",
-            "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:ring-offset-2",
+            "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2",
             "disabled:pointer-events-none",
             closeClassName
           )}

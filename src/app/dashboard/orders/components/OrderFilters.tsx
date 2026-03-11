@@ -1,0 +1,212 @@
+/**
+ * @component OrderFilters
+ * @description Filtros para la lista de pedidos
+ */
+
+'use client';
+
+import React from 'react';
+import { 
+  Search, 
+  X, 
+  Filter, 
+  Clock, 
+  Package, 
+  Truck, 
+  CheckCircle, 
+  XCircle,
+  DollarSign,
+  Calendar,
+  Calendar as CalendarIcon,
+  CalendarRange
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
+import type { OrderFilters as OrderFiltersType, OrderStatus } from '@/types/order';
+
+export interface OrderFiltersProps {
+  filters: OrderFiltersType;
+  onFilterChange: (filters: OrderFiltersType) => void;
+  onClearFilters: () => void;
+  totalOrders: number;
+  className?: string;
+}
+
+const STATUS_OPTIONS: { value: OrderStatus | ''; label: string; icon: React.ElementType; color: string }[] = [
+  { value: '', label: 'Todos los estados', icon: Filter, color: 'gray' },
+  { value: 'pending', label: 'Pendientes', icon: Clock, color: 'amber' },
+  { value: 'processing', label: 'Procesando', icon: Package, color: 'blue' },
+  { value: 'shipped', label: 'Enviados', icon: Truck, color: 'purple' },
+  { value: 'delivered', label: 'Entregados', icon: CheckCircle, color: 'green' },
+  { value: 'cancelled', label: 'Cancelados', icon: XCircle, color: 'red' }
+];
+
+export function OrderFilters({
+  filters,
+  onFilterChange,
+  onClearFilters,
+  totalOrders,
+  className
+}: OrderFiltersProps) {
+  const [showMobileFilters, setShowMobileFilters] = React.useState(false);
+  const [localSearch, setLocalSearch] = React.useState(filters.search || '');
+
+  const hasFilters = Boolean(
+    filters.status ||
+    filters.search ||
+    filters.dateFrom ||
+    filters.dateTo ||
+    filters.minAmount ||
+    filters.maxAmount
+  );
+
+  const handleSearchChange = (value: string) => {
+    setLocalSearch(value);
+    const timer = setTimeout(() => {
+      onFilterChange({ ...filters, search: value || undefined });
+    }, 300);
+    return () => clearTimeout(timer);
+  };
+
+  const toggleFilter = (key: keyof OrderFiltersType, value: any) => {
+    onFilterChange({ ...filters, [key]: value });
+  };
+
+  // Formatear fecha para input type="date" (YYYY-MM-DD)
+  const formatDateForInput = (date?: Date) => {
+    if (!date) return '';
+    return date.toISOString().split('T')[0];
+  };
+
+  return (
+    <Card variant="elevated" className={cn('p-3', className)}>
+      {/* Primera fila: búsqueda */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={localSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Buscar por nº pedido, cliente o email..."
+            className="w-full pl-9 pr-7 h-10 sm:h-9 text-sm bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-origen-menta/20 focus:border-origen-pradera"
+          />
+          {localSearch && (
+            <button
+              onClick={() => {
+                setLocalSearch('');
+                onFilterChange({ ...filters, search: undefined });
+              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <button
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className={cn(
+            'sm:hidden flex items-center justify-center h-10 px-3 border border-gray-200 rounded-md bg-white',
+            showMobileFilters ? 'bg-origen-crema text-origen-bosque border-origen-pradera/30' : 'text-gray-600'
+          )}
+        >
+          <Filter className="w-4 h-4 mr-2" />
+          <span>Filtros</span>
+          {hasFilters && (
+            <span className="ml-2 w-5 h-5 rounded-full bg-origen-pradera text-white text-xs flex items-center justify-center">
+              {Object.values(filters).filter(Boolean).length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Filtros desktop */}
+      <div className="hidden sm:flex flex-wrap items-center gap-3 mt-3">
+        {/* Estado */}
+        <select
+          value={filters.status || ''}
+          onChange={(e) => toggleFilter('status', e.target.value || undefined)}
+          className="h-9 px-3 text-sm border border-gray-200 bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-origen-menta/20 focus:border-origen-pradera"
+        >
+          {STATUS_OPTIONS.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Rango de fechas - CON PLACEHOLDERS MEJORADOS */}
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <CalendarIcon className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              type="date"
+              value={formatDateForInput(filters.dateFrom)}
+              onChange={(e) => toggleFilter('dateFrom', e.target.value ? new Date(e.target.value) : undefined)}
+              className="pl-8 h-9 text-sm border border-gray-200 bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-origen-menta/20 focus:border-origen-pradera"
+              placeholder="dd/mm/aaaa"
+              title="Fecha desde"
+            />
+          </div>
+          <span className="text-gray-400 text-sm">→</span>
+          <div className="relative">
+            <CalendarRange className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              type="date"
+              value={formatDateForInput(filters.dateTo)}
+              onChange={(e) => toggleFilter('dateTo', e.target.value ? new Date(e.target.value) : undefined)}
+              className="pl-8 h-9 text-sm border border-gray-200 bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-origen-menta/20 focus:border-origen-pradera"
+              placeholder="dd/mm/aaaa"
+              title="Fecha hasta"
+            />
+          </div>
+        </div>
+
+        {/* Rango de importe - CON PLACEHOLDERS DESCRIPTIVOS */}
+        <div className="flex items-center gap-1">
+          <div className="relative">
+            <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              type="number"
+              value={filters.minAmount || ''}
+              onChange={(e) => toggleFilter('minAmount', e.target.value ? Number(e.target.value) : undefined)}
+              placeholder="Mínimo €"
+              className="w-24 pl-7 h-9 text-sm border border-gray-200 bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-origen-menta/20 focus:border-origen-pradera"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <span className="text-gray-400">-</span>
+          <div className="relative">
+            <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <input
+              type="number"
+              value={filters.maxAmount || ''}
+              onChange={(e) => toggleFilter('maxAmount', e.target.value ? Number(e.target.value) : undefined)}
+              placeholder="Máximo €"
+              className="w-24 pl-7 h-9 text-sm border border-gray-200 bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-origen-menta/20 focus:border-origen-pradera"
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+
+        {hasFilters && (
+          <button
+            onClick={onClearFilters}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-origen-pradera hover:text-origen-hoja hover:bg-origen-crema/50 rounded-md transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Limpiar filtros</span>
+          </button>
+        )}
+      </div>
+
+      {/* Contador de resultados */}
+      <div className="mt-2 text-xs text-gray-500 text-right">
+        {totalOrders} {totalOrders === 1 ? 'pedido encontrado' : 'pedidos encontrados'}
+      </div>
+    </Card>
+  );
+}

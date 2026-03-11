@@ -1,7 +1,6 @@
 /**
  * @file alert-dialog.tsx
  * @description Diálogo de alerta premium - 100% responsive
- * @version 2.0.0 - Paleta oficial Origen
  */
 
 'use client';

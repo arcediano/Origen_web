@@ -8,8 +8,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { DashboardFooter } from '@/components/dashboard/layout/DashboardFooter';
+import { DashboardFooter } from '@/app/dashboard/components/footer/DashboardFooter';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -295,7 +294,7 @@ export default function ProducerDashboard() {
               title="Nuevo producto"
               description="Añade un producto a tu catálogo"
               icon={Package}
-              href="/dashboard/products/create"
+              href="/dashboard/dashboard/dashboard/dashboard/dashboard/dashboard/dashboard/products/create"
               gradient="from-origen-pradera to-origen-hoja"
             />
             <QuickActionCard
@@ -310,7 +309,7 @@ export default function ProducerDashboard() {
               title="Mi perfil"
               description="Actualiza la información de tu negocio"
               icon={Store}
-              href="/dashboard/perfil"
+              href="/dashboard/profile"
               gradient="from-origen-hoja to-origen-pino"
             />
             <QuickActionCard
@@ -369,7 +368,7 @@ export default function ProducerDashboard() {
                 Productos top
               </h3>
               <Link 
-                href="/dashboard/products" 
+                href="/products" 
                 className="text-sm text-origen-pradera hover:text-origen-hoja flex items-center gap-1"
               >
                 Ver todos <ChevronRight className="w-4 h-4" />

@@ -1,7 +1,6 @@
 /**
  * @file slider.tsx
  * @description Slider premium con diseño orgánico - 100% responsive
- * @version 4.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -95,11 +94,11 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         thumbActive: "border-origen-pino",
       },
       accent: {
-        track: "bg-origen-menta/20",
-        range: "bg-origen-menta",
-        thumb: "bg-white border-2 border-origen-menta",
-        thumbHover: "border-origen-pradera",
-        thumbActive: "border-origen-pradera",
+        track: "bg-origen-pradera/20",
+        range: "bg-origen-pradera",
+        thumb: "bg-white border-2 border-origen-pradera",
+        thumbHover: "border-origen-hoja",
+        thumbActive: "border-origen-hoja",
       },
     };
     
@@ -406,7 +405,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                   className={cn(
                     "rounded-full cursor-pointer",
                     "transition-all duration-200 ease-out",
-                    "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:ring-offset-2",
+                    "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2",
                     config.thumb,
                     size.thumb,
                     isDragging && draggingIndex === index && cn(

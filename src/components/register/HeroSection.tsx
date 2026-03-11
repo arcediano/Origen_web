@@ -206,15 +206,13 @@ export function HeroSection() {
                   @error: Antes usaba bg-origen-menta sobre imagen (violación manual de marca)
                   @fix: Cambiado a bg-origen-bosque con texto blanco (contraste 10.5:1 AAA ✓)
                 */}
-                <Button 
+                <Button
                   size="lg"
-                  className="bg-origen-bosque hover:bg-origen-pino text-white text-base md:text-lg px-7 md:px-10 py-4 md:py-5 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto font-semibold border-2 border-white/30"
+                  rightIcon={<ArrowRight className="w-5 h-5 flex-shrink-0" />}
+                  className="h-auto bg-origen-bosque hover:bg-origen-pino text-white text-sm sm:text-base md:text-lg px-5 sm:px-8 md:px-10 py-3 sm:py-4 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-0.5 w-full sm:w-auto font-semibold border-2 border-white/30 whitespace-nowrap"
                   onClick={() => document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  <span className="flex items-center justify-center gap-2.5">
-                    Empezar registro gratuito
-                    <ArrowRight className="w-5 h-5" />
-                  </span>
+                  Empezar registro gratuito
                 </Button>
                 
                 <div className="flex items-center gap-3 text-white/90">

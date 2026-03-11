@@ -11,6 +11,12 @@ export const initialRegistrationSchema = z.object({
   contactSurname: z.string().min(2, 'Mínimo 2 caracteres').max(100),
   email: z.string().email('Email inválido').toLowerCase(),
   phone: z.string().regex(/^(\+34|0034|34)?[6789]\d{8}$/, 'Teléfono español inválido'),
+  password: z
+    .string()
+    .min(8, 'Mínimo 8 caracteres')
+    .max(72, 'Máximo 72 caracteres')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Debe contener mayúscula, minúscula y número'),
+  confirmPassword: z.string().min(1, 'Confirma tu contraseña'),
   businessName: z.string().min(3, 'Mínimo 3 caracteres').max(200),
   businessType: z.enum(['individual', 'company']),
   province: z.string().min(2, 'Selecciona una provincia'),
@@ -25,6 +31,9 @@ export const initialRegistrationSchema = z.object({
   acceptsPrivacy: z.boolean().refine((val) => val === true, {
     message: 'Debes aceptar la política de privacidad',
   }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmPassword'],
 });
 
 /** Paso 1: Ubicación y región turística */

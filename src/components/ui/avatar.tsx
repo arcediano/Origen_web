@@ -1,7 +1,6 @@
 /**
  * @file avatar.tsx
  * @description Avatar premium con diseño orgánico - 100% responsive
- * @version 4.1.0 - CORREGIDO: Exportación de AvatarImage y AvatarFallback
  */
 
 "use client";

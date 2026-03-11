@@ -1,7 +1,6 @@
 /**
  * @file select.tsx
  * @description Select premium con diseño orgánico - 100% responsive
- * @version 4.0.2 - CORREGIDO: error como string
  */
 
 "use client";
@@ -160,7 +159,7 @@ const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
           "flex w-full items-center justify-between gap-2",
           "rounded-xl border bg-white px-3 py-2 sm:px-4 sm:py-3 text-left",
           "transition-all duration-200",
-          "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:ring-offset-2",
+          "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:ring-offset-2",
           "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
           
           error
@@ -168,7 +167,7 @@ const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
             : cn(
                 "border-origen-pradera/30",
                 "hover:border-origen-hoja",
-                open && "border-origen-pradera ring-2 ring-origen-menta/20"
+                open && "border-origen-pradera ring-2 ring-origen-pradera/20"
               ),
           
           className
@@ -283,7 +282,7 @@ const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 sm:py-2 pl-8 sm:pl-10 pr-3 text-xs sm:text-sm outline-none focus:border-origen-pradera focus:ring-1 focus:ring-origen-menta"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 sm:py-2 pl-8 sm:pl-10 pr-3 text-xs sm:text-sm outline-none focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/50"
                 onClick={(e) => e.stopPropagation()}
               />
               {searchTerm && (
@@ -343,7 +342,7 @@ const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
           "relative flex w-full cursor-pointer select-none items-center rounded-lg py-1.5 sm:py-2 pl-2 sm:pl-3 pr-8 sm:pr-9 text-xs sm:text-sm outline-none",
           "transition-all duration-150",
           "hover:bg-origen-crema hover:text-origen-bosque",
-          "focus:bg-origen-crema focus:text-origen-bosque focus:outline-none focus:ring-2 focus:ring-origen-menta/50",
+          "focus:bg-origen-crema focus:text-origen-bosque focus:outline-none focus:ring-2 focus:ring-origen-pradera/50",
           disabled && "pointer-events-none opacity-50",
           isSelected && "bg-origen-crema/80 font-medium text-origen-bosque",
           className

@@ -1,7 +1,6 @@
 /**
  * @file price-tier-card.tsx
  * @description Tarjeta de tramo de precio premium - 100% responsive
- * @version 2.0.1 - CORREGIDO: inputSize en lugar de size
  */
 
 "use client";

@@ -1,6 +1,6 @@
 /**
  * @file table.tsx
- * @description Componente de tabla responsive con scroll horizontal en móvil
+ * @description Componente de tabla responsive con scroll horizontal en móvil - CORREGIDO
  */
 
 'use client';
@@ -138,7 +138,7 @@ export function Table<T>({
     <div className={cn('bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100', className)}>
       {/* Contenedor con scroll horizontal en móvil */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] md:min-w-full"> {/* Ancho mínimo para móvil */}
+        <table className="w-full min-w-[640px] md:min-w-full">{/* Ancho mínimo para móvil */}
           {/* Cabecera */}
           <thead className="bg-origen-crema border-b-2 border-origen-pradera/30">
             <tr>

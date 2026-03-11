@@ -1,7 +1,6 @@
 /**
  * @file card.tsx
  * @description Sistema de Cards premium - 100% responsive
- * @version 4.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -129,7 +128,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           variantClasses[variant],
           paddingClasses[padding],
           hoverEffect !== "none" && hoverClasses[hoverEffect],
-          interactive && "cursor-pointer hover:ring-2 hover:ring-origen-menta/20",
+          interactive && "cursor-pointer hover:ring-2 hover:ring-origen-pradera/20",
           animationClasses,
           className
         )}
@@ -362,7 +361,7 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
       >
         {badge && (
           <div className="absolute top-4 right-4 z-20">
-            <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold bg-origen-menta text-white rounded-full">
+            <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold bg-origen-pradera text-white rounded-full">
               {badge}
             </span>
           </div>

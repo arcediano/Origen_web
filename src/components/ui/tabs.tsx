@@ -1,14 +1,14 @@
 /**
  * @file tabs.tsx
- * @description Sistema de pestañas premium - 100% responsive
- * @version 4.0.1 - CORREGIDO: Eliminada doble declaración de useTabs
+ * @description Sistema de pestañas profesional
  */
 
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Leaf } from "lucide-react";
+import { motion } from "framer-motion";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 
 // ============================================================================
 // TIPOS
@@ -19,12 +19,14 @@ export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   orientation?: "horizontal" | "vertical";
-  variant?: "default" | "pills" | "underline" | "organic" | "minimal";
-  tabsSize?: "sm" | "md" | "lg";
+  variant?: "default" | "pills" | "underline" | "minimal" | "card" | "segmented";
+  size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
+  className?: string;
 }
 
 export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
   children?: React.ReactNode;
 }
 
@@ -33,10 +35,15 @@ export interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonE
   disabled?: boolean;
   icon?: React.ReactNode;
   badge?: string | number;
+  badgeVariant?: BadgeVariant;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 // ============================================================================
@@ -47,8 +54,8 @@ interface TabsContextType {
   activeTab: string;
   setActiveTab: (value: string) => void;
   orientation: "horizontal" | "vertical";
-  variant: "default" | "pills" | "underline" | "organic" | "minimal";
-  tabsSize: "sm" | "md" | "lg";
+  variant: "default" | "pills" | "underline" | "minimal" | "card" | "segmented";
+  size: "sm" | "md" | "lg";
   fullWidth?: boolean;
 }
 
@@ -60,6 +67,91 @@ const useTabsContext = () => {
     throw new Error("useTabsContext debe usarse dentro de un componente Tabs");
   }
   return context;
+};
+
+// ============================================================================
+// CONSTANTES DE ESTILO - PALETA ORIGEN
+// ============================================================================
+
+const variantStyles = {
+  default: {
+    list: "bg-origen-crema/50 p-1 rounded-xl border border-origen-pradera/20 flex-wrap items-center",
+    trigger: {
+      base: "rounded-lg font-medium transition-all duration-200 whitespace-nowrap",
+      active: "bg-white text-origen-bosque shadow-sm border border-origen-pradera/30",
+      inactive: "text-gray-600 hover:text-origen-bosque hover:bg-white/50",
+      disabled: "opacity-50 cursor-not-allowed",
+    },
+  },
+  pills: {
+    list: "flex gap-2 flex-wrap",
+    trigger: {
+      base: "rounded-full font-medium transition-all duration-200 border whitespace-nowrap",
+      active: "bg-origen-pradera text-white border-origen-pradera shadow-sm",
+      inactive: "bg-white border-gray-200 text-gray-600 hover:border-origen-pradera hover:text-origen-bosque",
+      disabled: "opacity-50 cursor-not-allowed",
+    },
+  },
+  underline: {
+    list: "border-b border-gray-200 flex-wrap",
+    trigger: {
+      base: "font-medium transition-all duration-200 relative pb-2 whitespace-nowrap",
+      active: "text-origen-bosque font-semibold",
+      inactive: "text-gray-500 hover:text-origen-bosque",
+      disabled: "opacity-50 cursor-not-allowed",
+    },
+  },
+  minimal: {
+    list: "flex gap-1 flex-wrap",
+    trigger: {
+      base: "font-medium transition-all duration-200 rounded-lg px-3 py-2 whitespace-nowrap",
+      active: "text-origen-pradera bg-origen-pradera/10",
+      inactive: "text-gray-500 hover:text-origen-bosque hover:bg-gray-100",
+      disabled: "opacity-50 cursor-not-allowed",
+    },
+  },
+  card: {
+    list: "bg-white rounded-xl shadow-sm p-1 border border-gray-200 flex-wrap",
+    trigger: {
+      base: "rounded-lg font-medium transition-all duration-200 whitespace-nowrap",
+      active: "bg-origen-pradera/10 text-origen-bosque border border-origen-pradera/30",
+      inactive: "text-gray-500 hover:text-origen-bosque hover:bg-gray-50",
+      disabled: "opacity-50 cursor-not-allowed",
+    },
+  },
+  segmented: {
+    list: "bg-origen-crema/70 p-1 rounded-xl border border-origen-pradera/20 flex-wrap",
+    trigger: {
+      base: "rounded-lg font-medium transition-all duration-200 whitespace-nowrap",
+      active: "bg-white text-origen-bosque shadow-sm border border-origen-pradera/30",
+      inactive: "text-gray-500 hover:text-origen-bosque",
+      disabled: "opacity-50 cursor-not-allowed",
+    },
+  },
+};
+
+const sizeStyles = {
+  sm: {
+    list: "text-xs",
+    trigger: "px-3 py-1.5 text-xs",
+    gap: "gap-1",
+    icon: "w-3.5 h-3.5",
+    badge: "xs",
+  },
+  md: {
+    list: "text-sm",
+    trigger: "px-4 py-2 text-sm",
+    gap: "gap-2",
+    icon: "w-4 h-4",
+    badge: "sm",
+  },
+  lg: {
+    list: "text-base",
+    trigger: "px-5 py-2.5 text-base",
+    gap: "gap-3",
+    icon: "w-5 h-5",
+    badge: "md",
+  },
 };
 
 // ============================================================================
@@ -75,7 +167,7 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       onValueChange,
       orientation = "horizontal",
       variant = "default",
-      tabsSize = "md",
+      size = "md",
       fullWidth = false,
       children,
       ...props
@@ -102,10 +194,10 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
         setActiveTab,
         orientation,
         variant,
-        tabsSize,
+        size,
         fullWidth,
       }),
-      [activeTab, setActiveTab, orientation, variant, tabsSize, fullWidth]
+      [activeTab, setActiveTab, orientation, variant, size, fullWidth]
     );
 
     return (
@@ -134,53 +226,28 @@ Tabs.displayName = "Tabs";
 
 const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
   ({ className = "", children, ...props }, ref) => {
-    const { orientation, variant, tabsSize, fullWidth } = useTabsContext();
+    const { orientation, variant, size, fullWidth } = useTabsContext();
 
-    const variantClasses = {
-      default: cn(
-        "bg-origen-crema/80 p-1 rounded-xl",
-        orientation === "horizontal" ? "inline-flex flex-wrap" : "flex flex-col",
-        "backdrop-blur-sm"
+    const orientationClasses = {
+      horizontal: cn(
+        "flex",
+        sizeStyles[size].gap,
+        fullWidth && "w-full"
       ),
-      
-      pills: cn(
-        orientation === "horizontal" ? "flex flex-wrap gap-1.5" : "flex flex-col gap-1.5"
-      ),
-      
-      underline: cn(
-        orientation === "horizontal" 
-          ? "flex flex-wrap border-b border-origen-pradera/30" 
-          : "flex flex-col border-r border-origen-pradera/30"
-      ),
-      
-      organic: cn(
-        "relative",
-        orientation === "horizontal" 
-          ? "flex flex-wrap border-b-2 border-origen-pradera/20" 
-          : "flex flex-col border-r-2 border-origen-pradera/20"
-      ),
-      
-      minimal: cn(
-        orientation === "horizontal" ? "flex flex-wrap gap-2 sm:gap-4" : "flex flex-col gap-2"
+      vertical: cn(
+        "flex flex-col",
+        sizeStyles[size].gap,
+        "w-full sm:w-48 shrink-0"
       ),
     };
-
-    const sizeClasses = {
-      sm: "text-xs sm:text-sm",
-      md: "text-sm sm:text-base",
-      lg: "text-base sm:text-lg",
-    };
-
-    const widthClass = fullWidth && orientation === "horizontal" ? "w-full" : "";
 
     return (
       <div
         ref={ref}
         className={cn(
-          variantClasses[variant],
-          sizeClasses[tabsSize],
-          widthClass,
-          orientation === "vertical" && "w-full sm:w-48 shrink-0",
+          variantStyles[variant].list,
+          orientationClasses[orientation],
+          sizeStyles[size].list,
           className
         )}
         role="tablist"
@@ -196,91 +263,63 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
 TabsList.displayName = "TabsList";
 
 // ============================================================================
-// COMPONENTE TABS TRIGGER
+// COMPONENTE TABS TRIGGER - CORREGIDO
 // ============================================================================
 
 const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  ({ className = "", value, disabled = false, icon, badge, children, ...props }, ref) => {
-    const { activeTab, setActiveTab, orientation, variant, tabsSize, fullWidth } = useTabsContext();
+  ({ 
+    className = "", 
+    value, 
+    disabled = false, 
+    icon, 
+    badge,
+    badgeVariant = "warning",
+    children, 
+    ...props 
+  }, ref) => {
+    const { activeTab, setActiveTab, orientation, variant, size, fullWidth } = useTabsContext();
     const isActive = activeTab === value;
 
-    const variantClasses = {
-      default: cn(
-        "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        isActive 
-          ? "bg-white text-origen-bosque shadow-sm" 
-          : "text-gray-600 hover:text-origen-bosque hover:bg-white/50"
-      ),
-      
-      pills: cn(
-        "px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        isActive 
-          ? "bg-origen-bosque text-white shadow-md"
-          : "bg-white border border-origen-pradera/30 text-gray-600 hover:border-origen-pradera hover:text-origen-bosque"
-      ),
-      
-      underline: cn(
-        "px-3 py-1.5 sm:px-4 sm:py-2 font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        "relative",
-        orientation === "horizontal"
-          ? cn(
-              "border-b-2 -mb-px",
-              isActive 
-                ? "border-origen-pradera text-origen-bosque"
-                : "border-transparent text-gray-600 hover:text-origen-bosque hover:border-origen-pradera/50"
-            )
-          : cn(
-              "border-r-2 -mr-px",
-              isActive 
-                ? "border-origen-pradera text-origen-bosque"
-                : "border-transparent text-gray-600 hover:text-origen-bosque hover:border-origen-pradera/50"
-            )
-      ),
-      
-      organic: cn(
-        "px-3 py-2 sm:px-5 sm:py-2.5 font-medium transition-all duration-300",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        "relative group",
-        orientation === "horizontal"
-          ? cn(
-              "border-b-2 -mb-px",
-              isActive 
-                ? "border-origen-pradera text-origen-bosque"
-                : "border-transparent text-gray-600 hover:text-origen-bosque"
-            )
-          : cn(
-              "border-r-2 -mr-px",
-              isActive 
-                ? "border-origen-pradera text-origen-bosque"
-                : "border-transparent text-gray-600 hover:text-origen-bosque"
-            )
-      ),
-      
-      minimal: cn(
-        "px-2 py-1 sm:px-3 sm:py-1.5 font-medium transition-all duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        "relative",
-        isActive 
-          ? "text-origen-bosque font-semibold"
-          : "text-gray-500 hover:text-origen-hoja"
-      ),
-    };
-
-    const sizeClasses = {
-      sm: "text-xs px-2 py-1 sm:px-3 sm:py-1.5",
-      md: "text-sm px-3 py-1.5 sm:px-4 sm:py-2",
-      lg: "text-base px-4 py-2 sm:px-5 sm:py-2.5",
+    const orientationClasses = {
+      horizontal: "",
+      vertical: "w-full justify-start",
     };
 
     const widthClass = fullWidth && orientation === "horizontal" ? "flex-1" : "";
+
+    // Determinar la variante del badge según el estado
+    const getBadgeVariant = (): BadgeVariant => {
+      if (badgeVariant) return badgeVariant;
+      return isActive ? "success" : "warning";
+    };
+
+    // Indicador para variante underline
+    const UnderlineIndicator = () => {
+      if (variant !== "underline" || !isActive) return null;
+      
+      return (
+        <motion.div
+          layoutId="underline-indicator"
+          className="absolute -bottom-[1px] left-0 right-0 h-0.5 bg-origen-pradera rounded-full"
+          initial={false}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        />
+      );
+    };
+
+    // Indicador para variante vertical underline
+    const VerticalUnderlineIndicator = () => {
+      if (variant !== "underline" || !isActive || orientation !== "vertical") return null;
+      
+      return (
+        <motion.div
+          layoutId="vertical-underline-indicator"
+          className="absolute -right-[1px] top-0 bottom-0 w-0.5 bg-origen-pradera rounded-full"
+          initial={false}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        />
+      );
+    };
 
     return (
       <button
@@ -293,43 +332,49 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
         tabIndex={isActive ? 0 : -1}
         disabled={disabled}
         className={cn(
-          variantClasses[variant],
-          sizeClasses[tabsSize],
+          variantStyles[variant].trigger.base,
+          isActive ? variantStyles[variant].trigger.active : variantStyles[variant].trigger.inactive,
+          disabled && variantStyles[variant].trigger.disabled,
+          sizeStyles[size].trigger,
+          orientationClasses[orientation],
           widthClass,
+          "relative",
           className
         )}
         onClick={() => !disabled && setActiveTab(value)}
         data-state={isActive ? "active" : "inactive"}
         {...props}
       >
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+        <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+          {/* Icono */}
           {icon && (
             <span className={cn(
-              "transition-all duration-200 shrink-0 [&>svg]:h-3.5 [&>svg]:w-3.5 sm:[&>svg]:h-4 sm:[&>svg]:w-4",
+              "shrink-0",
+              sizeStyles[size].icon,
               isActive ? "text-current" : "text-gray-400"
             )}>
               {icon}
             </span>
           )}
           
-          <span>{children}</span>
+          {/* Texto - con whitespace-nowrap para evitar saltos de línea */}
+          <span className="whitespace-nowrap">{children}</span>
           
-          {badge !== undefined && (
-            <span className={cn(
-              "inline-flex items-center justify-center ml-1",
-              "px-1.5 py-0.5 text-[10px] font-medium rounded-full",
-              isActive 
-                ? "bg-origen-pradera text-white" 
-                : "bg-gray-200 text-gray-700"
-            )}>
+          {/* Badge - usando el componente Badge de la aplicación */}
+          {badge !== undefined && badge !== null && badge !== 0 && (
+            <Badge 
+              variant={getBadgeVariant()} 
+              size={sizeStyles[size].badge as any}
+              className="ml-0.5"
+            >
               {badge}
-            </span>
+            </Badge>
           )}
-          
-          {variant === "organic" && isActive && (
-            <span className="absolute -bottom-[2px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-origen-pradera animate-pulse" />
-          )}
-        </div>
+        </span>
+        
+        {/* Indicadores de línea */}
+        <UnderlineIndicator />
+        <VerticalUnderlineIndicator />
       </button>
     );
   }
@@ -355,8 +400,9 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
         id={`tabpanel-${value}`}
         aria-labelledby={`tab-${value}`}
         className={cn(
-          "mt-4 sm:mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta focus-visible:ring-offset-2",
-          "animate-in fade-in-0 slide-in-from-top-2 duration-300",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera focus-visible:ring-offset-2",
+          "animate-in fade-in-0 duration-300",
+          "mt-4",
           className
         )}
         tabIndex={0}
@@ -371,7 +417,7 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
 TabsContent.displayName = "TabsContent";
 
 // ============================================================================
-// TABS CON ICONOS (PREMIUM)
+// TABS CON ICONOS (Wrapper de alto nivel)
 // ============================================================================
 
 export interface TabsWithIconProps extends TabsProps {
@@ -381,6 +427,7 @@ export interface TabsWithIconProps extends TabsProps {
     icon: React.ReactNode;
     content: React.ReactNode;
     badge?: string | number;
+    badgeVariant?: BadgeVariant;
     disabled?: boolean;
   }>;
   className?: string;
@@ -397,6 +444,7 @@ const TabsWithIcon = React.forwardRef<HTMLDivElement, TabsWithIconProps>(
               value={tab.value}
               icon={tab.icon}
               badge={tab.badge}
+              badgeVariant={tab.badgeVariant}
               disabled={tab.disabled}
             >
               <span className="hidden sm:inline">{tab.label}</span>
@@ -427,5 +475,5 @@ export {
   TabsTrigger, 
   TabsContent, 
   TabsWithIcon,
-  useTabsContext as useTabs // Exportamos con el nombre useTabs para mantener la API
+  useTabsContext as useTabs
 };

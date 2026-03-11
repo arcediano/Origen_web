@@ -84,12 +84,12 @@
 //     id: 'perfil',
 //     label: 'Mi perfil',
 //     icon: Store,
-//     href: '/dashboard/perfil',
+//     href: '/dashboard/profile',
 //     submenu: [
-//       { id: 'informacion', label: 'Información del negocio', href: '/dashboard/perfil' },
-//       { id: 'certificaciones', label: 'Certificaciones', href: '/dashboard/perfil/certificaciones' },
-//       { id: 'imagenes', label: 'Imágenes y logo', href: '/dashboard/perfil/imagenes' },
-//       { id: 'historia', label: 'Historia y valores', href: '/dashboard/perfil/historia' }
+//       { id: 'informacion', label: 'Información del negocio', href: '/dashboard/profile' },
+//       { id: 'certificaciones', label: 'Certificaciones', href: '/dashboard/profile/certificaciones' },
+//       { id: 'imagenes', label: 'Imágenes y logo', href: '/dashboard/profile/imagenes' },
+//       { id: 'historia', label: 'Historia y valores', href: '/dashboard/profile/historia' }
 //     ]
 //   },
 //   {

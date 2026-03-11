@@ -14,7 +14,7 @@ const buttonVariants = cva(
   cn(
     "inline-flex items-center justify-center",
     "rounded-xl font-semibold transition-all duration-300",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-origen-menta",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-origen-pradera/50",
     "disabled:pointer-events-none disabled:opacity-50",
     "active:scale-[0.98]",
     "w-full sm:w-auto"
@@ -53,6 +53,7 @@ const buttonVariants = cva(
         md: "h-10 px-5 text-sm gap-2.5 rounded-xl",
         lg: "h-11 px-6 text-base gap-3 rounded-xl",
         icon: "h-10 w-10 p-0 rounded-xl",
+        "icon-sm": "h-8 w-8 p-0 rounded-lg", // ← AÑADIDO: tamaño para icono pequeño
       },
     },
     

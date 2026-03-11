@@ -1,7 +1,6 @@
 /**
  * @file alert.tsx
  * @description Alertas premium con diseño orgánico - 100% responsive
- * @version 4.0.1 - CORREGIDO: Añadido AlertWithIcon
  */
 
 "use client";

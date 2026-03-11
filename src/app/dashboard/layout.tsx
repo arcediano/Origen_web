@@ -6,8 +6,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DashboardSidebar } from '@/components/dashboard/layout/DashboardSidebar';
-import { DashboardHeader } from '@/components/dashboard/layout/DashboardHeader';
+import { DashboardSidebar } from '@/app/dashboard/components/sidebar/DashboardSidebar';
+import { DashboardHeader } from '@/app/dashboard/components/header/DashboardHeader';
 import { StatusBanner } from '@/components/shared/status/StatusBanner';
 import { cn } from '@/lib/utils';
 import { type SellerStatus } from '@/types/seller';

@@ -1,7 +1,6 @@
 /**
  * @file radio-group.tsx
  * @description Radio Group premium con diseño orgánico - 100% responsive
- * @version 2.0.0 - Paleta oficial Origen
  */
 
 "use client";
@@ -60,7 +59,8 @@ const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   RadioGroupItemProps
 >(({ className, variant = "default", size = "md", label, description, error, id, ...props }, ref) => {
-  const radioId = id || React.useId();
+  const generatedId = React.useId();
+  const radioId = id || generatedId;
 
   const variantClasses = {
     default: cn(
@@ -82,9 +82,9 @@ const RadioGroupItem = React.forwardRef<
       error && "border-red-500 data-[state=checked]:border-red-500"
     ),
     accent: cn(
-      "border-origen-menta/30 text-origen-menta",
-      "hover:border-origen-menta hover:bg-origen-menta/5",
-      "data-[state=checked]:border-origen-menta data-[state=checked]:text-origen-menta",
+      "border-origen-pradera/30 text-origen-pradera",
+      "hover:border-origen-pradera hover:bg-origen-pradera/5",
+      "data-[state=checked]:border-origen-pradera data-[state=checked]:text-origen-pradera",
       error && "border-red-500 data-[state=checked]:border-red-500"
     ),
   };
@@ -102,7 +102,7 @@ const RadioGroupItem = React.forwardRef<
       className={cn(
         "aspect-square rounded-full border-2 bg-white",
         "transition-all duration-200",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-origen-menta/50 focus-visible:ring-offset-2",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-origen-pradera/50 focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
         variantClasses[variant],
         sizeClasses[size],

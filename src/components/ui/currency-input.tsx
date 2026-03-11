@@ -1,7 +1,6 @@
 /**
  * @file currency-input.tsx
  * @description Input de moneda premium con soporte para importes grandes
- * @version 3.1.0 - Añadida propiedad inputSize para consistencia con Input
  */
 
 "use client";
@@ -339,7 +338,7 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
               "flex w-full rounded-xl border bg-white",
               "text-origen-oscuro placeholder:text-gray-400",
               "transition-all duration-200",
-              "focus:outline-none focus:ring-2 focus:ring-origen-menta/50 focus:border-origen-pradera",
+              "focus:outline-none focus:ring-2 focus:ring-origen-pradera/50 focus:border-origen-pradera",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-50",
               
               sizeClasses[inputSize],

@@ -1,0 +1,182 @@
+/**
+ * @component SidebarMenuItem
+ * @description Item del menú principal con soporte para submenús anidados
+ */
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { ChevronDown } from 'lucide-react';
+import { NotificationBadge } from '@/components/ui/notification-badge';
+import { SidebarSubmenu } from './SidebarSubmenu';
+import type { MenuItem, SubmenuItem } from '@/constants/sidebar';
+
+interface SidebarMenuItemProps extends MenuItem {
+  onItemClick?: () => void;
+  defaultOpen?: boolean;
+  depth?: number;
+}
+
+export function SidebarMenuItem({
+  id,
+  label,
+  icon: Icon,
+  href,
+  badge,
+  submenu,
+  onItemClick,
+  defaultOpen = false,
+  depth = 0
+}: SidebarMenuItemProps) {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  // Determinar si el item o algún subitem está activo
+  const isActive = href ? pathname === href : false;
+  
+  const hasActiveChild = submenu?.some(item => {
+    if ('submenu' in item) {
+      return (item as any).submenu?.some((sub: SubmenuItem) => 
+        pathname === sub.href || pathname === sub.href.split('?')[0]
+      );
+    }
+    return pathname === item.href || pathname === item.href.split('?')[0];
+  }) || false;
+
+  // Abrir automáticamente si tiene un hijo activo
+  useEffect(() => {
+    if (hasActiveChild && !isOpen) {
+      setIsOpen(true);
+    }
+  }, [hasActiveChild, isOpen]);
+
+  const toggleSubmenu = () => {
+    if (submenu) setIsOpen(!isOpen);
+  };
+
+  // Padding fijo para items principales
+  const itemPadding = 'pl-4';
+
+  // Si tiene submenú, renderizar con toggle
+  if (submenu) {
+    return (
+      <div className="space-y-0.5">
+        <button
+          onClick={toggleSubmenu}
+          className={cn(
+            'group relative w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
+            itemPadding,
+            'hover:bg-[#74C69D]/5',
+            (isActive || hasActiveChild) && 'bg-[#74C69D]/15'
+          )}
+        >
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            {/* Icono solo en primer nivel */}
+            <Icon className={cn(
+              'w-5 h-5 flex-shrink-0 transition-colors',
+              (isActive || hasActiveChild) 
+                ? 'text-[#06D6A0]' 
+                : 'text-gray-400 group-hover:text-[#74C69D]'
+            )} />
+            <span className={cn(
+              'truncate',
+              (isActive || hasActiveChild) 
+                ? 'text-[#1B4332] font-semibold' 
+                : 'text-gray-500 group-hover:text-[#1B4332]'
+            )}>
+              {label}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {badge && <NotificationBadge count={badge} size="sm" />}
+            {/* Chevron solo en items que tienen submenú */}
+            <ChevronDown className={cn(
+              'w-4 h-4 transition-transform',
+              isOpen ? 'rotate-180' : '',
+              (isActive || hasActiveChild) ? 'text-[#06D6A0]' : 'text-gray-400'
+            )} />
+          </div>
+
+          {/* Indicador de sección activa */}
+          {(isActive || hasActiveChild) && (
+            <motion.div
+              layoutId="activeNav"
+              className="absolute left-0 w-1 h-6 rounded-full"
+              style={{ background: '#06D6A0', boxShadow: '0 0 8px #06D6A0' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            />
+          )}
+        </button>
+
+        {/* Renderizar submenús anidados */}
+        <div>
+          {submenu.map((item) => {
+            if ('submenu' in item) {
+              return (
+                <SidebarMenuItem
+                  key={item.id}
+                  {...item as any}
+                  onItemClick={onItemClick}
+                  depth={depth + 1}
+                />
+              );
+            }
+            return (
+              <SidebarSubmenu
+                key={item.id}
+                items={[item]}
+                isOpen={isOpen}
+                onItemClick={onItemClick}
+                depth={depth + 1}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Si no tiene submenú, renderizar como link
+  return (
+    <Link
+      href={href || '#'}
+      onClick={onItemClick}
+      className={cn(
+        'group relative flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
+        itemPadding,
+        'hover:bg-[#74C69D]/5',
+        isActive && 'bg-[#74C69D]/15'
+      )}
+    >
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <Icon className={cn(
+          'w-5 h-5 flex-shrink-0 transition-colors',
+          isActive ? 'text-[#06D6A0]' : 'text-gray-400 group-hover:text-[#74C69D]'
+        )} />
+        <span className={cn(
+          'truncate',
+          isActive ? 'text-[#1B4332] font-semibold' : 'text-gray-500 group-hover:text-[#1B4332]'
+        )}>
+          {label}
+        </span>
+      </div>
+
+      {badge && <NotificationBadge count={badge} size="sm" />}
+
+      {/* Indicador de elemento activo */}
+      {isActive && (
+        <motion.div
+          layoutId="activeNav"
+          className="absolute left-0 w-1 h-6 rounded-full"
+          style={{ background: '#06D6A0', boxShadow: '0 0 8px #06D6A0' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        />
+      )}
+    </Link>
+  );
+}

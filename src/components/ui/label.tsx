@@ -1,7 +1,6 @@
 /**
  * @file label.tsx
  * @description Label premium con diseño orgánico - 100% responsive
- * @version 2.0.0 - Paleta oficial Origen
  */
 
 "use client";

@@ -49,6 +49,8 @@ import {
   initialRegistrationSchema,
   type InitialRegistrationFormData
 } from '@/lib/validations/seller';
+import { registerProducer } from '@/lib/api/auth';
+import { GatewayError } from '@/lib/api/client';
 
 // ============================================================================
 // ICONOS
@@ -84,7 +86,10 @@ import {
   Award,
   TrendingUp,
   Globe,
-  Sparkles
+  Sparkles,
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 // ============================================================================
@@ -483,120 +488,124 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 bg-origen-bosque/80 backdrop-blur-sm"
-            onClick={onClose}
           />
-          
+
           <motion.div
             ref={modalRef}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             className={cn(
-              "relative w-full max-w-3xl",
-              "bg-white rounded-2xl",
-              "shadow-2xl border border-gray-200",
-              "overflow-hidden"
+              "relative w-full sm:max-w-lg",
+              "bg-white sm:rounded-2xl rounded-t-2xl",
+              "shadow-2xl border border-gray-100",
+              "overflow-hidden max-h-[95dvh] overflow-y-auto"
             )}
           >
-            {/* CORREGIDO: from-origen-menta via-origen-pradera to-origen-hoja → from-origen-pradera via-origen-hoja to-origen-pino */}
+            {/* Barra superior degradada */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-origen-pradera via-origen-hoja to-origen-pino" />
-            
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-gray-600 border border-gray-200 hover:border-origen-pradera hover:bg-origen-crema/50 transition-all"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            
-            <div className="p-8">
+
+            {/* Pill handle — solo móvil */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-gray-300" />
+            </div>
+
+            <div className="p-6 sm:p-8">
+
+              {/* —— Cabecera —— */}
               <div className="text-center mb-6">
-                <div className="inline-flex items-center gap-2 bg-origen-crema rounded-full px-4 py-2 border border-origen-pradera/30 mb-4">
-                  {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-origen-pradera to-origen-hoja flex items-center justify-center">
-                    <CheckCircle className="w-3 h-3 text-white" />
-                  </div>
-                  <span className="text-sm font-bold text-origen-bosque uppercase tracking-wide">
-                    Registro completado
+                {/* Icono principal */}
+                <div className="mx-auto mb-4 w-16 h-16 rounded-2xl bg-gradient-to-br from-origen-pradera to-origen-hoja flex items-center justify-center shadow-lg">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+
+                <div className="inline-flex items-center gap-1.5 bg-origen-crema rounded-full px-3 py-1.5 border border-origen-pradera/30 mb-3">
+                  <div className="w-2 h-2 rounded-full bg-origen-pradera animate-pulse" />
+                  <span className="text-xs font-bold text-origen-bosque uppercase tracking-wider">
+                    Solicitud recibida
                   </span>
                 </div>
-                
-                <h2 className="text-2xl md:text-3xl font-bold text-origen-bosque mb-2">
-                  ¡Bienvenido a Origen, {contactName}!
+
+                <h2 className="text-xl sm:text-2xl font-bold text-origen-bosque mb-1">
+                  ¡Gracias, {contactName}!
                 </h2>
-                <p className="text-lg text-gray-600">
-                  Tu solicitud ha sido recibida correctamente
+                <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                  Hemos recibido tu solicitud para unirte a Origen.<br className="hidden sm:block" />
+                  Nuestro equipo la revisará y valorará tu candidatura.
                 </p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-origen-crema/30 rounded-xl p-6 border border-gray-200">
-                  <div className="flex items-start gap-4">
-                    {/* CORREGIDO: from-origen-menta to-origen-pradera → from-origen-pradera to-origen-hoja */}
-                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-origen-pradera to-origen-hoja flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <span className="text-2xl font-bold text-white">{initial}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-origen-bosque truncate">
-                        {businessName}
-                      </h3>
-                      <p className="text-base text-gray-600 truncate mt-1">{email}</p>
-                      <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-2">
-                        <MapPin className="w-4 h-4" />
-                        {city}, {provinceName}
-                      </p>
-                    </div>
-                  </div>
+
+              {/* —— Bloque 24h —— */}
+              <div className="flex items-start gap-3 bg-origen-crema/60 border border-origen-pradera/20 rounded-xl p-4 mb-4">
+                <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-origen-pradera/15 flex items-center justify-center mt-0.5">
+                  <Clock className="w-5 h-5 text-origen-hoja" />
                 </div>
-                
-                <div className="bg-gradient-to-br from-gray-900 to-origen-bosque rounded-xl p-6 shadow-xl">
-                  <p className="text-sm font-medium text-white/60 uppercase tracking-wider mb-2">
-                    Código de seguimiento
+                <div>
+                  <p className="text-sm font-semibold text-origen-bosque mb-0.5">
+                    Respuesta en menos de 24 horas
                   </p>
-                  <div className="flex items-center justify-between gap-3">
-                    <code className="font-mono text-xl font-bold text-white break-all">
-                      {trackingCode}
-                    </code>
-                    <button
-                      onClick={handleCopyCode}
-                      className="flex-shrink-0 w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
-                    >
-                      {copied ? (
-                        // CORREGIDO: text-origen-menta → text-origen-pradera
-                        <CheckCircle className="w-5 h-5 text-origen-pradera" />
-                      ) : (
-                        <Copy className="w-5 h-5 text-white" />
-                      )}
-                    </button>
-                  </div>
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Recibirás un email con la resolución de tu candidatura en la dirección{' '}
+                    <span className="font-semibold text-origen-bosque">{email}</span>.
+                  </p>
                 </div>
               </div>
-              
-              <div className="bg-origen-crema/50 rounded-xl p-4 mb-6">
-                <div className="flex items-center gap-3 text-base text-gray-600">
-                  <Mail className="w-5 h-5 text-origen-pradera" />
-                  <span>
-                    Hemos enviado un email de confirmación a <span className="font-semibold text-origen-bosque">{email}</span>
-                  </span>
+
+              {/* —— Código de seguimiento —— */}
+              <div className="bg-gradient-to-br from-gray-900 to-origen-bosque rounded-xl p-4 sm:p-5 mb-4">
+                <p className="text-xs font-medium text-white/50 uppercase tracking-widest mb-2">
+                  Código de seguimiento
+                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <code className="font-mono text-lg sm:text-xl font-bold text-white tracking-wide break-all">
+                    {trackingCode}
+                  </code>
+                  <button
+                    onClick={handleCopyCode}
+                    aria-label="Copiar código"
+                    className="flex-shrink-0 w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 active:scale-95 transition-all border border-white/15"
+                  >
+                    {copied ? (
+                      <CheckCircle className="w-5 h-5 text-origen-pradera" />
+                    ) : (
+                      <Copy className="w-5 h-5 text-white" />
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-white/40 mt-3 leading-relaxed">
+                  Guarda este código. Puedes usarlo para consultar el estado de tu solicitud o contactar con nosotros.
+                </p>
+              </div>
+
+              {/* —— Info negocio —— */}
+              <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-origen-pradera to-origen-hoja flex items-center justify-center flex-shrink-0 shadow">
+                  <span className="text-base font-bold text-white">{initial}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-origen-bosque truncate">{businessName}</p>
+                  <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5 truncate">
+                    <MapPin className="w-3 h-3 flex-shrink-0" />
+                    {city}, {provinceName}
+                  </p>
                 </div>
               </div>
-              
-              <div className="flex justify-end">
-                <Button
-                  onClick={onClose}
-                  className="bg-origen-bosque hover:bg-origen-pino text-white px-6 py-3 h-auto text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-                >
-                  <span className="flex items-center gap-2">
-                    Ir a mi panel
-                    <ArrowRight className="w-5 h-5" />
-                  </span>
-                </Button>
-              </div>
+
+              {/* —— Botón cerrar —— */}
+              <button
+                onClick={onClose}
+                className="w-full py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-500 hover:text-origen-bosque hover:border-origen-pradera/40 hover:bg-origen-crema/30 active:scale-[.98] transition-all"
+              >
+                Cerrar
+              </button>
+
             </div>
           </motion.div>
         </div>
@@ -620,6 +629,15 @@ export function SimpleRegistration({
   const [submittedData, setSubmittedData] = useState<InitialRegistrationFormData | null>(null);
   const [trackingCode, setTrackingCode] = useState<string>('');
 
+
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (submitStatus === 'error' && errorMessage) {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [submitStatus, errorMessage]);
+
   const {
     register,
     handleSubmit,
@@ -634,6 +652,8 @@ export function SimpleRegistration({
       contactSurname: '',
       email: '',
       phone: '',
+      password: '',
+      confirmPassword: '',
       businessName: '',
       businessType: 'individual',
       province: '',
@@ -655,18 +675,35 @@ export function SimpleRegistration({
     setErrorMessage('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const code = generateTrackingCode();
-      setTrackingCode(code);
+      const result = await registerProducer({
+        email: data.email,
+        password: data.password,
+        firstName: data.contactName,
+        lastName: data.contactSurname,
+        phone: data.phone,
+        businessName: data.businessName,
+        businessType: data.businessType as 'individual' | 'company',
+        producerCategory: data.producerCategory,
+        province: data.province,
+        city: data.city,
+        whyOrigin: data.whyOrigin,
+        acceptsTerms: true,
+        acceptsPrivacy: true,
+      });
+
+      setTrackingCode(result.data.trackingCode ?? '');
       setSubmittedData(data);
       setSubmitStatus('success');
       setIsModalOpen(true);
       onSuccess?.(data);
-      
-    } catch {
+
+    } catch (err) {
       setSubmitStatus('error');
-      setErrorMessage('No hemos podido procesar tu solicitud. Inténtalo de nuevo.');
+      if (err instanceof GatewayError) {
+        setErrorMessage(err.message);
+      } else {
+        setErrorMessage('No hemos podido procesar tu solicitud. Inténtalo de nuevo.');
+      }
     }
   }, [onSuccess]);
 
@@ -703,7 +740,7 @@ export function SimpleRegistration({
         {/* SIN CABECERA - Eliminada porque ya viene en page.tsx */}
 
         {submitStatus === 'error' && errorMessage && (
-          <div className="mb-6">
+          <div ref={errorRef} className="mb-6">
             <AlertWithIcon
               variant="error"
               description={errorMessage}
@@ -769,7 +806,6 @@ export function SimpleRegistration({
                     placeholder="tu@email.com"
                     error={errors.email?.message}
                     {...register('email')}
-                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
                     className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
                   />
                 </div>
@@ -783,8 +819,36 @@ export function SimpleRegistration({
                     placeholder="600 000 000"
                     error={errors.phone?.message}
                     {...register('phone')}
-                    // CORREGIDO: focus:border-origen-menta focus:ring-origen-menta/30 → focus:border-origen-pradera focus:ring-origen-pradera/30
                     className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-1 focus:ring-origen-pradera/30"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
+                    <Lock className="w-5 h-5 text-origen-pradera" />
+                    Contraseña <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="Mín. 8 caracteres"
+                    error={errors.password?.message}
+                    inputSize="lg"
+                    {...register('password')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-base font-medium text-origen-bosque flex items-center gap-2">
+                    <Lock className="w-5 h-5 text-origen-pradera" />
+                    Confirmar contraseña <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="Repite la contraseña"
+                    error={errors.confirmPassword?.message}
+                    inputSize="lg"
+                    {...register('confirmPassword')}
                   />
                 </div>
               </div>
