@@ -280,7 +280,7 @@ export function EnhancedStep2Story({ data, onChange }: EnhancedStep2StoryProps) 
               className="h-12 text-base border-gray-200 focus:border-origen-pradera focus:ring-2 focus:ring-origen-pradera/20"
             />
             <p className="text-xs text-gray-500">
-              Ej: "El sabor de la tradición", "De nuestra huerta a tu mesa", "Artesanía con corazón"
+              Ej: &ldquo;El sabor de la tradición&rdquo;, &ldquo;De nuestra huerta a tu mesa&rdquo;, &ldquo;Artesanía con corazón&rdquo;
             </p>
           </div>
         </div>
