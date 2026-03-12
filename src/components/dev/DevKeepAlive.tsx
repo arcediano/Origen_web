@@ -12,12 +12,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-const ENDPOINTS = [
-  { name: 'Gateway',   url: `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/health` },
-  { name: 'Auth',      url: 'https://origen-auth-dev.onrender.com/health' },
-  { name: 'Producers', url: 'https://origen-producers-dev.onrender.com/health' },
-  { name: 'Products',  url: 'https://origen-products-dev.onrender.com/health' },
-];
+const SERVICE_NAMES = ['Gateway', 'Auth', 'Producers', 'Products'];
 
 const INTERVAL_MS = 30_000;
 
@@ -31,31 +26,30 @@ interface PingState {
 
 export function DevKeepAlive() {
   const [services, setServices] = useState<PingState[]>(
-    ENDPOINTS.map(e => ({ name: e.name, status: 'pending', lastPing: null }))
+    SERVICE_NAMES.map(name => ({ name, status: 'pending', lastPing: null }))
   );
   const [minimized, setMinimized] = useState(false);
 
   const pingAll = useCallback(async () => {
-    const results = await Promise.allSettled(
-      ENDPOINTS.map(e => {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 10_000);
-        return fetch(e.url, { signal: controller.signal })
-          .then(r => (r.ok ? 'ok' : 'error'))
-          .catch(() => 'error');
-      })
-    );
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 12_000);
 
-    setServices(prev =>
-      prev.map((s, i) => {
-        const r = results[i];
-        return {
-          ...s,
-          status: (r.status === 'fulfilled' ? r.value : 'error') as ServiceStatus,
-          lastPing: new Date(),
-        };
-      })
-    );
+    try {
+      const res = await fetch('/api/keepalive', { signal: controller.signal });
+      if (!res.ok) throw new Error();
+      const data: { services: { name: string; status: 'ok' | 'error' }[] } = await res.json();
+
+      setServices(prev =>
+        prev.map(s => {
+          const found = data.services.find(d => d.name === s.name);
+          return { ...s, status: found?.status ?? 'error', lastPing: new Date() };
+        })
+      );
+    } catch {
+      setServices(prev =>
+        prev.map(s => ({ ...s, status: 'error', lastPing: new Date() }))
+      );
+    }
   }, []);
 
   useEffect(() => {
