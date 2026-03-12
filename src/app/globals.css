@@ -188,6 +188,15 @@
 
 /* === UTILIDADES PERSONALIZADAS === */
 @layer utilities {
+  /* Ocultar scrollbar (slider móvil) */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* === UTILIDADES DE ACCESIBILIDAD === */
   .focus-origen:focus-visible {
     outline: 2px solid hsl(var(--menta));

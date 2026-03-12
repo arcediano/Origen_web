@@ -235,8 +235,8 @@ export function HeroSection() {
               </div>
             </div>
             
-            {/* Columna derecha - TARJETA DE REGISTRO CORREGIDA */}
-            <div className="flex-1 w-full lg:w-5/12 mt-8 lg:mt-0">
+            {/* Columna derecha - oculta en móvil (el formulario real está más abajo) */}
+            <div className="hidden lg:block flex-1 w-full lg:w-5/12 mt-8 lg:mt-0">
               <div className="relative">
                 {/* 
                   EFECTO DE SOMBRA - CORREGIDO
