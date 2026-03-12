@@ -137,7 +137,7 @@ export function SimpleLogin() {
                 }}
                 placeholder="nombre@productor.es"
                 className={cn(
-                  "w-full h-11 px-4 text-sm",
+                  "w-full h-12 px-4 text-sm",
                   "bg-white border rounded-xl",
                   "focus:outline-none focus:ring-2",
                   // CORREGIDO: focus:ring-origen-menta/20 → focus:ring-origen-pradera/20
@@ -183,7 +183,7 @@ export function SimpleLogin() {
                 }}
                 placeholder="••••••••"
                 className={cn(
-                  "w-full h-11 px-4 text-sm",
+                  "w-full h-12 px-4 text-sm",
                   "bg-white border rounded-xl",
                   "focus:outline-none focus:ring-2",
                   // CORREGIDO: focus:ring-origen-menta/20 → focus:ring-origen-pradera/20
@@ -240,7 +240,7 @@ export function SimpleLogin() {
             type="submit"
             disabled={isLoading}
             className={cn(
-              "w-full h-11",
+              "w-full h-12",
               "bg-origen-bosque hover:bg-origen-pino",
               "text-white text-sm font-semibold",
               "rounded-xl shadow-md hover:shadow-lg",

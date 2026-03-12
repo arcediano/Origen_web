@@ -75,12 +75,28 @@ export default function LoginPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 md:px-6 py-12 md:py-16 lg:py-20">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-12 lg:py-16 xl:py-20">
         <div className="max-w-7xl mx-auto">
+
+          {/* Hero compacto — solo móvil */}
+          <div className="lg:hidden text-center mb-8 space-y-3">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-origen-pradera/10 to-origen-hoja/10 rounded-full px-4 py-2 border border-origen-pradera/30">
+              <Sparkles className="w-4 h-4 text-origen-pradera" />
+              <span className="text-xs font-semibold text-origen-bosque">Espacio exclusivo para productores</span>
+            </div>
+            <h1 className="text-2xl font-bold text-origen-bosque">
+              Bienvenido a tu{' '}
+              <span className="text-origen-pradera">panel de control</span>
+            </h1>
+            <p className="text-sm text-gray-600 max-w-sm mx-auto">
+              Gestiona tu tienda, analiza tus ventas y haz crecer tu negocio.
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
-            {/* COLUMNA IZQUIERDA - 6/12 */}
-            <div className="lg:col-span-6 space-y-8 lg:pr-8 xl:pr-12">
+
+            {/* COLUMNA IZQUIERDA - 6/12 — oculta en móvil */}
+            <div className="hidden lg:block lg:col-span-6 space-y-8 lg:pr-8 xl:pr-12">
               
               {/* Badge */}
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-origen-pradera/10 to-origen-hoja/10 rounded-full px-4 py-2 border border-origen-pradera/30">
@@ -200,8 +216,37 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* Footer - CORREGIDO */}
-      <footer className="bg-white border-t border-gray-200 pt-12 pb-8 mt-12 md:mt-16 lg:mt-20">
+      {/* Footer */}
+      <footer className="bg-white border-t border-gray-200 mt-8 md:mt-16 lg:mt-20">
+
+        {/* Footer compacto — solo móvil */}
+        <div className="lg:hidden px-4 py-6">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-lg bg-origen-bosque flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="85" fill="none" stroke="white" strokeWidth="3"/>
+                <path d="M100 140 L100 80" stroke="white" strokeWidth="5" strokeLinecap="round"/>
+                <path d="M100 90 Q85 75, 75 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                <path d="M100 90 Q115 75, 125 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+                <circle cx="100" cy="140" r="8" fill="white"/>
+                <circle cx="100" cy="140" r="5" fill="#74C69D"/>
+              </svg>
+            </div>
+            <span className="font-bold text-origen-bosque">ORIGEN</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4">
+            <Link href="/privacidad" className="text-xs text-gray-500 hover:text-origen-pradera transition-colors">Privacidad</Link>
+            <Link href="/cookies" className="text-xs text-gray-500 hover:text-origen-pradera transition-colors">Cookies</Link>
+            <Link href="/aviso-legal" className="text-xs text-gray-500 hover:text-origen-pradera transition-colors">Aviso Legal</Link>
+            <Link href="/soporte" className="text-xs text-gray-500 hover:text-origen-pradera transition-colors">Soporte</Link>
+          </div>
+          <p className="text-center text-xs text-gray-400">
+            © {new Date().getFullYear()} Origen Marketplace
+          </p>
+        </div>
+
+        {/* Footer completo — solo desktop */}
+        <div className="hidden lg:block pt-12 pb-8">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
             
@@ -360,6 +405,7 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
+        </div>{/* /hidden lg:block */}
       </footer>
     </div>
   );
