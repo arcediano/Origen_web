@@ -6,6 +6,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+// ⚠️ TEMPORAL: eliminar cuando se use plan de pago en Render o UptimeRobot externo
+import { DevKeepAlive } from "@/components/dev/DevKeepAlive";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        {/* ⚠️ TEMPORAL — keep-alive para Render free tier. Eliminar al pasar a plan de pago. */}
+        {process.env.NEXT_PUBLIC_DEV_KEEPALIVE === 'true' && <DevKeepAlive />}
+      </body>
     </html>
   );
 }
