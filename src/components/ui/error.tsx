@@ -185,7 +185,7 @@ const errorTypeConfig: Record<string, {
     title: 'No autorizado',
     message: 'Necesitas iniciar sesión para acceder a esta página.',
     icon: Lock,
-    defaultAction: { label: 'Iniciar sesión', to: '/login' }
+    defaultAction: { label: 'Iniciar sesión', to: '/auth/login' }
   },
   'forbidden': {
     code: '403',
