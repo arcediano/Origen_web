@@ -12,7 +12,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-const SERVICE_NAMES = ['Gateway', 'Auth', 'Producers', 'Products'];
+const SERVICE_NAMES = ['Auth', 'Producers', 'Products'];
 
 const INTERVAL_MS = 30_000;
 

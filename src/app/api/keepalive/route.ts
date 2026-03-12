@@ -11,7 +11,6 @@
 import { NextResponse } from 'next/server';
 
 const SERVICES = [
-  { name: 'Gateway',   url: `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/health` },
   { name: 'Auth',      url: 'https://origen-auth-dev.onrender.com/health' },
   { name: 'Producers', url: 'https://origen-producers-dev.onrender.com/health' },
   { name: 'Products',  url: 'https://origen-products-dev.onrender.com/health' },
