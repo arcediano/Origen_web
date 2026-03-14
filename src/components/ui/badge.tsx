@@ -64,10 +64,10 @@ export interface BadgeProps {
  */
 
 const variantStyles: Record<BadgeVariant, string> = {
-  success: 'bg-green-50 text-green-700 border-green-200',
+  success: 'bg-origen-hoja/10 text-origen-hoja border-origen-hoja/20',
   warning: 'bg-amber-50 text-amber-700 border-amber-200',
   danger: 'bg-red-50 text-red-700 border-red-200',
-  info: 'bg-blue-50 text-blue-700 border-blue-200',
+  info: 'bg-origen-pradera/10 text-origen-pradera border-origen-pradera/20',
   neutral: 'bg-gray-50 text-gray-600 border-gray-200',
   leaf: 'bg-origen-pastel text-origen-hoja border-origen-pradera/30',
   outline: 'bg-transparent text-gray-600 border-gray-200',

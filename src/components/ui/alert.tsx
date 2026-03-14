@@ -79,10 +79,10 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
 
     const variantClasses = {
       default: "bg-origen-crema border border-origen-pradera/30 text-origen-bosque [&>svg]:text-origen-hoja",
-      success: "bg-green-50 border border-green-200 text-green-900 [&>svg]:text-green-600",
+      success: "bg-origen-hoja/10 border border-origen-hoja/20 text-origen-bosque [&>svg]:text-origen-hoja",
       warning: "bg-amber-50 border border-amber-200 text-amber-900 [&>svg]:text-amber-600",
       error: "bg-red-50 border border-red-200 text-red-900 [&>svg]:text-red-600",
-      info: "bg-blue-50 border border-blue-200 text-blue-900 [&>svg]:text-blue-600",
+      info: "bg-origen-pradera/10 border border-origen-pradera/20 text-origen-bosque [&>svg]:text-origen-pradera",
       organic: "bg-gradient-to-br from-origen-pastel to-origen-crema border-2 border-origen-pradera/30 text-origen-oscuro [&>svg]:text-origen-pradera shadow-lg shadow-origen-pradera/10",
     };
 

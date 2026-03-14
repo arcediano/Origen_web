@@ -155,7 +155,7 @@ export function HeroSection() {
               {/* Título */}
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-5 leading-tight text-white drop-shadow-xl">
                 Conecta tu pasión
-                <span className="block text-origen-hoja mt-1 md:mt-2 drop-shadow-2xl">
+                <span className="block text-white mt-1 md:mt-2 drop-shadow-2xl">
                   con quien la valora
                 </span>
               </h1>
@@ -262,7 +262,7 @@ export function HeroSection() {
                     <h3 className="text-xl md:text-2xl font-bold mb-2 text-origen-bosque">
                       Registro simplificado
                     </h3>
-                    <p className="text-origen-hoja text-sm md:text-base font-medium">
+                    <p className="text-origen-pino text-sm md:text-base font-medium">
                       4 pasos • 5 minutos
                     </p>
                   </div>

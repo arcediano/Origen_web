@@ -104,12 +104,12 @@ const ProgressBar: React.FC<{ value: number; max: number; className?: string }> 
   return (
     <div className={cn('space-y-1', className)}>
       <div className="flex items-center justify-between">
-        <span className="text-xs md:text-sm text-origen-hoja">Mínimo 50 caracteres</span>
-        <span className="text-xs md:text-sm font-semibold text-origen-hoja">{percentage}%</span>
+        <span className="text-xs md:text-sm text-origen-pino">Mínimo 50 caracteres</span>
+        <span className="text-xs md:text-sm font-semibold text-origen-pino">{percentage}%</span>
       </div>
       <div className="h-2 bg-origen-crema rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-origen-hoja to-origen-menta transition-all duration-700"
+          className="h-full rounded-full bg-origen-pradera transition-all duration-700"
           style={{ width: `${percentage}%` }}
         />
       </div>

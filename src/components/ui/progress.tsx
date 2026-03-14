@@ -200,11 +200,11 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   const offset = circumference - (percentage / 100) * circumference;
 
   const variantColors = {
-    seed: { track: "#D8F3DC", progress: "#74C69D" },
-    sprout: { track: "#D1FAE5", progress: "#10B981" },
-    leaf: { track: "#D8F3DC", progress: "#74C69D" },
-    fruit: { track: "#FEF3C7", progress: "#F59E0B" },
-    forest: { track: "#D1E7DD", progress: "#1B4332" },
+    seed: { track: "hsl(var(--pradera) / 0.2)", progress: "hsl(var(--pradera))" },
+    sprout: { track: "hsl(var(--hoja) / 0.2)", progress: "hsl(var(--hoja))" },
+    leaf: { track: "hsl(var(--hoja) / 0.2)", progress: "hsl(var(--hoja))" },
+    fruit: { track: "hsl(var(--menta) / 0.2)", progress: "hsl(var(--menta))" },
+    forest: { track: "hsl(var(--pino) / 0.2)", progress: "hsl(var(--bosque))" },
   };
   
   const config = variantColors[variant] || variantColors.leaf;

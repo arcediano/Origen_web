@@ -44,7 +44,7 @@ export default function RegisterPage() {
           <div className="text-center max-w-4xl mx-auto mb-8 md:mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-origen-bosque mb-3 md:mb-4">
               Regístrate como productor
-              <span className="block text-origen-hoja">y empieza a vender hoy</span>
+              <span className="block text-origen-pino">y empieza a vender hoy</span>
             </h2>
             <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Completa el formulario en menos de 5 minutos. Sin compromiso,
